@@ -1,0 +1,1010 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Zeus's Wormy Walk</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sniglet:wght@400;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+  /* Layout: one rain-soaked sidewalk stage, HUD floating on it, a single line of controls below. */
+  :root {
+    --night: #17252a;     /* page + wet evening sky */
+    --slate: #22363c;     /* panels */
+    --rain: #cfe3e6;      /* text on dark */
+    --mist: #8fa9ad;      /* secondary text */
+    --coat: #f2c230;      /* raincoat yellow, the one accent */
+    --worm: #e8888c;      /* worm pink, used for danger */
+    --ink: #10191c;       /* text on yellow */
+    --display: "Sniglet", "Arial Rounded MT Bold", "Trebuchet MS", system-ui, sans-serif;
+    --body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; background: var(--night); color: var(--rain); }
+  body {
+    font-family: var(--body);
+    font-size: 15px;
+    line-height: 1.5;
+    padding-block: 20px 28px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; display: grid; gap: 12px; }
+  .stage {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    max-width: 100%;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #22343a;
+    box-shadow: 0 18px 50px -20px rgba(0, 0, 0, .7);
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  @media (max-width: 700px) { .stage { aspect-ratio: 4 / 5; } }
+  canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+  .hud {
+    position: absolute; top: 10px; left: 12px; right: 12px;
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    pointer-events: none;
+    font-family: var(--display);
+    font-size: 18px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, .5);
+  }
+  .hud .dist { font-weight: 800; font-size: 24px; font-variant-numeric: tabular-nums; min-width: 4.5ch; }
+  .hud .treats { color: var(--mist); font-variant-numeric: tabular-nums; }
+  .paws { display: flex; gap: 4px; }
+  .paws svg { width: 22px; height: 22px; }
+  .paws .lost { opacity: .28; }
+  .hud .spacer { flex: 1; }
+  .pause-btn {
+    pointer-events: auto;
+    font: 800 14px var(--display);
+    color: var(--rain);
+    background: rgba(16, 25, 28, .55);
+    border: 1px solid rgba(207, 227, 230, .25);
+    border-radius: 999px;
+    padding: 5px 14px;
+    cursor: pointer;
+  }
+  .hud[hidden] { display: none !important; }
+
+  .overlay {
+    position: absolute; inset: 0;
+    display: grid; place-items: center;
+    padding: 16px;
+    background: linear-gradient(180deg, rgba(23, 37, 42, .35), rgba(23, 37, 42, .82));
+    overflow: auto;
+  }
+  .card {
+    width: min(460px, 100%);
+    background: rgba(34, 54, 60, .92);
+    border: 1px solid rgba(207, 227, 230, .14);
+    border-radius: 18px;
+    padding: 20px 22px;
+    display: grid; gap: 12px;
+    backdrop-filter: blur(4px);
+  }
+  .eyebrow {
+    font-family: var(--display); font-size: 12px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--coat); margin: 0;
+  }
+  h1, h2 {
+    font-family: var(--display); font-weight: 800; margin: 0;
+    line-height: 1.02; text-wrap: balance; color: #fff;
+  }
+  h1 { font-size: clamp(30px, 6vw, 46px); }
+  h1 em { font-style: normal; color: var(--worm); }
+  h2 { font-size: clamp(26px, 5vw, 36px); }
+  .card p { margin: 0; color: var(--rain); max-width: 60ch; }
+  .card .muted { color: var(--mist); font-size: 14px; }
+  .names { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 380px) { .names { grid-template-columns: 1fr; } }
+  label { display: grid; gap: 4px; font-size: 13px; color: var(--mist); min-width: 0; }
+  input {
+    font: 700 16px var(--body);
+    color: #fff;
+    background: rgba(16, 25, 28, .6);
+    border: 1px solid rgba(207, 227, 230, .22);
+    border-radius: 10px;
+    padding: 8px 10px;
+    width: 100%;
+  }
+  input:focus-visible, button:focus-visible { outline: 3px solid var(--coat); outline-offset: 2px; }
+  .go {
+    font: 800 20px var(--display);
+    color: var(--ink);
+    background: var(--coat);
+    border: none; border-radius: 999px;
+    padding: 12px 22px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #b88c12;
+    transition: transform .08s ease, box-shadow .08s ease;
+  }
+  .go:active { transform: translateY(3px); box-shadow: 0 1px 0 #b88c12; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .stat { background: rgba(16, 25, 28, .45); border-radius: 12px; padding: 8px 10px; }
+  .stat b { display: block; font: 800 24px var(--display); color: #fff; font-variant-numeric: tabular-nums; }
+  .stat span { font-size: 12px; color: var(--mist); letter-spacing: .06em; text-transform: uppercase; }
+  .new-best { color: var(--coat); font-family: var(--display); font-weight: 800; }
+
+  .help { color: var(--mist); font-size: 14px; margin: 0; text-align: center; }
+  kbd {
+    font: 700 12px var(--body); color: var(--rain);
+    border: 1px solid rgba(207, 227, 230, .3); border-bottom-width: 2px;
+    border-radius: 5px; padding: 0 5px;
+  }
+  @media (max-width: 520px) {
+    .card { padding: 16px; gap: 10px; }
+    .card p { font-size: 14px; }
+    .hud .dist { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="stage" id="stage">
+    <canvas id="game" aria-label="Game: steer Zeus the white dog around worms on a rainy sidewalk"></canvas>
+
+    <div class="hud" id="hud" hidden>
+      <span class="dist" id="dist">0 m</span>
+      <span class="paws" id="paws" aria-label="Clean paws left"></span>
+      <span class="treats" id="treats">0 treats</span>
+      <span class="spacer"></span>
+      <button class="pause-btn" id="pauseBtn" type="button">Pause</button>
+    </div>
+
+    <div class="overlay" id="titleScreen">
+      <div class="card">
+        <p class="eyebrow">After the rain</p>
+        <h1>Zeus's Wormy <em>Walk</em></h1>
+        <p>It rained all afternoon and the sidewalk is crawling with worms. Steer Zeus around them. You two follow his exact path, so watch for worms wriggling in behind him.</p>
+        <div class="names">
+          <label for="nameMe">Your name
+            <input id="nameMe" maxlength="14" autocomplete="off" value="Seamus">
+          </label>
+          <label for="nameGf">Girlfriend's name
+            <input id="nameGf" maxlength="14" autocomplete="off" placeholder="GF">
+          </label>
+        </div>
+        <p class="muted">Three worms and the walk is over. Zeus can grab treats and tennis balls along the way.</p>
+        <button class="go" id="startBtn" type="button">Start the walk</button>
+        <p class="muted" id="bestLine">No walks yet.</p>
+      </div>
+    </div>
+
+    <div class="overlay" id="pauseScreen" hidden>
+      <div class="card">
+        <h2>Paused</h2>
+        <p>Zeus is sniffing a lamp post.</p>
+        <button class="go" id="resumeBtn" type="button">Keep walking</button>
+      </div>
+    </div>
+
+    <div class="overlay" id="overScreen" hidden>
+      <div class="card">
+        <p class="eyebrow" id="overEyebrow">Walk over</p>
+        <h2 id="overTitle">Bath time for Zeus</h2>
+        <p id="overText"></p>
+        <div class="stats">
+          <div class="stat"><b id="sDist">0</b><span>Meters</span></div>
+          <div class="stat"><b id="sTreats">0</b><span>Treats</span></div>
+          <div class="stat"><b id="sScore">0</b><span>Score</span></div>
+        </div>
+        <p class="muted" id="overBest"></p>
+        <button class="go" id="againBtn" type="button">Walk again</button>
+      </div>
+    </div>
+  </div>
+  <p class="help">Drag up and down on the sidewalk, or use <kbd>↑</kbd> <kbd>↓</kbd> / <kbd>W</kbd> <kbd>S</kbd>. <kbd>P</kbd> pauses.</p>
+</div>
+
+<script>
+(() => {
+  const H = 500;
+  const PATH_TOP = 190, PATH_BOT = 430;
+  const Z_MIN = PATH_TOP + 34, Z_MAX = PATH_BOT - 38;
+  const SLAB = 120;
+  const MAX_LIVES = 3;
+
+  const stage = document.getElementById('stage');
+  const canvas = document.getElementById('game');
+  const ctx = canvas.getContext('2d');
+  const $ = id => document.getElementById(id);
+
+  let W = 800, scale = 1;
+
+  // ---------- storage (best-effort) ----------
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+  };
+  let best = store.get('zeusWalk.best', 0);
+  const savedNames = store.get('zeusWalk.names', null);
+  if (savedNames) { $('nameMe').value = savedNames.me || 'Seamus'; $('nameGf').value = savedNames.gf || ''; }
+  const names = { me: 'Seamus', gf: 'GF' };
+  function readNames() {
+    names.me = $('nameMe').value.trim() || 'Seamus';
+    names.gf = $('nameGf').value.trim() || 'GF';
+    store.set('zeusWalk.names', { me: $('nameMe').value.trim(), gf: $('nameGf').value.trim() });
+  }
+  function updateBestLine() {
+    $('bestLine').textContent = best > 0 ? `Best walk: ${best} points` : 'No walks yet.';
+  }
+  updateBestLine();
+
+  // ---------- helpers ----------
+  const rnd = i => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+  const rand = (a, b) => a + Math.random() * (b - a);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---------- state ----------
+  let state = 'title';           // title | play | paused | over
+  let g;                          // per-run game state
+  function newGame() {
+    return {
+      d: 0,                      // ground distance in px
+      speed: 160,
+      zy: (Z_MIN + Z_MAX) / 2,
+      vy: 0,
+      trace: [],
+      worms: [],
+      splats: [],
+      items: [],
+      pops: [],
+      splashes: [],
+      lives: MAX_LIVES,
+      treats: 0,
+      bonus: 0,
+      invuln: 0,
+      roll: 0,
+      mud: [],
+      nextWorm: 1.2,
+      nextItem: 2.5,
+      lastHit: null,
+      t: 0,
+      milestone: 0,
+      phase: 0,
+      shake: 0
+    };
+  }
+  g = newGame();
+
+  const rain = [];
+  for (let i = 0; i < 260; i++) rain.push({ x: Math.random() * 1400, y: Math.random() * H, s: rand(0.6, 1.2) });
+
+  // ---------- sizing ----------
+  function resize() {
+    const r = stage.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(r.width * dpr);
+    canvas.height = Math.round(r.height * dpr);
+    scale = canvas.height / H;
+    W = canvas.width / scale;
+  }
+  new ResizeObserver(resize).observe(stage);
+  resize();
+
+  const zeusX = () => Math.min(W * 0.58, W - 150);
+  const meX = () => zeusX() - 128;
+  const gfX = () => zeusX() - 150;
+
+  // ---------- input ----------
+  const keys = { up: false, down: false };
+  let pointer = { active: false, y: 0 };
+  function toLogicalY(clientY) {
+    const r = canvas.getBoundingClientRect();
+    return (clientY - r.top) / r.height * H;
+  }
+  canvas.addEventListener('pointerdown', e => {
+    if (state !== 'play') return;
+    pointer.active = true; pointer.y = toLogicalY(e.clientY);
+    canvas.setPointerCapture?.(e.pointerId);
+  });
+  canvas.addEventListener('pointermove', e => {
+    if (state !== 'play') return;
+    if (pointer.active || e.pointerType === 'mouse') { pointer.active = true; pointer.y = toLogicalY(e.clientY); }
+  });
+  const endPointer = e => { if (e.pointerType !== 'mouse') pointer.active = false; };
+  canvas.addEventListener('pointerup', endPointer);
+  canvas.addEventListener('pointercancel', endPointer);
+  canvas.addEventListener('pointerleave', () => { pointer.active = false; });
+
+  window.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT') { if (e.key === 'Enter') startGame(); return; }
+    const k = e.key.toLowerCase();
+    if (k === 'arrowup' || k === 'w') { keys.up = true; pointer.active = false; e.preventDefault(); }
+    if (k === 'arrowdown' || k === 's') { keys.down = true; pointer.active = false; e.preventDefault(); }
+    if (k === 'p' || k === 'escape') { togglePause(); }
+    if ((k === ' ' || k === 'enter') && (state === 'title' || state === 'over')) { e.preventDefault(); startGame(); }
+  });
+  window.addEventListener('keyup', e => {
+    const k = e.key.toLowerCase();
+    if (k === 'arrowup' || k === 'w') keys.up = false;
+    if (k === 'arrowdown' || k === 's') keys.down = false;
+  });
+  document.addEventListener('visibilitychange', () => { if (document.hidden && state === 'play') togglePause(); });
+
+  $('startBtn').addEventListener('click', startGame);
+  $('againBtn').addEventListener('click', startGame);
+  $('pauseBtn').addEventListener('click', togglePause);
+  $('resumeBtn').addEventListener('click', togglePause);
+
+  function startGame() {
+    readNames();
+    g = newGame();
+    state = 'play';
+    $('titleScreen').hidden = true;
+    $('overScreen').hidden = true;
+    $('pauseScreen').hidden = true;
+    $('hud').hidden = false;
+    renderHud();
+    canvas.focus?.();
+  }
+  function togglePause() {
+    if (state === 'play') { state = 'paused'; $('pauseScreen').hidden = false; $('pauseBtn').textContent = 'Resume'; }
+    else if (state === 'paused') { state = 'play'; $('pauseScreen').hidden = true; $('pauseBtn').textContent = 'Pause'; last = performance.now(); }
+  }
+
+  // ---------- HUD ----------
+  const pawSvg = '<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="#f4f7f6"><ellipse cx="12" cy="15.5" rx="5.2" ry="4.4"/><circle cx="6" cy="9.5" r="2.2"/><circle cx="10" cy="6" r="2.2"/><circle cx="14" cy="6" r="2.2"/><circle cx="18" cy="9.5" r="2.2"/></g></svg>';
+  let hudCache = '';
+  function renderHud() {
+    const m = Math.floor(g.d / 40);
+    $('dist').textContent = m + ' m';
+    $('treats').textContent = g.treats === 1 ? '1 treat' : g.treats + ' treats';
+    const key = g.lives;
+    if (key !== hudCache) {
+      hudCache = key;
+      let html = '';
+      for (let i = 0; i < MAX_LIVES; i++) html += `<span class="${i < g.lives ? '' : 'lost'}">${pawSvg}</span>`;
+      $('paws').innerHTML = html;
+      $('paws').setAttribute('aria-label', `${g.lives} clean paws left`);
+    }
+  }
+
+  // ---------- trace (humans follow Zeus's exact ground path) ----------
+  function traceY(dTarget) {
+    const tr = g.trace;
+    if (!tr.length || dTarget <= tr[0].d) return tr.length ? tr[0].y : g.zy;
+    for (let i = tr.length - 1; i > 0; i--) {
+      if (tr[i - 1].d <= dTarget) {
+        const a = tr[i - 1], b = tr[i];
+        const f = b.d === a.d ? 0 : (dTarget - a.d) / (b.d - a.d);
+        return a.y + (b.y - a.y) * f;
+      }
+    }
+    return tr[0].y;
+  }
+  const meY = () => traceY(g.d - (zeusX() - meX())) - 12;
+  const gfY = () => traceY(g.d - (zeusX() - gfX())) + 16;
+
+  // ---------- spawning ----------
+  function spawnWorm(x) {
+    const fromTop = Math.random() < 0.5;
+    const y = rand(PATH_TOP - 10, PATH_BOT + 10);
+    const ang = (fromTop ? Math.PI / 2 : -Math.PI / 2) + rand(-0.6, 0.6);
+    g.worms.push({
+      x: x ?? W + 40,
+      y,
+      ang,
+      sp: rand(14, 34) * (1 + Math.min(1, g.d / 40 / 600)),
+      len: rand(24, 34),
+      ph: Math.random() * 6.28,
+      turn: rand(-0.4, 0.4)
+    });
+  }
+  function spawnItem() {
+    const ball = Math.random() < 0.18;
+    g.items.push({ x: W + 30, y: rand(Z_MIN + 4, Z_MAX - 4), kind: ball ? 'ball' : 'treat', bob: Math.random() * 6 });
+  }
+
+  function pop(x, y, text, color) {
+    g.pops.push({ x, y, text, color: color || '#fff', t: 0 });
+  }
+
+  // ---------- update ----------
+  function update(dt) {
+    g.t += dt;
+    const meters = g.d / 40;
+    g.speed = 160 + Math.min(250, meters * 0.75);
+    const dx = g.speed * dt;
+    g.d += dx;
+    g.phase += dx * 0.055;
+
+    // Zeus movement
+    let targetVy = 0;
+    if (pointer.active) targetVy = clamp((pointer.y - 18 - g.zy) * 9, -430, 430);
+    else targetVy = ((keys.down ? 1 : 0) - (keys.up ? 1 : 0)) * 340;
+    g.vy += (targetVy - g.vy) * Math.min(1, dt * 14);
+    g.zy = clamp(g.zy + g.vy * dt, Z_MIN, Z_MAX);
+
+    g.trace.push({ d: g.d, y: g.zy });
+    if (g.trace.length > 400) g.trace.shift();
+
+    // spawn worms
+    g.nextWorm -= dt;
+    if (g.nextWorm <= 0) {
+      const crowd = meters > 120 && Math.random() < Math.min(0.45, meters / 900) ? 2 + (Math.random() < 0.3 ? 1 : 0) : 1;
+      for (let i = 0; i < crowd; i++) spawnWorm(W + 40 + i * rand(30, 70));
+      g.nextWorm = Math.max(0.32, 1.25 - meters * 0.0028) * rand(0.7, 1.3);
+    }
+    g.nextItem -= dt;
+    if (g.nextItem <= 0) { spawnItem(); g.nextItem = rand(2.2, 4.2); }
+
+    // worms
+    for (const w of g.worms) {
+      w.x -= dx;
+      w.ang += Math.sin(g.t * 1.3 + w.ph) * w.turn * dt;
+      w.x += Math.cos(w.ang) * w.sp * dt;
+      w.y += Math.sin(w.ang) * w.sp * dt;
+      w.ph += dt * 6;
+    }
+    g.worms = g.worms.filter(w => w.x > -60 && w.y > PATH_TOP - 60 && w.y < PATH_BOT + 60);
+
+    for (const s of g.splats) s.x -= dx;
+    g.splats = g.splats.filter(s => s.x > -60);
+
+    for (const it of g.items) { it.x -= dx; it.bob += dt * 4; }
+
+    // collisions
+    if (g.invuln > 0) g.invuln -= dt;
+    if (g.roll > 0) g.roll -= dt;
+    const zx = zeusX();
+    const bodies = [
+      { who: 'zeus', x: zx + 4, y: g.zy, rx: 34, ry: 10 },
+      { who: 'me', x: meX(), y: meY(), rx: 13, ry: 8 },
+      { who: 'gf', x: gfX(), y: gfY(), rx: 13, ry: 8 }
+    ];
+    if (g.invuln <= 0) {
+      outer:
+      for (const w of g.worms) {
+        const cx = Math.cos(w.ang) * w.len / 2, cy = Math.sin(w.ang) * w.len / 2;
+        const pts = [[w.x, w.y], [w.x + cx, w.y + cy], [w.x - cx, w.y - cy]];
+        for (const b of bodies) {
+          for (const [px, py] of pts) {
+            const ex = (px - b.x) / b.rx, ey = (py - b.y) / b.ry;
+            if (ex * ex + ey * ey < 1) { hit(b, w); break outer; }
+          }
+        }
+      }
+    }
+
+    // pickups (Zeus's mouth)
+    const mouthX = zx + 40, mouthY = g.zy - 6;
+    g.items = g.items.filter(it => {
+      if (it.x < -40) return false;
+      if (Math.abs(it.x - mouthX) < 30 && Math.abs(it.y - g.zy) < 22) {
+        if (it.kind === 'ball') { g.bonus += 50; pop(mouthX, mouthY - 40, 'Ball! +50', '#d6f05a'); }
+        else { g.treats += 1; g.bonus += 10; pop(mouthX, mouthY - 40, 'Treat +10', '#f2c230'); }
+        return false;
+      }
+      return true;
+    });
+
+    // milestones
+    const ms = [[100, 'The rain is picking up'], [250, 'Worm rush hour'], [450, 'Zeus is having the best walk ever'], [700, 'Legendary walk'], [1000, '1 km of worms. Wow.']];
+    if (g.milestone < ms.length && meters >= ms[g.milestone][0]) {
+      g.banner = { text: ms[g.milestone][1], t: 0 };
+      g.milestone++;
+    }
+    if (g.banner) { g.banner.t += dt; if (g.banner.t > 2.6) g.banner = null; }
+
+    for (const p of g.pops) p.t += dt;
+    g.pops = g.pops.filter(p => p.t < 1.3);
+    if (g.shake > 0) g.shake -= dt;
+
+    updateAmbient(dt, dx);
+    renderHud();
+  }
+
+  function hit(b, w) {
+    w.dead = true;
+    g.worms = g.worms.filter(x => !x.dead);
+    g.splats.push({ x: w.x, y: w.y, ang: w.ang, len: w.len });
+    g.lives -= 1;
+    g.invuln = 1.4;
+    g.shake = reduceMotion ? 0 : 0.25;
+    g.lastHit = b.who;
+    if (b.who === 'zeus') {
+      g.roll = 0.75;
+      g.mud.push({ x: rand(-18, 14), y: rand(-8, 6), r: rand(4, 7) }, { x: rand(-18, 14), y: rand(-8, 6), r: rand(3, 5) });
+      pop(b.x, b.y - 70, 'Zeus rolled in a worm!', '#e8888c');
+    } else {
+      const n = b.who === 'me' ? names.me : names.gf;
+      pop(b.x, b.y - 100, `${n} stepped on a worm. Ew!`, '#e8888c');
+    }
+    if (g.lives <= 0) gameOver();
+  }
+
+  function gameOver() {
+    state = 'over';
+    const meters = Math.floor(g.d / 40);
+    const score = meters + g.bonus;
+    const isBest = score > best;
+    if (isBest) { best = score; store.set('zeusWalk.best', best); }
+    updateBestLine();
+    let title, text;
+    if (g.lastHit === 'zeus') {
+      title = 'Bath time for Zeus';
+      text = g.mud.length >= 4
+        ? `Your white dog is now a brown dog. ${names.me} and ${names.gf} carry a very proud, very muddy Zeus home.`
+        : `Zeus found one worm too many and rolled in it. Straight to the tub.`;
+    } else {
+      const n = g.lastHit === 'me' ? names.me : names.gf;
+      title = 'Squish.';
+      text = `${n} stepped on one worm too many. Shoes off at the door. Zeus thinks this is hilarious.`;
+    }
+    $('overTitle').textContent = title;
+    $('overText').textContent = text;
+    $('sDist').textContent = meters;
+    $('sTreats').textContent = g.treats;
+    $('sScore').textContent = score;
+    $('overBest').innerHTML = isBest ? '<span class="new-best">New best walk!</span>' : `Best walk: ${best} points`;
+    $('overEyebrow').textContent = `${meters} m before the walk ended`;
+    setTimeout(() => { if (state === 'over') { $('overScreen').hidden = false; $('hud').hidden = true; } }, 650);
+  }
+
+  // ambient stuff runs on title screen too
+  let idleD = 0;
+  function updateAmbient(dt, dx) {
+    const level = state === 'play' ? 1 + Math.min(2, g.d / 40 / 250) : 1;
+    for (const r of rain) {
+      r.y += 620 * r.s * dt;
+      r.x -= (120 * r.s + dx / Math.max(dt, 1e-4) * 0.15) * dt;
+      if (r.y > H) { r.y = -20; r.x = Math.random() * (W + 200); }
+      if (r.x < -40) r.x += W + 200;
+    }
+    rainCount = Math.floor(90 * level);
+    if (Math.random() < dt * 14 * level) g.splashes.push({ x: rand(0, W), y: rand(PATH_TOP + 5, H - 10), t: 0 });
+    for (const s of g.splashes) { s.t += dt; s.x -= dx; }
+    g.splashes = g.splashes.filter(s => s.t < 0.5);
+  }
+  let rainCount = 90;
+
+  // ---------- drawing ----------
+  function drawBackground(d) {
+    // sky
+    const sky = ctx.createLinearGradient(0, 0, 0, 150);
+    sky.addColorStop(0, '#1b2b31');
+    sky.addColorStop(1, '#30474b');
+    ctx.fillStyle = sky;
+    ctx.fillRect(0, 0, W, 150);
+
+    // houses (far parallax)
+    const hp = d * 0.15, HW = 150;
+    const h0 = Math.floor(hp / HW) - 1;
+    for (let i = h0; i < h0 + W / HW + 3; i++) {
+      const x = i * HW - hp;
+      const hh = 50 + rnd(i) * 45, hw = 110 + rnd(i + 9) * 30;
+      ctx.fillStyle = '#18262b';
+      ctx.fillRect(x, 140 - hh, hw, hh);
+      ctx.beginPath();
+      ctx.moveTo(x - 6, 140 - hh); ctx.lineTo(x + hw / 2, 140 - hh - 26 - rnd(i + 3) * 14); ctx.lineTo(x + hw + 6, 140 - hh);
+      ctx.fill();
+      for (let k = 0; k < 3; k++) {
+        if (rnd(i * 7 + k) < 0.55) {
+          ctx.fillStyle = 'rgba(243, 199, 107, .75)';
+          ctx.fillRect(x + 14 + k * 32, 140 - hh + 14, 14, 16);
+        }
+      }
+    }
+
+    // lamp posts (mid parallax)
+    const lp = d * 0.5, LS = 320;
+    const l0 = Math.floor(lp / LS) - 1;
+    for (let i = l0; i < l0 + W / LS + 3; i++) {
+      const x = i * LS - lp + 60;
+      const glow = ctx.createRadialGradient(x, 52, 2, x, 52, 70);
+      glow.addColorStop(0, 'rgba(255, 214, 140, .55)');
+      glow.addColorStop(1, 'rgba(255, 214, 140, 0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(x - 70, 0, 140, 130);
+      ctx.fillStyle = '#0f1a1d';
+      ctx.fillRect(x - 2.5, 52, 5, 110);
+      ctx.fillStyle = '#ffe2a6';
+      ctx.beginPath(); ctx.ellipse(x, 52, 8, 6, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#0f1a1d';
+      ctx.fillRect(x - 10, 44, 20, 4);
+    }
+
+    // hedge
+    ctx.fillStyle = '#2a4a2c';
+    ctx.fillRect(0, 140, W, 40);
+    const bp = d * 0.8;
+    ctx.fillStyle = '#335a33';
+    for (let i = Math.floor(bp / 40) - 1; i < bp / 40 + W / 40 + 2; i++) {
+      const x = i * 40 - bp;
+      ctx.beginPath(); ctx.arc(x, 146, 18 + rnd(i) * 8, Math.PI, 0); ctx.fill();
+    }
+
+    // curb
+    ctx.fillStyle = '#8a9595';
+    ctx.fillRect(0, 176, W, 14);
+    ctx.fillStyle = '#5c6767';
+    ctx.fillRect(0, 188, W, 2);
+
+    // sidewalk
+    const sw = ctx.createLinearGradient(0, PATH_TOP, 0, PATH_BOT);
+    sw.addColorStop(0, '#5e6a6a');
+    sw.addColorStop(1, '#6e7a79');
+    ctx.fillStyle = sw;
+    ctx.fillRect(0, PATH_TOP, W, PATH_BOT - PATH_TOP);
+
+    // lamp reflections on the wet concrete
+    for (let i = l0; i < l0 + W / LS + 3; i++) {
+      const x = i * LS - lp + 60;
+      const refl = ctx.createLinearGradient(0, PATH_TOP, 0, PATH_BOT);
+      refl.addColorStop(0, 'rgba(255, 214, 140, .16)');
+      refl.addColorStop(1, 'rgba(255, 214, 140, 0)');
+      ctx.fillStyle = refl;
+      ctx.fillRect(x - 14, PATH_TOP, 28, PATH_BOT - PATH_TOP);
+    }
+
+    // slab seams + puddles
+    const s0 = Math.floor(d / SLAB) - 1;
+    ctx.strokeStyle = 'rgba(40, 48, 48, .55)';
+    ctx.lineWidth = 2;
+    for (let i = s0; i < s0 + W / SLAB + 3; i++) {
+      const x = i * SLAB - d;
+      ctx.beginPath(); ctx.moveTo(x, PATH_TOP); ctx.lineTo(x - 18, PATH_BOT); ctx.stroke();
+    }
+    ctx.beginPath(); ctx.moveTo(0, 310); ctx.lineTo(W, 310); ctx.stroke();
+    for (let i = s0; i < s0 + W / SLAB + 3; i++) {
+      if (rnd(i * 3.1) < 0.33) {
+        const x = i * SLAB - d + rnd(i + 1) * SLAB;
+        const y = PATH_TOP + 30 + rnd(i + 2) * (PATH_BOT - PATH_TOP - 60);
+        const rx = 26 + rnd(i + 4) * 34, ry = 7 + rnd(i + 5) * 7;
+        ctx.fillStyle = '#4a5a5e';
+        ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = 'rgba(207, 227, 230, .18)';
+        ctx.beginPath(); ctx.ellipse(x - rx * 0.25, y - ry * 0.3, rx * 0.45, ry * 0.3, 0, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+
+    // front grass
+    ctx.fillStyle = '#2f532e';
+    ctx.fillRect(0, PATH_BOT, W, H - PATH_BOT);
+    ctx.fillStyle = '#3d6a39';
+    ctx.fillRect(0, PATH_BOT, W, 6);
+    ctx.strokeStyle = '#4b7d44';
+    ctx.lineWidth = 2;
+    const gp = d * 1.1;
+    for (let i = Math.floor(gp / 14) - 1; i < gp / 14 + W / 14 + 2; i++) {
+      const x = i * 14 - gp;
+      const hgt = 6 + rnd(i) * 10;
+      ctx.beginPath(); ctx.moveTo(x, PATH_BOT + 4); ctx.lineTo(x + 3, PATH_BOT + 4 - hgt); ctx.stroke();
+    }
+  }
+
+  function drawSplashes() {
+    ctx.strokeStyle = 'rgba(207, 227, 230, .45)';
+    ctx.lineWidth = 1;
+    for (const s of g.splashes) {
+      const k = s.t / 0.5;
+      ctx.globalAlpha = 1 - k;
+      ctx.beginPath(); ctx.ellipse(s.x, s.y, 2 + k * 10, 1 + k * 3, 0, 0, Math.PI * 2); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function drawWorm(w) {
+    const n = 9, len = w.len;
+    const ca = Math.cos(w.ang), sa = Math.sin(w.ang);
+    const pts = [];
+    for (let i = 0; i <= n; i++) {
+      const f = i / n - 0.5;
+      const wig = Math.sin(w.ph + i * 0.9) * 3.2;
+      pts.push([w.x + ca * f * len - sa * wig, w.y + sa * f * len + ca * wig]);
+    }
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.strokeStyle = 'rgba(0,0,0,.25)';
+    ctx.lineWidth = 6;
+    ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y + 2) : ctx.moveTo(x, y + 2)); ctx.stroke();
+    ctx.strokeStyle = '#e8888c';
+    ctx.lineWidth = 5.5;
+    ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke();
+    // clitellum band near the head
+    ctx.strokeStyle = '#c9646b';
+    ctx.lineWidth = 6.5;
+    ctx.beginPath(); ctx.moveTo(...pts[n - 3]); ctx.lineTo(...pts[n - 2]); ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,255,255,.35)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y - 1.5) : ctx.moveTo(x, y - 1.5)); ctx.stroke();
+  }
+
+  function drawSplat(s) {
+    ctx.save();
+    ctx.translate(s.x, s.y);
+    ctx.rotate(s.ang);
+    ctx.fillStyle = 'rgba(201, 100, 107, .7)';
+    ctx.beginPath(); ctx.ellipse(0, 0, s.len * 0.6, 4, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgba(232, 136, 140, .6)';
+    for (let i = 0; i < 4; i++) { ctx.beginPath(); ctx.arc(-s.len * 0.5 + i * s.len * 0.33, (i % 2 ? 5 : -5), 2, 0, 6.28); ctx.fill(); }
+    ctx.restore();
+  }
+
+  function drawItem(it) {
+    const y = it.y - 6 + Math.sin(it.bob) * 2;
+    ctx.fillStyle = 'rgba(0,0,0,.25)';
+    ctx.beginPath(); ctx.ellipse(it.x, it.y + 2, 11, 3.5, 0, 0, 6.28); ctx.fill();
+    if (it.kind === 'ball') {
+      ctx.fillStyle = '#c9e04a';
+      ctx.beginPath(); ctx.arc(it.x, y, 8, 0, 6.28); ctx.fill();
+      ctx.strokeStyle = '#f5f9e6'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(it.x - 8, y, 7, -0.9, 0.9); ctx.stroke();
+      ctx.beginPath(); ctx.arc(it.x + 8, y, 7, Math.PI - 0.9, Math.PI + 0.9); ctx.stroke();
+    } else {
+      ctx.fillStyle = '#d9a866';
+      ctx.fillRect(it.x - 8, y - 3, 16, 6);
+      for (const [ox, oy] of [[-8, -3], [-8, 3], [8, -3], [8, 3]]) { ctx.beginPath(); ctx.arc(it.x + ox, y + oy, 3.6, 0, 6.28); ctx.fill(); }
+    }
+  }
+
+  function drawHuman(x, y, o, phase) {
+    const step = Math.sin(phase) * 7;
+    ctx.fillStyle = 'rgba(0,0,0,.28)';
+    ctx.beginPath(); ctx.ellipse(x, y, 15, 4.5, 0, 0, 6.28); ctx.fill();
+    ctx.lineCap = 'round';
+    // legs
+    ctx.strokeStyle = o.pants; ctx.lineWidth = 6.5;
+    ctx.beginPath(); ctx.moveTo(x - 2, y - 32); ctx.lineTo(x - step, y - 2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x + 2, y - 32); ctx.lineTo(x + step, y - 2); ctx.stroke();
+    // boots
+    ctx.fillStyle = o.boots;
+    ctx.beginPath(); ctx.ellipse(x - step + 2, y - 1, 5, 3, 0, 0, 6.28); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x + step + 2, y - 1, 5, 3, 0, 0, 6.28); ctx.fill();
+    // coat
+    ctx.fillStyle = o.coat;
+    roundRect(x - 11, y - 70, 22, 42, 8); ctx.fill();
+    ctx.fillStyle = 'rgba(0,0,0,.12)';
+    ctx.fillRect(x - 1, y - 66, 2, 36);
+    // back hair (long)
+    if (o.long) {
+      ctx.fillStyle = o.hair;
+      roundRect(x - 10, y - 88, 14, 26, 6); ctx.fill();
+    }
+    // head
+    ctx.fillStyle = o.skin;
+    ctx.beginPath(); ctx.arc(x + 2, y - 80, 9.5, 0, 6.28); ctx.fill();
+    ctx.fillStyle = o.hair;
+    ctx.beginPath(); ctx.arc(x + 1, y - 82, 10, Math.PI * 0.95, Math.PI * 2.05); ctx.fill();
+    ctx.fillStyle = '#1b2224';
+    ctx.beginPath(); ctx.arc(x + 7, y - 80, 1.3, 0, 6.28); ctx.fill();
+    // label
+    if (o.label) {
+      ctx.font = '800 12px Sniglet, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = 'rgba(16,25,28,.7)';
+      const tw = ctx.measureText(o.label).width + 10;
+      roundRect(x - tw / 2, y + 6, tw, 17, 8); ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.fillText(o.label, x, y + 19);
+    }
+  }
+
+  function drawUmbrella(x, y) {
+    ctx.strokeStyle = '#2a2f30'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(x + 8, y - 56); ctx.lineTo(x + 8, y - 120); ctx.stroke();
+    ctx.fillStyle = '#f2c230';
+    ctx.beginPath();
+    ctx.moveTo(x + 8 - 40, y - 112);
+    ctx.quadraticCurveTo(x + 8, y - 160, x + 8 + 40, y - 112);
+    for (let i = 4; i > 0; i--) {
+      const sx = x + 8 - 40 + i * 20, ex = sx - 20;
+      ctx.quadraticCurveTo((sx + ex) / 2, y - 104, ex, y - 112);
+    }
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,.18)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x + 8, y - 136); ctx.lineTo(x - 12, y - 110); ctx.moveTo(x + 8, y - 136); ctx.lineTo(x + 28, y - 110); ctx.stroke();
+  }
+
+  function drawZeus(x, y, phase) {
+    const flash = g.invuln > 0 && Math.floor(g.invuln * 10) % 2 === 0 && state === 'play';
+    ctx.fillStyle = 'rgba(0,0,0,.28)';
+    ctx.beginPath(); ctx.ellipse(x + 4, y, 34, 6, 0, 0, 6.28); ctx.fill();
+    ctx.save();
+    ctx.translate(x, y - 22);
+    if (g.roll > 0) {
+      const k = 1 - g.roll / 0.75;
+      ctx.rotate(Math.sin(k * Math.PI) * 2.6);
+    }
+    if (flash) ctx.globalAlpha = 0.45;
+    const fur = '#fbfbf7', edge = '#b7c2c3';
+    const lg = Math.sin(phase * 1.6) * 6;
+    // legs
+    ctx.strokeStyle = '#e9ecea'; ctx.lineWidth = 6; ctx.lineCap = 'round';
+    for (const [lx, s] of [[-18, 1], [-9, -1], [13, -1], [21, 1]]) {
+      ctx.beginPath(); ctx.moveTo(lx, 6); ctx.lineTo(lx + lg * s, 21); ctx.stroke();
+    }
+    // tail: fluffy curl, wagging
+    const wag = Math.sin(g.t * 14 + phase) * 0.35;
+    ctx.save();
+    ctx.translate(-26, -6);
+    ctx.rotate(-0.6 + wag);
+    ctx.fillStyle = fur; ctx.strokeStyle = edge; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.ellipse(0, -9, 7, 12, 0.3, 0, 6.28); ctx.fill(); ctx.stroke();
+    ctx.restore();
+    // body (fluffy)
+    ctx.fillStyle = fur; ctx.strokeStyle = edge; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.ellipse(0, 0, 27, 14, 0, 0, 6.28); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = fur;
+    for (const [fx, fy, r] of [[-16, -9, 8], [-4, -11, 9], [9, -10, 8], [18, -6, 7]]) { ctx.beginPath(); ctx.arc(fx, fy, r, 0, 6.28); ctx.fill(); }
+    // mud
+    ctx.fillStyle = '#7a5434';
+    for (const m of g.mud) { ctx.beginPath(); ctx.arc(m.x, m.y, m.r, 0, 6.28); ctx.fill(); }
+    // collar
+    ctx.strokeStyle = '#d5433b'; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(19, -14); ctx.lineTo(23, 2); ctx.stroke();
+    ctx.fillStyle = '#f2c230';
+    ctx.beginPath(); ctx.arc(22, 0, 2.6, 0, 6.28); ctx.fill();
+    // head
+    ctx.fillStyle = fur; ctx.strokeStyle = edge; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(28, -16, 12, 0, 6.28); ctx.fill(); ctx.stroke();
+    // ears
+    ctx.beginPath(); ctx.moveTo(20, -24); ctx.lineTo(22, -38); ctx.lineTo(29, -27); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(28, -27); ctx.lineTo(34, -39); ctx.lineTo(37, -24); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#f0c5c5';
+    ctx.beginPath(); ctx.moveTo(23, -27); ctx.lineTo(23.5, -34); ctx.lineTo(27, -28); ctx.fill();
+    // snout
+    ctx.fillStyle = fur;
+    ctx.beginPath(); ctx.ellipse(38, -12, 9, 6.5, 0, 0, 6.28); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#fbfbf7';
+    ctx.beginPath(); ctx.arc(28, -16, 10.6, 0, 6.28); ctx.fill();
+    ctx.fillStyle = '#1b2224';
+    ctx.beginPath(); ctx.ellipse(46, -14, 3.2, 2.6, 0, 0, 6.28); ctx.fill();
+    ctx.beginPath(); ctx.arc(32, -19, 2, 0, 6.28); ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(32.6, -19.6, 0.7, 0, 6.28); ctx.fill();
+    // tongue
+    ctx.fillStyle = '#e57b8a';
+    ctx.beginPath(); ctx.ellipse(41, -5, 3, 4.5, 0.2, 0, 6.28); ctx.fill();
+    ctx.restore();
+    ctx.globalAlpha = 1;
+
+    if (showLabels()) {
+      ctx.font = '800 12px Sniglet, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = 'rgba(16,25,28,.7)';
+      const tw = ctx.measureText('Zeus').width + 10;
+      roundRect(x + 4 - tw / 2, y + 6, tw, 17, 8); ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.fillText('Zeus', x + 4, y + 19);
+    }
+  }
+
+  function drawLeash(hx, hy, zx, zy) {
+    const ax = hx + 10, ay = hy - 54;
+    const bx = zx + 21, by = zy - 32;
+    ctx.strokeStyle = '#d5433b'; ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(ax, ay);
+    ctx.quadraticCurveTo((ax + bx) / 2, Math.max(ay, by) + 22, bx, by);
+    ctx.stroke();
+  }
+
+  function roundRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  const showLabels = () => state === 'title' || (state === 'play' && g.t < 4);
+
+  const ME = { coat: '#3a6ea5', pants: '#2b3640', boots: '#1d2427', skin: '#f0c9a8', hair: '#5a3a24' };
+  const GF = { coat: '#e9695f', pants: '#3b3346', boots: '#1d2427', skin: '#f2cdb0', hair: '#7a4a2a', long: true };
+
+  function draw() {
+    ctx.setTransform(scale, 0, 0, scale, 0, 0);
+    if (g.shake > 0) ctx.translate(rand(-3, 3), rand(-3, 3));
+    const d = state === 'title' ? idleD : g.d;
+    drawBackground(d);
+
+    for (const s of g.splats) drawSplat(s);
+    drawSplashes();
+
+    // painter's order by y
+    const zx = zeusX();
+    const my = state === 'title' ? g.zy - 12 : meY();
+    const gy = state === 'title' ? g.zy + 16 : gfY();
+    const phase = state === 'title' ? idleD * 0.055 : g.phase;
+    const list = [];
+    for (const w of g.worms) list.push({ y: w.y, f: () => drawWorm(w) });
+    for (const it of g.items) list.push({ y: it.y, f: () => drawItem(it) });
+    list.push({ y: g.zy, f: () => drawZeus(zx, g.zy, phase) });
+    list.push({ y: my, f: () => drawHuman(meX(), my, { ...ME, label: showLabels() ? names.me : '' }, phase) });
+    list.push({ y: gy, f: () => { drawHuman(gfX(), gy, { ...GF, label: showLabels() ? names.gf : '' }, phase + 1.4); } });
+    list.sort((a, b) => a.y - b.y);
+    for (const e of list) e.f();
+
+    // hand-holding + umbrella + leash over everyone
+    ctx.strokeStyle = GF.skin; ctx.lineWidth = 3; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(gfX() + 8, gy - 50); ctx.lineTo(meX() - 8, my - 50); ctx.stroke();
+    drawLeash(meX(), my, zx, g.zy);
+    drawUmbrella(gfX() + 4, Math.min(gy, my + 10));
+
+    // rain
+    ctx.strokeStyle = 'rgba(207, 227, 230, .38)';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    for (let i = 0; i < Math.min(rain.length, rainCount); i++) {
+      const r = rain[i];
+      ctx.moveTo(r.x, r.y); ctx.lineTo(r.x - 4 * r.s, r.y + 14 * r.s);
+    }
+    ctx.stroke();
+
+    // pops
+    ctx.textAlign = 'center';
+    for (const p of g.pops) {
+      const k = p.t / 1.3;
+      ctx.globalAlpha = 1 - k * k;
+      ctx.font = '800 17px Sniglet, sans-serif';
+      ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(16,25,28,.8)';
+      const px = clamp(p.x, 110, W - 110), py = p.y - k * 30;
+      ctx.strokeText(p.text, px, py);
+      ctx.fillStyle = p.color;
+      ctx.fillText(p.text, px, py);
+    }
+    ctx.globalAlpha = 1;
+
+    if (g.banner && state === 'play') {
+      const k = g.banner.t;
+      ctx.globalAlpha = Math.min(1, k * 3, (2.6 - k) * 3);
+      ctx.font = '800 24px Sniglet, sans-serif';
+      ctx.lineWidth = 5; ctx.strokeStyle = 'rgba(16,25,28,.85)';
+      ctx.strokeText(g.banner.text, W / 2, 96);
+      ctx.fillStyle = '#f2c230';
+      ctx.fillText(g.banner.text, W / 2, 96);
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  // ---------- title-screen demo scene ----------
+  function seedTitle() {
+    g.worms = [];
+    spawnWorm(zeusX() + 120); spawnWorm(zeusX() + 230); spawnWorm(zeusX() - 40);
+    g.worms[2].y = PATH_BOT - 12;
+    g.items = [{ x: zeusX() + 170, y: g.zy - 30, kind: 'treat', bob: 0 }];
+  }
+  seedTitle();
+
+  // ---------- loop ----------
+  let last = performance.now();
+  function frame(now) {
+    const dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+    if (state === 'play') update(dt);
+    else if (state === 'title') {
+      g.t += dt;
+      for (const w of g.worms) w.ph += dt * 6;
+      for (const it of g.items) it.bob += dt * 4;
+      updateAmbient(dt, 0);
+    } else if (state === 'over') {
+      g.t += dt;
+      if (g.roll > 0) g.roll -= dt;
+      for (const p of g.pops) p.t += dt;
+      g.pops = g.pops.filter(p => p.t < 1.3);
+      if (g.shake > 0) g.shake -= dt;
+      updateAmbient(dt, 0);
+    }
+    draw();
+    requestAnimationFrame(frame);
+  }
+  if (document.fonts && document.fonts.load) document.fonts.load('800 16px Sniglet').catch(() => {});
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
