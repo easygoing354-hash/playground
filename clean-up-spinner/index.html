@@ -1,0 +1,1184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Clean-Up Spinner</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap">
+<style>
+  /* Layout: one playful column on phones (title, wheel, SPIN, crew card); wheel and crew sit side by side from 880px. */
+  :root {
+    --bg: #fdf0e1;
+    --surface: #fffaf2;
+    --raised: #ffffff;
+    --ink: #2a2350;
+    --ink-soft: #6a6386;
+    --line: #ecdcc8;
+    --coral: #f25f5c;
+    --coral-deep: #c8413f;
+    --on-coral: #ffffff;
+    --strong: #2a2350;
+    --on-strong: #ffffff;
+    --ok: #1f8a5a;
+    --flash: #fff1b8;
+    --blob-a: #fcd56a;
+    --blob-b: #f8b9cb;
+    --blob-c: #a6dfd2;
+    --scrim: rgba(30, 24, 60, .45);
+    --shadow: rgba(42, 35, 80, .18);
+    --font-display: "Fredoka", "Baloo 2", ui-rounded, "Arial Rounded MT Bold", system-ui, sans-serif;
+    --font-body: "Nunito", ui-rounded, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #1b1730; --surface: #252040; --raised: #2f2952; --ink: #f7efe3; --ink-soft: #b8b0cf;
+      --line: #3d3663; --coral: #ff6b67; --coral-deep: #a93533; --on-coral: #ffffff;
+      --strong: #f7efe3; --on-strong: #2a2350; --ok: #5fd39b; --flash: #4a3f1c;
+      --blob-a: #4f421b; --blob-b: #52283c; --blob-c: #1d4842; --scrim: rgba(0, 0, 0, .6);
+      --shadow: rgba(0, 0, 0, .45); color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #1b1730; --surface: #252040; --raised: #2f2952; --ink: #f7efe3; --ink-soft: #b8b0cf;
+    --line: #3d3663; --coral: #ff6b67; --coral-deep: #a93533; --on-coral: #ffffff;
+    --strong: #f7efe3; --on-strong: #2a2350; --ok: #5fd39b; --flash: #4a3f1c;
+    --blob-a: #4f421b; --blob-b: #52283c; --blob-c: #1d4842; --scrim: rgba(0, 0, 0, .6);
+    --shadow: rgba(0, 0, 0, .45); color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { min-height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.45;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 20px 96px;
+    overflow-x: hidden;
+  }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  button:disabled { cursor: not-allowed; }
+  :focus-visible { outline: 3px solid var(--coral); outline-offset: 3px; }
+
+  .blob { position: fixed; border-radius: 50%; z-index: 0; pointer-events: none; }
+  .blob.a { width: 260px; height: 260px; background: var(--blob-a); left: -120px; top: 120px; opacity: .55; }
+  .blob.b { width: 200px; height: 200px; background: var(--blob-b); right: -70px; top: -40px; opacity: .6; }
+  .blob.c { width: 300px; height: 300px; background: var(--blob-c); right: -110px; bottom: -90px; opacity: .55; }
+
+  main { position: relative; z-index: 1; max-width: 1040px; margin: 0 auto; display: grid; gap: 22px; }
+
+  header { display: grid; gap: 10px; }
+  h1 {
+    font-family: var(--font-display); font-weight: 700; margin: 0;
+    font-size: clamp(2.1rem, 8vw, 3rem); line-height: 1.05; letter-spacing: -.01em; text-wrap: balance;
+  }
+  h1 span { color: var(--coral); }
+  .lede { margin: 0; color: var(--ink-soft); font-weight: 700; font-size: 1.05rem; max-width: 46ch; }
+
+  .toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+  .pill {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 46px; padding: 10px 18px; border-radius: 999px;
+    background: var(--raised); border: 2px solid var(--line); color: var(--ink);
+    font-weight: 800; font-size: .98rem; line-height: 1.1;
+    transition: transform .12s ease, background-color .2s ease, border-color .2s ease;
+  }
+  .pill:hover:not(:disabled) { border-color: var(--ink-soft); }
+  .pill:active:not(:disabled) { transform: scale(.97); }
+  .pill:disabled { opacity: .45; }
+  .pill.strong { background: var(--strong); border-color: var(--strong); color: var(--on-strong); }
+  .pill.outline { background: transparent; border-color: var(--strong); }
+  .pill.warn { background: var(--coral); border-color: var(--coral); color: var(--on-coral); }
+  .pill svg { width: 18px; height: 18px; flex: none; }
+
+  .stage { display: grid; gap: 26px; align-items: start; }
+  .spin-col { display: grid; justify-items: center; gap: 22px; padding-top: 18px; }
+
+  .wheel-wrap { position: relative; width: min(100%, 440px); aspect-ratio: 1; max-width: 100%; }
+  .wheel-clip {
+    width: 100%; height: 100%; border-radius: 50%; overflow: hidden;
+    box-shadow: 0 0 0 6px var(--raised), 0 18px 34px var(--shadow);
+  }
+  #wheel { display: block; width: 100%; height: 100%; will-change: transform; }
+  .pointer {
+    position: absolute; left: 50%; top: -22px; width: 44px; height: 54px; margin-left: -22px;
+    color: var(--strong); z-index: 2; transform-origin: 50% 20%;
+    filter: drop-shadow(0 3px 2px var(--shadow));
+  }
+  .pointer.tick { animation: tick .14s ease-out; }
+  @keyframes tick { 0% { transform: rotate(0); } 40% { transform: rotate(-16deg); } 100% { transform: rotate(0); } }
+  .hub {
+    position: absolute; left: 50%; top: 50%; width: 23%; aspect-ratio: 1; transform: translate(-50%, -50%);
+    border-radius: 50%; border: 5px solid #2a2350; background: #ffffff; color: #2a2350;
+    font-family: var(--font-display); font-weight: 700; font-size: clamp(.95rem, 4.2vw, 1.35rem);
+    display: grid; place-items: center; padding: 0; z-index: 2;
+    box-shadow: 0 4px 10px rgba(42, 35, 80, .3);
+  }
+  .hub:disabled { cursor: default; }
+
+  .spin-btn {
+    width: min(100%, 340px); min-height: 68px; border: 0; border-radius: 999px;
+    background: var(--coral); color: var(--on-coral);
+    font-family: var(--font-display); font-weight: 700; font-size: 2.1rem; letter-spacing: .06em;
+    box-shadow: 0 7px 0 var(--coral-deep), 0 14px 24px var(--shadow);
+    transition: transform .08s ease, box-shadow .08s ease, opacity .2s ease;
+  }
+  .spin-btn:active:not(:disabled) { transform: translateY(5px); box-shadow: 0 2px 0 var(--coral-deep), 0 6px 12px var(--shadow); }
+  .spin-btn:disabled { opacity: .55; }
+  .spin-btn.done { font-size: 1.5rem; letter-spacing: .02em; }
+
+  .crew {
+    background: var(--surface); border: 2px solid var(--line); border-radius: 26px;
+    padding: 22px 18px 18px; display: grid; gap: 14px; min-width: 0;
+  }
+  .crew h2 { font-family: var(--font-display); font-weight: 700; font-size: 1.65rem; margin: 0; line-height: 1.1; }
+  .crew .count { margin: 2px 0 0; color: var(--ink-soft); font-weight: 700; }
+  .crew .count.all { color: var(--ok); }
+  .crew ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .crew li {
+    display: grid; grid-template-columns: 38px minmax(0, 1fr) auto; align-items: center; gap: 12px;
+    padding: 9px 14px 9px 10px; background: var(--raised); border: 1.5px solid var(--line); border-radius: 14px;
+  }
+  .crew li.flash { animation: flash 1.6s ease-out; }
+  @keyframes flash { 0%, 30% { background: var(--flash); } 100% { background: var(--raised); } }
+  .chip {
+    width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center;
+    font-size: 1.3rem; line-height: 1; overflow: hidden;
+  }
+  .num-icon {
+    width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center;
+    background: #ffffff; color: #2a2350; border: 2.5px solid #2a2350;
+    font-family: var(--font-display); font-weight: 700; font-size: .8rem;
+  }
+  .crew .name { font-weight: 800; overflow-wrap: anywhere; }
+  .crew li.full .name { text-decoration: line-through; text-decoration-thickness: 2px; color: var(--ink-soft); }
+  .crew li.full .chip { opacity: .6; }
+  .crew .tally { font-weight: 800; color: var(--ink-soft); font-variant-numeric: tabular-nums; white-space: nowrap; font-size: .95rem; }
+  .crew li.full .tally { color: var(--ok); }
+  .crew .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-top: 10px; border-top: 2px dashed var(--line); }
+  .crew .actions .wide { grid-column: 1 / -1; }
+  .crew .actions .pill { width: 100%; padding-inline: 12px; }
+
+  /* Timer pill */
+  .timer {
+    position: fixed; z-index: 30; left: 50%; transform: translateX(-50%);
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    display: flex; align-items: center; gap: 12px; padding: 8px 8px 8px 18px;
+    background: var(--strong); color: var(--on-strong); border-radius: 999px;
+    box-shadow: 0 10px 24px var(--shadow); max-width: calc(100% - 32px);
+  }
+  .timer .clock { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; font-variant-numeric: tabular-nums; min-width: 3.2ch; }
+  .timer .label { font-weight: 800; font-size: .9rem; opacity: .85; white-space: nowrap; }
+  .timer .bar { width: 64px; height: 8px; border-radius: 99px; background: color-mix(in srgb, var(--on-strong) 25%, transparent); overflow: hidden; }
+  .timer .bar i { display: block; height: 100%; width: 100%; background: var(--coral); border-radius: inherit; transform-origin: left; }
+  .timer button { border: 0; border-radius: 999px; padding: 8px 14px; background: var(--coral); color: var(--on-coral); font-weight: 800; }
+  @media (max-width: 380px) { .timer .label, .timer .bar { display: none; } }
+
+  /* Overlays */
+  .overlay {
+    position: fixed; inset: 0; z-index: 50; background: var(--scrim);
+    display: grid; place-items: center; padding: 16px;
+    padding-top: calc(16px + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    animation: fade .18s ease-out;
+  }
+  @keyframes fade { from { opacity: 0; } }
+  .modal {
+    width: min(100%, 460px); max-height: 100%; overflow: auto; background: var(--surface);
+    border-radius: 28px; padding: 24px; box-shadow: 0 24px 60px var(--shadow);
+    animation: pop .26s cubic-bezier(.2, 1.4, .4, 1);
+  }
+  @keyframes pop { from { transform: scale(.88); opacity: 0; } }
+  .modal h3 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; margin: 0; }
+  .modal .sub { color: var(--ink-soft); font-weight: 700; margin: 4px 0 0; }
+  .modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+  .x { width: 40px; height: 40px; flex: none; border-radius: 50%; border: 2px solid var(--line); background: var(--raised); font-size: 1.2rem; line-height: 1; }
+
+  .result { text-align: center; display: grid; gap: 10px; justify-items: center; padding-block: 28px 22px; }
+  .result .big-icon {
+    width: 108px; height: 108px; border-radius: 32px; display: grid; place-items: center; font-size: 3.6rem; line-height: 1;
+    box-shadow: inset 0 -6px 0 rgba(0, 0, 0, .08);
+  }
+  .result .big-icon .num-icon { width: 64px; height: 64px; font-size: 2rem; border-width: 5px; }
+  .result .kicker { color: var(--ink-soft); font-weight: 800; text-transform: uppercase; letter-spacing: .08em; font-size: .82rem; margin: 6px 0 0; }
+  .result .station { font-family: var(--font-display); font-weight: 700; font-size: clamp(2rem, 9vw, 2.7rem); line-height: 1.05; margin: 0; overflow-wrap: anywhere; }
+  .result .detail { margin: 0; font-weight: 700; color: var(--ink-soft); }
+  .result .everyone { margin: 4px 0 0; font-weight: 800; color: var(--ok); }
+  .result .buttons { display: grid; gap: 10px; width: 100%; margin-top: 12px; }
+  .result .buttons .pill { width: 100%; min-height: 54px; font-size: 1.1rem; }
+
+  .wheel-list { display: grid; gap: 10px; }
+  .wheel-option {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; text-align: left;
+    padding: 14px 16px; border-radius: 18px; background: var(--raised); border: 2px solid var(--line);
+  }
+  .wheel-option[aria-pressed="true"] { border-color: var(--coral); box-shadow: 0 0 0 3px color-mix(in srgb, var(--coral) 25%, transparent); }
+  .wheel-option .wname { font-weight: 800; font-size: 1.05rem; }
+  .wheel-option .wmeta { grid-column: 1; color: var(--ink-soft); font-weight: 700; font-size: .9rem; }
+  .wheel-option .wicons { grid-row: 1 / span 2; grid-column: 2; align-self: center; font-size: 1.25rem; letter-spacing: 2px; white-space: nowrap; }
+  .wheel-option .now { color: var(--coral); font-size: .8rem; font-weight: 800; margin-left: 6px; text-transform: uppercase; letter-spacing: .06em; }
+  .note { color: var(--ink-soft); font-weight: 700; font-size: .9rem; margin: 14px 0 0; }
+
+  .field { display: grid; gap: 6px; }
+  .field label, .rows-head { font-weight: 800; font-size: .85rem; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-soft); }
+  .fields { display: grid; grid-template-columns: minmax(0, 1fr) 7.5rem; gap: 10px; margin-bottom: 18px; }
+  input[type="text"] {
+    width: 100%; min-width: 0; font: inherit; font-weight: 700; color: var(--ink); background: var(--raised);
+    border: 2px solid var(--line); border-radius: 12px; padding: 9px 10px;
+  }
+  input[type="text"]:focus { border-color: var(--coral); outline: none; }
+  .rows-head { display: grid; grid-template-columns: 3.25rem minmax(0, 1fr) auto 40px; gap: 8px; margin-bottom: 6px; }
+  .setup-rows { display: grid; gap: 8px; }
+  .setup-row { display: grid; grid-template-columns: 3.25rem minmax(0, 1fr) auto 40px; gap: 8px; align-items: center; }
+  .setup-row .icon-in { text-align: center; font-size: 1.25rem; padding-inline: 4px; }
+  .stepper { display: flex; align-items: center; border: 2px solid var(--line); border-radius: 12px; background: var(--raised); overflow: hidden; }
+  .stepper button { width: 34px; height: 40px; border: 0; background: transparent; font-weight: 800; font-size: 1.2rem; }
+  .stepper button:disabled { opacity: .3; }
+  .stepper output { min-width: 2ch; text-align: center; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .remove { width: 40px; height: 40px; border-radius: 12px; border: 2px solid var(--line); background: var(--raised); font-size: 1.1rem; line-height: 1; }
+  .remove:disabled { opacity: .3; }
+  .add-row { margin-top: 10px; width: 100%; border-style: dashed; }
+  .total { margin: 14px 0 0; font-weight: 800; }
+  .sheet-foot {
+    position: sticky; bottom: -24px; margin: 18px -24px -24px; padding: 14px 24px 20px;
+    background: var(--surface); border-top: 2px solid var(--line);
+    display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end;
+  }
+  .sheet-foot .pill { min-width: 7.5rem; }
+  .setup-extra { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+
+  @media (max-width: 560px) {
+    .overlay.sheet { place-items: end stretch; padding: 0; padding-top: calc(24px + env(safe-area-inset-top, 0px)); }
+    .overlay.sheet .modal {
+      width: 100%; border-radius: 26px 26px 0 0; animation: rise .26s ease-out;
+      padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px));
+      padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    }
+    .overlay.sheet .sheet-foot { margin-inline: calc(-1 * max(20px, env(safe-area-inset-left, 0px))); padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px)); }
+    .fields { grid-template-columns: 1fr; }
+  }
+  @keyframes rise { from { transform: translateY(40px); opacity: 0; } }
+
+  #confetti { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 60; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  @media (min-width: 880px) {
+    body { padding-block: 40px 96px; }
+    .stage { grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 40px; }
+    .crew { margin-top: 18px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  }
+</style>
+</head>
+<body>
+<div class="blob a" aria-hidden="true"></div>
+<div class="blob b" aria-hidden="true"></div>
+<div class="blob c" aria-hidden="true"></div>
+
+<main>
+  <header>
+    <h1>Clean-Up <span>Spinner</span></h1>
+    <p class="lede">Tap SPIN to find out where you're helping today!</p>
+    <div class="toolbar">
+      <button class="pill" id="sound-btn" type="button" aria-pressed="true"></button>
+      <button class="pill" id="change-btn" type="button">Change wheel</button>
+      <button class="pill strong" id="setup-btn" type="button">Teacher setup</button>
+    </div>
+  </header>
+
+  <div class="stage">
+    <section class="spin-col" aria-label="Spinner">
+      <div class="wheel-wrap">
+        <svg class="pointer" id="pointer" viewBox="0 0 44 54" aria-hidden="true">
+          <path d="M5 6 Q22 -1 39 6 Q41 8 40 10 L24.5 50 Q22 54 19.5 50 L4 10 Q3 8 5 6 Z" fill="currentColor"/>
+        </svg>
+        <div class="wheel-clip"><canvas id="wheel" role="img" aria-label="Clean-up wheel"></canvas></div>
+        <button class="hub" id="hub" type="button" aria-label="Spin the wheel">Tidy!</button>
+      </div>
+      <button class="spin-btn" id="spin-btn" type="button">SPIN!</button>
+    </section>
+
+    <section class="crew" aria-labelledby="crew-title">
+      <div>
+        <h2 id="crew-title">Clean-up crew</h2>
+        <p class="count" id="crew-count"></p>
+      </div>
+      <ul id="crew-list"></ul>
+      <div class="actions">
+        <button class="pill" id="undo-btn" type="button">Undo spin</button>
+        <button class="pill" id="timer-btn" type="button">Start 3-min timer</button>
+        <button class="pill outline wide" id="reset-btn" type="button">Start a new clean-up</button>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div class="timer" id="timer" hidden>
+  <span class="clock" id="timer-clock">3:00</span>
+  <span class="label">tidy time</span>
+  <span class="bar" aria-hidden="true"><i id="timer-bar"></i></span>
+  <button type="button" id="timer-stop">Stop</button>
+</div>
+
+<!-- Spin result -->
+<div class="overlay" id="result-overlay" hidden>
+  <div class="modal result" role="dialog" aria-modal="true" aria-labelledby="result-station">
+    <div class="big-icon" id="result-icon"></div>
+    <p class="kicker">You're helping at</p>
+    <p class="station" id="result-station"></p>
+    <p class="detail" id="result-detail"></p>
+    <p class="everyone" id="result-everyone" hidden>That's everyone. Let's get tidy!</p>
+    <div class="buttons">
+      <button class="pill warn" id="result-next" type="button" data-autofocus>Next helper</button>
+      <button class="pill" id="result-timer" type="button" hidden>Start 3-min timer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Time's up -->
+<div class="overlay" id="timesup-overlay" hidden>
+  <div class="modal result" role="dialog" aria-modal="true" aria-labelledby="timesup-title">
+    <div class="big-icon" style="background:#fcd56a">⏰</div>
+    <p class="station" id="timesup-title">Time's up!</p>
+    <p class="detail">Freeze! Look at your spot. Is it tidy?</p>
+    <div class="buttons">
+      <button class="pill warn" id="timesup-ok" type="button" data-autofocus>All tidy</button>
+    </div>
+  </div>
+</div>
+
+<!-- Change wheel -->
+<div class="overlay sheet" id="wheels-overlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="wheels-title">
+    <div class="modal-head">
+      <div>
+        <h3 id="wheels-title">Change wheel</h3>
+        <p class="sub">Pick the wheel for this clean-up.</p>
+      </div>
+      <button class="x" type="button" data-close aria-label="Close">✕</button>
+    </div>
+    <div class="wheel-list" id="wheel-list"></div>
+    <button class="pill add-row" id="new-wheel-btn" type="button">+ Make a new wheel</button>
+    <p class="note">Switching wheels starts a new clean-up.</p>
+  </div>
+</div>
+
+<!-- Teacher setup -->
+<div class="overlay sheet" id="setup-overlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="setup-title">
+    <div class="modal-head">
+      <div>
+        <h3 id="setup-title">Teacher setup</h3>
+        <p class="sub">Name each station and how many helpers it needs.</p>
+      </div>
+      <button class="x" type="button" data-close aria-label="Close">✕</button>
+    </div>
+    <div class="fields">
+      <div class="field">
+        <label for="setup-name">Wheel name</label>
+        <input type="text" id="setup-name" maxlength="40" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="setup-hub">Center word</label>
+        <input type="text" id="setup-hub" maxlength="8" autocomplete="off">
+      </div>
+    </div>
+    <div class="rows-head" aria-hidden="true"><span>Icon</span><span>Station</span><span>Helpers</span><span></span></div>
+    <div class="setup-rows" id="setup-rows"></div>
+    <button class="pill add-row" id="add-station" type="button">+ Add a station</button>
+    <p class="total" id="setup-total"></p>
+    <div class="setup-extra">
+      <button class="pill" id="restore-btn" type="button">Restore defaults</button>
+      <button class="pill" id="delete-wheel-btn" type="button">Delete wheel</button>
+    </div>
+    <div class="sheet-foot">
+      <button class="pill" type="button" data-close>Cancel</button>
+      <button class="pill strong" id="save-setup" type="button">Save</button>
+    </div>
+  </div>
+</div>
+
+<canvas id="confetti" aria-hidden="true"></canvas>
+<div class="sr" id="live" aria-live="polite"></div>
+
+<script>
+(() => {
+  const TAU = Math.PI * 2;
+  const INK = '#2a2350';
+  const RIM = '#2a2350';
+  const PALETTE = ['#f2625f', '#f7a24a', '#f9cf4a', '#6cc76a', '#82d8c4', '#8ac8f2', '#a78ee8', '#f592b8', '#5fb3a1', '#ec8a5c', '#c3d95a', '#7a9cf0'];
+  const DISPLAY_FONT = '"Fredoka", "Arial Rounded MT Bold", system-ui, sans-serif';
+  const EMOJI_FONT = '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
+  const STORE_KEY = 'cleanup-spinner-v1';
+  const TIMER_MS = 3 * 60 * 1000;
+  const MAX_STATIONS = 12;
+  const MAX_SLOTS = 30;
+
+  const BUILT_IN = [
+    { id: 'cleanup', name: 'Clean-up crew', hub: 'Tidy!', stations: [
+      { id: 'kitchen', name: 'Kitchen', icon: '🍳', slots: 5 },
+      { id: 'carpet', name: 'Carpet', icon: '🧸', slots: 5 },
+      { id: 'books', name: 'Book Center', icon: '📚', slots: 1 },
+      { id: 'craft', name: 'Craft Table', icon: '🎨', slots: 2 },
+      { id: 'table1', name: 'Table 1', icon: '1', slots: 1 },
+      { id: 'table2', name: 'Table 2', icon: '2', slots: 1 },
+      { id: 'sandbox', name: 'Sandbox / Floor', icon: '🧹', slots: 1 }
+    ] },
+    { id: 'jobs', name: 'Classroom jobs', hub: 'Jobs!', stations: [
+      { id: 'line', name: 'Line Leader', icon: '🚶', slots: 1 },
+      { id: 'door', name: 'Door Holder', icon: '🚪', slots: 1 },
+      { id: 'lights', name: 'Lights', icon: '💡', slots: 1 },
+      { id: 'plants', name: 'Plant Waterer', icon: '🪴', slots: 1 },
+      { id: 'calendar', name: 'Calendar', icon: '📅', slots: 1 },
+      { id: 'messenger', name: 'Messenger', icon: '✉️', slots: 1 },
+      { id: 'pencils', name: 'Pencils', icon: '✏️', slots: 1 },
+      { id: 'library', name: 'Library Helper', icon: '📖', slots: 1 }
+    ] },
+    { id: 'playground', name: 'Playground put-away', hub: 'Go!', stations: [
+      { id: 'balls', name: 'Balls', icon: '⚽', slots: 3 },
+      { id: 'ropes', name: 'Jump Ropes', icon: '🪢', slots: 2 },
+      { id: 'chalk', name: 'Chalk', icon: '🖍️', slots: 2 },
+      { id: 'sand', name: 'Sand Toys', icon: '🪣', slots: 3 },
+      { id: 'cones', name: 'Cones', icon: '🔶', slots: 2 },
+      { id: 'hoops', name: 'Hoops', icon: '⭕', slots: 2 }
+    ] }
+  ];
+
+  const $ = (s) => document.querySelector(s);
+  const clone = (o) => JSON.parse(JSON.stringify(o));
+  const mod = (a, n) => ((a % n) + n) % n;
+  const uid = () => 's' + Math.random().toString(36).slice(2, 9);
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isNumIcon = (icon) => /^\d{1,2}$/.test(icon);
+
+  // ---------- State ----------
+  function defaultState() {
+    return { wheels: clone(BUILT_IN), activeId: 'cleanup', filled: {}, history: [], sound: true, rotation: 0, timerEnd: 0 };
+  }
+  function load() {
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      if (!raw) return null;
+      const s = JSON.parse(raw);
+      if (!s || !Array.isArray(s.wheels) || !s.wheels.length) return null;
+      if (!s.wheels.some((w) => w.id === s.activeId)) s.activeId = s.wheels[0].id;
+      s.filled = s.filled && typeof s.filled === 'object' ? s.filled : {};
+      s.history = Array.isArray(s.history) ? s.history : [];
+      s.sound = s.sound !== false;
+      s.rotation = Number(s.rotation) || 0;
+      s.timerEnd = Number(s.timerEnd) || 0;
+      return s;
+    } catch (e) { return null; }
+  }
+  function save() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { /* storage unavailable */ }
+  }
+  let state = load() || defaultState();
+
+  const wheel = () => state.wheels.find((w) => w.id === state.activeId);
+  const filledOf = (st) => state.filled[st.id] || 0;
+  const remainingOf = (st) => Math.max(0, st.slots - filledOf(st));
+  const colorFor = (i) => PALETTE[i % PALETTE.length];
+
+  function mix(hexA, hexB, t) {
+    const a = parseInt(hexA.slice(1), 16), b = parseInt(hexB.slice(1), 16);
+    const ch = (v, s) => (v >> s) & 255;
+    const m = (s) => Math.round(ch(a, s) + (ch(b, s) - ch(a, s)) * t);
+    return '#' + ((1 << 24) + (m(16) << 16) + (m(8) << 8) + m(0)).toString(16).slice(1);
+  }
+
+  function iconHTML(icon) {
+    return isNumIcon(icon) ? `<span class="num-icon">${esc(icon)}</span>` : esc(icon);
+  }
+
+  // ---------- Sound ----------
+  let actx = null;
+  function audio() {
+    if (!state.sound) return null;
+    if (!actx) {
+      try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; }
+    }
+    if (actx.state === 'suspended') actx.resume();
+    return actx;
+  }
+  function tone(freq, at, dur, type, gain) {
+    const a = audio();
+    if (!a) return;
+    const t = a.currentTime + at;
+    const o = a.createOscillator(), g = a.createGain();
+    o.type = type || 'sine';
+    o.frequency.setValueAtTime(freq, t);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(gain || 0.15, t + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g).connect(a.destination);
+    o.start(t);
+    o.stop(t + dur + 0.05);
+  }
+  const sfx = {
+    tick: () => tone(1250, 0, 0.035, 'square', 0.04),
+    win: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, i * 0.1, 0.3, 'triangle', 0.18)),
+    start: () => { tone(660, 0, 0.14, 'triangle', 0.15); tone(990, 0.12, 0.2, 'triangle', 0.15); },
+    timesUp: () => [880, 660, 880, 660, 1046].forEach((f, i) => tone(f, i * 0.22, 0.5, 'sine', 0.2)),
+    undo: () => tone(392, 0, 0.15, 'triangle', 0.12)
+  };
+
+  // ---------- Wheel drawing ----------
+  const canvas = $('#wheel');
+  const ctx = canvas.getContext('2d');
+  let cssSize = 0;
+
+  function sizeCanvas() {
+    const size = canvas.clientWidth;
+    if (!size) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 3);
+    cssSize = size;
+    canvas.width = Math.round(size * dpr);
+    canvas.height = Math.round(size * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    drawWheel();
+  }
+
+  function fitText(text, maxW, startSize, minSize) {
+    let fs = startSize;
+    ctx.font = `700 ${fs}px ${DISPLAY_FONT}`;
+    while (ctx.measureText(text).width > maxW && fs > minSize) {
+      fs *= 0.93;
+      ctx.font = `700 ${fs}px ${DISPLAY_FONT}`;
+    }
+    let out = text;
+    while (ctx.measureText(out).width > maxW && out.length > 2) out = out.slice(0, -2) + '…';
+    return out;
+  }
+
+  function drawIcon(icon, y, size) {
+    if (isNumIcon(icon)) {
+      const r = size * 0.46;
+      ctx.beginPath();
+      ctx.arc(0, y, r, 0, TAU);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+      ctx.lineWidth = Math.max(2, size * 0.09);
+      ctx.strokeStyle = INK;
+      ctx.stroke();
+      ctx.fillStyle = INK;
+      ctx.font = `700 ${size * 0.52}px ${DISPLAY_FONT}`;
+      ctx.fillText(icon, 0, y + size * 0.03);
+    } else {
+      ctx.font = `${size}px ${EMOJI_FONT}`;
+      ctx.fillStyle = INK;
+      ctx.fillText(icon, 0, y + size * 0.06);
+    }
+  }
+
+  function drawWheel() {
+    const w = wheel();
+    const S = cssSize;
+    if (!S || !w) return;
+    const n = w.stations.length;
+    const c = S / 2;
+    const outer = c - 0.5;
+    const rimW = Math.max(9, S * 0.04);
+    const r = outer - rimW;
+    const seg = TAU / n;
+
+    ctx.clearRect(0, 0, S, S);
+    ctx.beginPath();
+    ctx.arc(c, c, outer, 0, TAU);
+    ctx.fillStyle = RIM;
+    ctx.fill();
+
+    w.stations.forEach((st, i) => {
+      const a0 = i * seg - Math.PI / 2;
+      ctx.beginPath();
+      ctx.moveTo(c, c);
+      ctx.arc(c, c, r, a0, a0 + seg);
+      ctx.closePath();
+      ctx.fillStyle = remainingOf(st) === 0 ? mix(colorFor(i), '#ffffff', 0.62) : colorFor(i);
+      ctx.fill();
+    });
+
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = Math.max(2, S * 0.008);
+    ctx.lineCap = 'round';
+    w.stations.forEach((_, i) => {
+      const a = i * seg - Math.PI / 2;
+      ctx.beginPath();
+      ctx.moveTo(c, c);
+      ctx.lineTo(c + Math.cos(a) * r, c + Math.sin(a) * r);
+      ctx.stroke();
+    });
+
+    // rim lights at every boundary and midpoint
+    ctx.fillStyle = '#fff3c4';
+    for (let k = 0; k < n * 2; k++) {
+      const a = k * seg / 2 - Math.PI / 2;
+      ctx.beginPath();
+      ctx.arc(c + Math.cos(a) * (r + rimW / 2), c + Math.sin(a) * (r + rimW / 2), rimW * 0.2, 0, TAU);
+      ctx.fill();
+    }
+
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    w.stations.forEach((st, i) => {
+      const rem = remainingOf(st);
+      const full = rem === 0;
+      ctx.save();
+      ctx.translate(c, c);
+      ctx.rotate(i * seg + seg / 2);
+      ctx.globalAlpha = full ? 0.5 : 1;
+
+      // label, tangential near the rim
+      const halfArc = Math.min(seg, Math.PI) / 2;
+      const chord = 2 * r * 0.84 * Math.sin(halfArc);
+      const label = fitText(st.name, Math.min(chord * 0.86, r * 0.95), r * 0.118, r * 0.06);
+      ctx.fillStyle = INK;
+      ctx.fillText(label, 0, -r * 0.84);
+      if (full) {
+        const lw = ctx.measureText(label).width;
+        ctx.fillRect(-lw / 2, -r * 0.84 - 1, lw, 2.5);
+      }
+
+      // icon
+      const iconSize = Math.min(r * 0.2, 2 * r * 0.6 * Math.sin(halfArc) * 0.62);
+      drawIcon(st.icon, -r * 0.6, iconSize);
+
+      // remaining-spots badge
+      ctx.globalAlpha = 1;
+      const br = Math.max(9, r * 0.065);
+      const by = -r * 0.37;
+      ctx.beginPath();
+      ctx.arc(0, by, br, 0, TAU);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = full ? '#1f8a5a' : INK;
+      ctx.stroke();
+      ctx.fillStyle = full ? '#1f8a5a' : INK;
+      ctx.font = `700 ${br * 1.15}px ${DISPLAY_FONT}`;
+      ctx.fillText(full ? '✓' : String(rem), 0, by + br * 0.06);
+      ctx.restore();
+    });
+  }
+
+  function applyRotation(rad) {
+    canvas.style.transform = `rotate(${rad}rad)`;
+  }
+
+  // ---------- Rendering ----------
+  const els = {
+    sound: $('#sound-btn'), change: $('#change-btn'), setup: $('#setup-btn'), hub: $('#hub'), spin: $('#spin-btn'),
+    title: $('#crew-title'), count: $('#crew-count'), list: $('#crew-list'), undo: $('#undo-btn'),
+    timerBtn: $('#timer-btn'), reset: $('#reset-btn'), live: $('#live'), pointer: $('#pointer')
+  };
+
+  const SOUND_ON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
+  const SOUND_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M17 9l5 6M22 9l-5 6"/></svg>';
+
+  function announce(msg) { els.live.textContent = msg; }
+
+  function render() {
+    const w = wheel();
+    const total = w.stations.reduce((a, s) => a + s.slots, 0);
+    const left = w.stations.reduce((a, s) => a + remainingOf(s), 0);
+
+    els.sound.innerHTML = (state.sound ? SOUND_ON : SOUND_OFF) + `<span>${state.sound ? 'Sound on' : 'Sound off'}</span>`;
+    els.sound.setAttribute('aria-pressed', String(state.sound));
+    els.title.textContent = w.name;
+    els.hub.textContent = w.hub || 'Spin!';
+    canvas.setAttribute('aria-label', `${w.name} wheel with ${w.stations.length} stations`);
+
+    els.count.classList.toggle('all', left === 0);
+    els.count.textContent = left === 0
+      ? `All ${total} helpers have a spot. Let's tidy!`
+      : `${left} of ${total} helper${total === 1 ? '' : 's'} still needed`;
+
+    els.list.innerHTML = w.stations.map((st, i) => {
+      const f = filledOf(st);
+      const full = f >= st.slots;
+      return `<li class="${full ? 'full' : ''}" data-id="${esc(st.id)}">
+        <span class="chip" style="background:${mix(colorFor(i), '#ffffff', 0.45)}">${iconHTML(st.icon)}</span>
+        <span class="name">${esc(st.name)}</span>
+        <span class="tally">${full ? '✓ ' : ''}${Math.min(f, st.slots)} of ${st.slots}</span>
+      </li>`;
+    }).join('');
+
+    els.spin.disabled = spinning || left === 0;
+    els.spin.classList.toggle('done', left === 0);
+    els.spin.textContent = left === 0 ? 'Everyone has a spot!' : 'SPIN!';
+    els.hub.disabled = spinning || left === 0;
+    els.undo.disabled = spinning || state.history.length === 0;
+    els.reset.disabled = spinning;
+    els.change.disabled = spinning;
+    els.setup.disabled = spinning;
+    updateTimerButton();
+    drawWheel();
+  }
+
+  // ---------- Spin ----------
+  let spinning = false;
+
+  function spin() {
+    if (spinning) return;
+    const w = wheel();
+    const open = w.stations.filter((s) => remainingOf(s) > 0);
+    if (!open.length) return;
+    audio();
+
+    // Weighted by open spots, so every remaining spot is equally likely.
+    const totalOpen = open.reduce((a, s) => a + remainingOf(s), 0);
+    let roll = Math.random() * totalOpen;
+    let pick = open[open.length - 1];
+    for (const s of open) { roll -= remainingOf(s); if (roll < 0) { pick = s; break; } }
+
+    const n = w.stations.length;
+    const seg = TAU / n;
+    const idx = w.stations.indexOf(pick);
+    const landAt = idx * seg + seg * (0.18 + Math.random() * 0.64);
+    const desired = mod(-landAt, TAU);
+    const start = state.rotation;
+    const quick = reduceMotion();
+    const turns = quick ? 1 : 5 + Math.floor(Math.random() * 2);
+    const target = start + turns * TAU + mod(desired - mod(start, TAU), TAU);
+    const duration = quick ? 900 : 4300 + Math.random() * 900;
+
+    spinning = true;
+    render();
+
+    let lastIdx = Math.floor(mod(-start, TAU) / seg);
+    const t0 = performance.now();
+    const frame = (now) => {
+      const t = Math.min(1, (now - t0) / duration);
+      const eased = 1 - Math.pow(1 - t, 4);
+      const rot = start + (target - start) * eased;
+      applyRotation(rot);
+      const under = Math.floor(mod(-rot, TAU) / seg);
+      if (under !== lastIdx) {
+        lastIdx = under;
+        sfx.tick();
+        els.pointer.classList.remove('tick');
+        void els.pointer.getBoundingClientRect();
+        els.pointer.classList.add('tick');
+      }
+      if (t < 1) { requestAnimationFrame(frame); return; }
+      state.rotation = mod(target, TAU);
+      applyRotation(state.rotation);
+      state.filled[pick.id] = filledOf(pick) + 1;
+      state.history.push(pick.id);
+      spinning = false;
+      save();
+      render();
+      showResult(pick, idx);
+    };
+    requestAnimationFrame(frame);
+  }
+
+  // ---------- Overlays ----------
+  let lastFocus = null;
+  const openStack = [];
+  function openOverlay(el) {
+    lastFocus = document.activeElement;
+    el.hidden = false;
+    openStack.push(el);
+    const target = el.querySelector('[data-autofocus]') || el.querySelector('input, button');
+    if (target) target.focus();
+  }
+  function closeOverlay(el) {
+    if (!el || el.hidden) return;
+    el.hidden = true;
+    const i = openStack.indexOf(el);
+    if (i >= 0) openStack.splice(i, 1);
+    if (lastFocus && document.contains(lastFocus) && !lastFocus.disabled) lastFocus.focus();
+  }
+  document.querySelectorAll('.overlay').forEach((ov) => {
+    ov.addEventListener('click', (e) => {
+      if (e.target === ov || e.target.closest('[data-close]')) closeOverlay(ov);
+    });
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && openStack.length) {
+      const top = openStack[openStack.length - 1];
+      if (top.id === 'result-overlay') finishResult(); else closeOverlay(top);
+    }
+  });
+
+  const resultEl = $('#result-overlay');
+  let lastPickId = null;
+
+  function showResult(st, i) {
+    const w = wheel();
+    const left = w.stations.reduce((a, s) => a + remainingOf(s), 0);
+    lastPickId = st.id;
+    const icon = $('#result-icon');
+    icon.style.background = colorFor(i);
+    icon.innerHTML = iconHTML(st.icon);
+    $('#result-station').textContent = st.name;
+    $('#result-detail').textContent = `Helper ${filledOf(st)} of ${st.slots} here`;
+    $('#result-everyone').hidden = left !== 0;
+    $('#result-timer').hidden = left !== 0 || timerRunning();
+    $('#result-next').textContent = left === 0 ? 'Done' : 'Next helper';
+    sfx.win();
+    announce(`${st.name}! Helper ${filledOf(st)} of ${st.slots}.`);
+    openOverlay(resultEl);
+    confetti(i);
+  }
+  function finishResult() {
+    closeOverlay(resultEl);
+    if (lastPickId) {
+      const li = els.list.querySelector(`li[data-id="${CSS.escape(lastPickId)}"]`);
+      if (li) { li.classList.remove('flash'); void li.offsetWidth; li.classList.add('flash'); }
+    }
+    if (!els.spin.disabled) els.spin.focus();
+  }
+  $('#result-next').addEventListener('click', finishResult);
+  $('#result-timer').addEventListener('click', () => { finishResult(); startTimer(); });
+
+  // ---------- Confetti ----------
+  const confCanvas = $('#confetti');
+  const confCtx = confCanvas.getContext('2d');
+  let confParts = [];
+  let confRunning = false;
+  function confetti(i) {
+    if (reduceMotion()) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const W = window.innerWidth, H = window.innerHeight;
+    confCanvas.width = W * dpr;
+    confCanvas.height = H * dpr;
+    confCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const colors = [colorFor(i), '#f2625f', '#f9cf4a', '#82d8c4', '#a78ee8', '#ffffff'];
+    for (let k = 0; k < 150; k++) {
+      const a = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 1.1;
+      const sp = 7 + Math.random() * 10;
+      confParts.push({
+        x: W / 2, y: H * 0.42, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp,
+        w: 6 + Math.random() * 6, h: 8 + Math.random() * 8, rot: Math.random() * TAU, vr: (Math.random() - 0.5) * 0.4,
+        color: colors[k % colors.length], life: 0
+      });
+    }
+    if (!confRunning) { confRunning = true; requestAnimationFrame(confFrame); }
+  }
+  function confFrame() {
+    const W = window.innerWidth, H = window.innerHeight;
+    confCtx.clearRect(0, 0, W, H);
+    confParts = confParts.filter((p) => p.y < H + 40 && p.life < 240);
+    for (const p of confParts) {
+      p.life++;
+      p.vy += 0.28;
+      p.vx *= 0.985;
+      p.vy *= 0.985;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rot += p.vr;
+      confCtx.save();
+      confCtx.translate(p.x, p.y);
+      confCtx.rotate(p.rot);
+      confCtx.fillStyle = p.color;
+      confCtx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h * Math.abs(Math.cos(p.rot * 1.7)) + 1);
+      confCtx.restore();
+    }
+    if (confParts.length) requestAnimationFrame(confFrame);
+    else { confRunning = false; confCtx.clearRect(0, 0, W, H); }
+  }
+
+  // ---------- Timer ----------
+  const timerEl = $('#timer');
+  let timerInterval = 0;
+  const timerRunning = () => state.timerEnd > Date.now();
+
+  function updateTimerButton() {
+    els.timerBtn.textContent = timerRunning() ? 'Stop timer' : 'Start 3-min timer';
+  }
+  function startTimer() {
+    audio();
+    state.timerEnd = Date.now() + TIMER_MS;
+    save();
+    sfx.start();
+    announce('Three minute clean-up timer started.');
+    runTimer();
+  }
+  function runTimer() {
+    timerEl.hidden = false;
+    clearInterval(timerInterval);
+    timerInterval = setInterval(tickTimer, 250);
+    tickTimer();
+    updateTimerButton();
+  }
+  function tickTimer() {
+    const left = Math.max(0, state.timerEnd - Date.now());
+    const secs = Math.ceil(left / 1000);
+    $('#timer-clock').textContent = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
+    $('#timer-bar').style.transform = `scaleX(${left / TIMER_MS})`;
+    if (left <= 0) {
+      stopTimer();
+      sfx.timesUp();
+      announce("Time's up!");
+      openOverlay($('#timesup-overlay'));
+    }
+  }
+  function stopTimer() {
+    clearInterval(timerInterval);
+    state.timerEnd = 0;
+    save();
+    timerEl.hidden = true;
+    updateTimerButton();
+  }
+  els.timerBtn.addEventListener('click', () => (timerRunning() ? stopTimer() : startTimer()));
+  $('#timer-stop').addEventListener('click', stopTimer);
+  $('#timesup-ok').addEventListener('click', () => closeOverlay($('#timesup-overlay')));
+
+  // ---------- Two-tap confirm ----------
+  function confirmTap(btn, armedLabel, action) {
+    if (btn.dataset.armed) {
+      clearTimeout(btn._disarm);
+      delete btn.dataset.armed;
+      btn.classList.remove('warn');
+      btn.textContent = btn.dataset.label;
+      action();
+      return;
+    }
+    btn.dataset.label = btn.textContent;
+    btn.dataset.armed = '1';
+    btn.classList.add('warn');
+    btn.textContent = armedLabel;
+    btn._disarm = setTimeout(() => {
+      delete btn.dataset.armed;
+      btn.classList.remove('warn');
+      btn.textContent = btn.dataset.label;
+    }, 3000);
+  }
+
+  // ---------- Main controls ----------
+  function resetRound() {
+    state.filled = {};
+    state.history = [];
+  }
+  els.spin.addEventListener('click', spin);
+  els.hub.addEventListener('click', spin);
+  els.sound.addEventListener('click', () => {
+    state.sound = !state.sound;
+    save();
+    render();
+    if (state.sound) sfx.start();
+  });
+  els.undo.addEventListener('click', () => {
+    const id = state.history.pop();
+    if (!id) return;
+    state.filled[id] = Math.max(0, (state.filled[id] || 0) - 1);
+    const st = wheel().stations.find((s) => s.id === id);
+    sfx.undo();
+    save();
+    render();
+    announce(`Undid last spin${st ? ': ' + st.name : ''}.`);
+  });
+  els.reset.addEventListener('click', () => {
+    if (!state.history.length) { announce('Nothing to clear yet.'); return; }
+    confirmTap(els.reset, 'Tap again to clear all spots', () => {
+      resetRound();
+      save();
+      render();
+      announce('New clean-up started. All spots are open.');
+    });
+  });
+
+  // ---------- Change wheel ----------
+  const wheelsEl = $('#wheels-overlay');
+  function renderWheelList() {
+    $('#wheel-list').innerHTML = state.wheels.map((w) => {
+      const helpers = w.stations.reduce((a, s) => a + s.slots, 0);
+      const icons = w.stations.slice(0, 4).map((s) => (isNumIcon(s.icon) ? '' : esc(s.icon))).join('');
+      const active = w.id === state.activeId;
+      return `<button type="button" class="wheel-option" data-wheel="${esc(w.id)}" aria-pressed="${active}">
+        <span class="wname">${esc(w.name)}${active ? '<span class="now">In use</span>' : ''}</span>
+        <span class="wmeta">${w.stations.length} stations · ${helpers} helpers</span>
+        <span class="wicons" aria-hidden="true">${icons}</span>
+      </button>`;
+    }).join('');
+  }
+  els.change.addEventListener('click', () => { renderWheelList(); openOverlay(wheelsEl); });
+  $('#wheel-list').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-wheel]');
+    if (!btn) return;
+    const id = btn.dataset.wheel;
+    if (id !== state.activeId) {
+      state.activeId = id;
+      resetRound();
+      save();
+      render();
+      announce(`Switched to ${wheel().name}.`);
+    }
+    closeOverlay(wheelsEl);
+  });
+  $('#new-wheel-btn').addEventListener('click', () => {
+    const w = {
+      id: 'w' + uid(), name: 'My wheel', hub: 'Go!', stations: [
+        { id: uid(), name: 'Station 1', icon: '⭐', slots: 2 },
+        { id: uid(), name: 'Station 2', icon: '🌈', slots: 2 },
+        { id: uid(), name: 'Station 3', icon: '🚀', slots: 2 }
+      ]
+    };
+    state.wheels.push(w);
+    state.activeId = w.id;
+    resetRound();
+    save();
+    render();
+    closeOverlay(wheelsEl);
+    openSetup();
+  });
+
+  // ---------- Teacher setup ----------
+  const setupEl = $('#setup-overlay');
+  const rowsEl = $('#setup-rows');
+  let draft = null;
+
+  function firstGlyph(str) {
+    const s = str.trim();
+    if (!s) return '';
+    if (window.Intl && Intl.Segmenter) {
+      const it = new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(s)[Symbol.iterator]().next();
+      const g = it.value ? it.value.segment : s;
+      return /^\d$/.test(g) ? s.match(/^\d{1,2}/)[0] : g;
+    }
+    return Array.from(s).slice(0, 2).join('');
+  }
+
+  function renderSetup(focusId) {
+    $('#setup-name').value = draft.name;
+    $('#setup-hub').value = draft.hub || '';
+    const many = draft.stations.length;
+    rowsEl.innerHTML = draft.stations.map((st, i) => `
+      <div class="setup-row" data-id="${esc(st.id)}">
+        <input type="text" class="icon-in" id="icon-${esc(st.id)}" value="${esc(st.icon)}" maxlength="12" aria-label="Icon for station ${i + 1}" autocomplete="off">
+        <input type="text" class="name-in" id="name-${esc(st.id)}" value="${esc(st.name)}" maxlength="28" aria-label="Name of station ${i + 1}" autocomplete="off">
+        <div class="stepper">
+          <button type="button" data-step="-1" aria-label="Fewer helpers" ${st.slots <= 1 ? 'disabled' : ''}>−</button>
+          <output aria-live="polite">${st.slots}</output>
+          <button type="button" data-step="1" aria-label="More helpers" ${st.slots >= MAX_SLOTS ? 'disabled' : ''}>+</button>
+        </div>
+        <button type="button" class="remove" data-remove aria-label="Remove station ${i + 1}" ${many <= 2 ? 'disabled' : ''}>✕</button>
+      </div>`).join('');
+    $('#add-station').disabled = many >= MAX_STATIONS;
+    $('#add-station').textContent = many >= MAX_STATIONS ? `${MAX_STATIONS} stations is the most a wheel holds` : '+ Add a station';
+    updateSetupTotal();
+    const builtIn = BUILT_IN.some((b) => b.id === draft.id);
+    $('#restore-btn').hidden = !builtIn;
+    $('#delete-wheel-btn').hidden = builtIn || state.wheels.length <= 1;
+    if (focusId) {
+      const el = document.getElementById(focusId);
+      if (el) { el.focus(); el.select(); }
+    }
+  }
+  function updateSetupTotal() {
+    const total = draft.stations.reduce((a, s) => a + s.slots, 0);
+    $('#setup-total').textContent = `${draft.stations.length} stations · ${total} helpers in all`;
+  }
+  function openSetup() {
+    draft = clone(wheel());
+    renderSetup();
+    openOverlay(setupEl);
+  }
+  els.setup.addEventListener('click', openSetup);
+
+  rowsEl.addEventListener('input', (e) => {
+    const row = e.target.closest('.setup-row');
+    if (!row) return;
+    const st = draft.stations.find((s) => s.id === row.dataset.id);
+    if (e.target.classList.contains('name-in')) st.name = e.target.value;
+    if (e.target.classList.contains('icon-in')) st.icon = e.target.value;
+  });
+  rowsEl.addEventListener('click', (e) => {
+    const row = e.target.closest('.setup-row');
+    if (!row) return;
+    const idx = draft.stations.findIndex((s) => s.id === row.dataset.id);
+    const st = draft.stations[idx];
+    const step = e.target.closest('[data-step]');
+    if (step) {
+      st.slots = Math.min(MAX_SLOTS, Math.max(1, st.slots + Number(step.dataset.step)));
+      row.querySelector('output').textContent = st.slots;
+      row.querySelector('[data-step="-1"]').disabled = st.slots <= 1;
+      row.querySelector('[data-step="1"]').disabled = st.slots >= MAX_SLOTS;
+      updateSetupTotal();
+      return;
+    }
+    if (e.target.closest('[data-remove]') && draft.stations.length > 2) {
+      draft.stations.splice(idx, 1);
+      renderSetup();
+      const next = rowsEl.querySelectorAll('.remove')[Math.min(idx, draft.stations.length - 1)];
+      if (next) next.focus();
+    }
+  });
+  $('#setup-name').addEventListener('input', (e) => { draft.name = e.target.value; });
+  $('#setup-hub').addEventListener('input', (e) => { draft.hub = e.target.value; });
+  $('#add-station').addEventListener('click', () => {
+    if (draft.stations.length >= MAX_STATIONS) return;
+    const st = { id: uid(), name: `Station ${draft.stations.length + 1}`, icon: '⭐', slots: 1 };
+    draft.stations.push(st);
+    renderSetup('name-' + st.id);
+  });
+  $('#restore-btn').addEventListener('click', () => {
+    const b = BUILT_IN.find((x) => x.id === draft.id);
+    if (b) { draft = clone(b); renderSetup(); announce('Defaults restored. Save to keep them.'); }
+  });
+  $('#delete-wheel-btn').addEventListener('click', (e) => {
+    confirmTap(e.currentTarget, 'Tap again to delete', () => {
+      state.wheels = state.wheels.filter((w) => w.id !== draft.id);
+      state.activeId = state.wheels[0].id;
+      resetRound();
+      save();
+      render();
+      closeOverlay(setupEl);
+      announce(`Wheel deleted. Now using ${wheel().name}.`);
+    });
+  });
+  $('#save-setup').addEventListener('click', () => {
+    draft.name = draft.name.trim() || 'My wheel';
+    draft.hub = (draft.hub || '').trim() || 'Spin!';
+    draft.stations.forEach((st, i) => {
+      st.name = st.name.trim() || `Station ${i + 1}`;
+      st.icon = firstGlyph(st.icon) || '⭐';
+    });
+    const idx = state.wheels.findIndex((w) => w.id === draft.id);
+    state.wheels[idx] = draft;
+
+    // Keep spots already filled, trimming any station that now has fewer slots.
+    const ids = new Set(draft.stations.map((s) => s.id));
+    const kept = {};
+    const history = [];
+    for (const id of state.history) {
+      const st = draft.stations.find((s) => s.id === id);
+      if (!st || !ids.has(id)) continue;
+      if ((kept[id] || 0) < st.slots) { kept[id] = (kept[id] || 0) + 1; history.push(id); }
+    }
+    state.filled = kept;
+    state.history = history;
+    save();
+    render();
+    closeOverlay(setupEl);
+    announce('Wheel saved.');
+  });
+
+  // ---------- Boot ----------
+  applyRotation(state.rotation);
+  render();
+  sizeCanvas();
+  if (window.ResizeObserver) new ResizeObserver(sizeCanvas).observe(canvas.parentElement);
+  else window.addEventListener('resize', sizeCanvas);
+  if (document.fonts && document.fonts.load) {
+    document.fonts.load(`700 20px "Fredoka"`).then(drawWheel, () => {});
+    document.fonts.ready.then(drawWheel);
+  }
+  if (timerRunning()) runTimer();
+  else if (state.timerEnd) { state.timerEnd = 0; save(); }
+})();
+</script>
+</body>
+</html>
