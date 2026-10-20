@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Homepage</title>
+  <style>
+    :root {
+      --bg: #f7f5f2;
+      --text: #1f1f1f;
+      --muted: #5f5f5f;
+      --card: #ffffff;
+      --border: #e4e0da;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #161616;
+        --text: #f0f0f0;
+        --muted: #a8a8a8;
+        --card: #1f1f1f;
+        --border: #2e2e2e;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    main {
+      width: 100%;
+      max-width: 560px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px 32px;
+      text-align: center;
+    }
+    h1 { margin: 0 0 8px; font-size: 2rem; }
+    p { margin: 0 0 24px; color: var(--muted); }
+    #color-button {
+      --button-color: #3b6ef5;
+      border: none;
+      border-radius: 999px;
+      padding: 12px 28px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #fff;
+      background: var(--button-color);
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.1s ease;
+    }
+    #color-button:active { transform: scale(0.97); }
+    #color-button:focus-visible { outline: 3px solid var(--text); outline-offset: 3px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Hi, I'm Your Name</h1>
+    <p>Welcome to my personal homepage. Here's a little about me and what I'm working on.</p>
+    <button id="color-button" type="button">Change my color</button>
+  </main>
+
+  <script>
+    const colors = ["#3b6ef5", "#e5484d", "#30a46c", "#f76b15", "#8e4ec6", "#0d9488"];
+    const button = document.getElementById("color-button");
+    let index = 0;
+
+    button.addEventListener("click", () => {
+      index = (index + 1) % colors.length;
+      button.style.setProperty("--button-color", colors[index]);
+    });
+  </script>
+</body>
+</html>
