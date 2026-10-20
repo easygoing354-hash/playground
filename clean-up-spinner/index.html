@@ -7,7 +7,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800;900&family=Patrick+Hand&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800;900&family=Patrick+Hand&family=Bangers&family=Shrikhand&display=swap">
 <style>
   /* Layout: phones stack title, wheel, SPIN and crew; iPad landscape and computers put the wheel left and the crew right.
      Each of the 10 wheel designs rewrites these tokens from script, so the whole room-facing screen changes with the design. */
@@ -429,7 +429,7 @@
     <p class="detail" id="result-detail"></p>
     <p class="everyone" id="result-everyone" hidden></p>
     <div class="buttons">
-      <button class="pill accent" id="result-next" type="button" data-autofocus>Next helper</button>
+      <button class="pill accent" id="result-next" type="button" data-autofocus>I'm on it!</button>
       <button class="pill" id="result-timer" type="button" hidden>Start the timer</button>
     </div>
   </div>
@@ -546,7 +546,9 @@
   const FONTS = {
     fredoka: '"Fredoka", "Arial Rounded MT Bold", ui-rounded, system-ui, sans-serif',
     patrick: '"Patrick Hand", "Chalkboard SE", "Comic Sans MS", cursive',
-    nunito: '"Nunito", ui-rounded, system-ui, sans-serif'
+    nunito: '"Nunito", ui-rounded, system-ui, sans-serif',
+    bangers: '"Bangers", Impact, "Arial Black", sans-serif',
+    shrikhand: '"Shrikhand", "Cooper Black", Georgia, serif'
   };
   const EMOJI_FONT = '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
   const PICTURES = ['🍳', '🍽️', '🧸', '🧩', '🧱', '📚', '📖', '🎨', '🖍️', '✏️', '✂️', '📎', '🧹', '🧽', '🧺', '🪣', '🗑️', '♻️',
@@ -556,7 +558,7 @@
   // ---------- The 10 wheel designs ----------
   const THEMES = [
     {
-      id: 'carnival', name: 'Carnival Classic', font: 'fredoka', weight: 700,
+      id: 'rainbow', name: 'Rainbow Bright', font: 'fredoka', weight: 700, confetti: ['rect', 'circle', 'streamer'],
       desc: 'Bright rainbow slices, a navy rim with marquee lights and a classic arrow.',
       page: { bg: '#fdf0e1', surface: '#fffaf2', raised: '#ffffff', ink: '#2a2350', inkSoft: '#6a6386', line: '#ecdcc8',
         accent: '#f25f5c', accentDeep: '#c8413f', onAccent: '#ffffff', strong: '#2a2350', onStrong: '#ffffff', ok: '#1f8a5a',
@@ -566,7 +568,7 @@
         hubBg: '#ffffff', hubRing: '#2a2350', hubInk: '#2a2350', pointerShape: 'triangle', pointer: '#2a2350' }
     },
     {
-      id: 'pastel', name: 'Pastel Bloom', font: 'fredoka', weight: 700,
+      id: 'pastel', name: 'Pastel Bloom', font: 'fredoka', weight: 700, confetti: ['circle', 'rect', 'streamer'],
       desc: 'Soft rose, coral, lavender and mint with a petal edge and a heart pointer.',
       page: { bg: '#fdeef1', surface: '#fff7f9', raised: '#ffffff', ink: '#4a3046', inkSoft: '#866780', line: '#f3d6de',
         accent: '#ef7d90', accentDeep: '#c75a6c', onAccent: '#ffffff', strong: '#4a3046', onStrong: '#ffffff', ok: '#2a8a65',
@@ -576,7 +578,7 @@
         hubBg: '#ffffff', hubRing: '#f4a6b8', hubInk: '#4a3046', hubIcon: '🌸', pointerShape: 'heart', pointer: '#ef7d90' }
     },
     {
-      id: 'boho', name: 'Boho Rainbow', font: 'fredoka', weight: 600,
+      id: 'boho', name: 'Boho Rainbow', font: 'fredoka', weight: 600, confetti: ['circle', 'rect'],
       desc: 'Earthy terracotta, sage and mustard, a map-pin pointer and a rainbow in the middle.',
       page: { bg: '#f5ede3', surface: '#fbf7f1', raised: '#fffdf9', ink: '#4a3a2e', inkSoft: '#85705e', line: '#e6d8c6',
         accent: '#c4694a', accentDeep: '#98492f', onAccent: '#ffffff', strong: '#4a3a2e', onStrong: '#ffffff', ok: '#56794a',
@@ -586,37 +588,17 @@
         hubBg: '#fbf3e6', hubRing: '#b2694f', hubInk: '#4a3a2e', hubIcon: '🌈', pointerShape: 'pin', pointer: '#b2694f', pointer2: '#fbf3e6' }
     },
     {
-      id: 'chalk', name: 'Chalkboard', font: 'patrick', weight: 400, dark: true,
-      desc: 'A green slate board, chalky pastels, dashed chalk lines and a wooden frame.',
-      page: { bg: '#2f4a3a', surface: '#365441', raised: '#3e5e49', ink: '#f4f1e6', inkSoft: '#c8d3c2', line: '#57785f',
-        accent: '#f2c94c', accentDeep: '#b88f1d', onAccent: '#2b3a2c', strong: '#f4f1e6', onStrong: '#2f4a3a', ok: '#a6e3a0', warn: '#ffc27a',
-        blobs: ['#ffffff', '#ffffff', '#ffffff'], blobOp: .05 },
-      wheel: { segs: ['#f2a89f', '#f5cf8f', '#f1e89b', '#b8e0a3', '#a5dacd', '#a8c6ea', '#cab7e9', '#f0b7d3', '#f7dcb4', '#cde7b5', '#b9d9ee', '#e7c4c4'],
-        rim: 'frame', rimColor: '#a8743f', rimAccent: '#6e4521', sep: '#ffffff', sepDash: true, labelDark: '#24352a', fade: '#7f9686',
-        hubBg: '#2f4a3a', hubRing: '#a8743f', hubInk: '#f4f1e6', pointerShape: 'arrow', pointer: '#f4f1e6', pointer2: '#2f4a3a' }
-    },
-    {
-      id: 'ocean', name: 'Ocean Splash', font: 'fredoka', weight: 700,
+      id: 'ocean', name: 'Under the Sea', font: 'fredoka', weight: 700, confetti: ['circle', 'circle', 'rect'],
       desc: 'Sea blues and seafoam with a wavy edge, bubbles on the rim and a water-drop pointer.',
       page: { bg: '#e4f4f8', surface: '#f3fbfc', raised: '#ffffff', ink: '#0f3b52', inkSoft: '#4c7183', line: '#c5e3eb',
         accent: '#ff8a5c', accentDeep: '#d0623a', onAccent: '#ffffff', strong: '#0f3b52', onStrong: '#ffffff', ok: '#1b7f63',
         blobs: ['#a9e1ef', '#c7f0e4', '#ffd9c7'], blobOp: .7 },
       wheel: { segs: ['#6fb8e8', '#8fd3ea', '#a7e6dc', '#c4efd2', '#7ec8e3', '#5fc9b8', '#a9cdf5', '#86e0d0', '#ffc8a8', '#9adbe8', '#b9e4f7', '#7fd1c0'],
         rim: 'waves', rimColor: '#1d6fa3', rimAccent: '#e6f8ff', sep: '#ffffff', labelDark: '#0f3b52', fade: '#ffffff',
-        hubBg: '#ffffff', hubRing: '#1d6fa3', hubInk: '#0f3b52', hubIcon: '🐳', pointerShape: 'drop', pointer: '#1d6fa3' }
+        hubBg: '#ffffff', hubRing: '#1d6fa3', hubInk: '#0f3b52', hubIcon: '🐙', pointerShape: 'drop', pointer: '#1d6fa3' }
     },
     {
-      id: 'jungle', name: 'Jungle Safari', font: 'fredoka', weight: 700,
-      desc: 'Leafy greens and sunny yellows inside a ring of leaves, with a leaf pointer.',
-      page: { bg: '#eef3de', surface: '#f8faee', raised: '#ffffff', ink: '#253a1d', inkSoft: '#5b6d4c', line: '#d5dfbb',
-        accent: '#f0a22e', accentDeep: '#b97812', onAccent: '#253a1d', strong: '#2f5b2a', onStrong: '#ffffff', ok: '#2d7a31',
-        blobs: ['#c9df9a', '#f6dc8a', '#a9d4a0'], blobOp: .55 },
-      wheel: { segs: ['#7cb342', '#aed581', '#f6c945', '#ffb74d', '#8bc79a', '#c5e1a5', '#e6a85c', '#9ccc65', '#d4e157', '#81c784', '#ffd54f', '#a1887f'],
-        rim: 'leaves', rimColor: '#2f5b2a', rimAccent: '#4f8a3c', rimAccent2: '#78b04a', sep: '#fffbe6', labelDark: '#1f2f18', fade: '#f8faee',
-        hubBg: '#fff8e1', hubRing: '#2f5b2a', hubInk: '#253a1d', hubIcon: '🦁', pointerShape: 'leaf', pointer: '#2f5b2a', pointer2: '#c5e1a5' }
-    },
-    {
-      id: 'space', name: 'Outer Space', font: 'fredoka', weight: 700, dark: true,
+      id: 'space', name: 'Outer Space', font: 'fredoka', weight: 700, dark: true, confetti: ['star', 'star', 'circle'],
       desc: 'A deep night sky, glowing planet colors, a starry rim and a star pointer.',
       page: { bg: '#14123a', surface: '#1e1b4b', raised: '#28245e', ink: '#f2efff', inkSoft: '#b9b3e3', line: '#3a3580',
         accent: '#ffcc4d', accentDeep: '#c4961a', onAccent: '#1e1b4b', strong: '#f2efff', onStrong: '#1e1b4b', ok: '#6ee7b7', warn: '#ffb86b',
@@ -626,34 +608,54 @@
         hubBg: '#1e1b4b', hubRing: '#ffcc4d', hubInk: '#ffffff', hubIcon: '🚀', pointerShape: 'star', pointer: '#ffcc4d', pointer2: '#ffffff' }
     },
     {
-      id: 'candy', name: 'Candy Shop', font: 'fredoka', weight: 700,
-      desc: 'Bubblegum pink, mint and lemon with a gumdrop rim and a candy-drop pointer.',
-      page: { bg: '#fff0f6', surface: '#fff8fb', raised: '#ffffff', ink: '#5a1f45', inkSoft: '#935d7d', line: '#f7d0e3',
-        accent: '#ff4f9a', accentDeep: '#c92c71', onAccent: '#ffffff', strong: '#5a1f45', onStrong: '#ffffff', ok: '#1b7f5c',
-        blobs: ['#ffc2df', '#b8f2df', '#fff2a8'], blobOp: .7 },
-      wheel: { segs: ['#ff7eb6', '#7fe0c3', '#ffe873', '#b69cff', '#ff9f80', '#8fd3ff', '#ffb3d9', '#c6f27f', '#ffc46b', '#9ef0e0', '#d7b8ff', '#ff8fa3'],
-        rim: 'gumdrops', rimColor: '#ffffff', rimLine: '#f7c6dc', sep: '#ffffff', labelDark: '#4a1838', fade: '#ffffff',
-        hubBg: '#ffffff', hubRing: '#ff4f9a', hubInk: '#5a1f45', hubIcon: '🍭', pointerShape: 'drop', pointer: '#ff4f9a' }
+      id: 'donut', name: 'Donut Shop', font: 'fredoka', weight: 700, confetti: ['sprinkle', 'sprinkle', 'circle'],
+      desc: 'Frosting pinks, chocolate and vanilla on a sprinkle-covered donut, with a donut pointer.',
+      page: { bg: '#fdf1ea', surface: '#fffaf6', raised: '#ffffff', ink: '#4e2a1e', inkSoft: '#875c4b', line: '#f1dccf',
+        accent: '#f06292', accentDeep: '#c2185b', onAccent: '#ffffff', strong: '#4e2a1e', onStrong: '#ffffff', ok: '#2e7d5b',
+        blobs: ['#f8bbd0', '#ffe0b2', '#b3e5fc'], blobOp: .6 },
+      wheel: { segs: ['#f7a1c4', '#8d5a3b', '#fde7b0', '#9fe2c8', '#f48fb1', '#9bb8f0', '#fbe17a', '#e0a25e', '#c39bd3', '#ffb3a7', '#6d4330', '#b8e0f5'],
+        rim: 'sprinkles', rimColor: '#e3a861', rimAccent: '#f7a1c4', sep: '#fffaf6', labelDark: '#4e2a1e', fade: '#ffffff',
+        hubBg: '#ffffff', hubRing: '#f06292', hubInk: '#4e2a1e', hubIcon: '🍩', pointerShape: 'donut', pointer: '#f06292', pointer2: '#e3a861' }
     },
     {
-      id: 'crayon', name: 'Crayon Box', font: 'patrick', weight: 400,
-      desc: 'Bold crayon colors, a zigzag of crayon tips around the edge and a pencil pointer.',
-      page: { bg: '#fffbea', surface: '#fffef6', raised: '#ffffff', ink: '#262626', inkSoft: '#5f5a4a', line: '#ece3c0',
-        accent: '#2f6fdf', accentDeep: '#1d4ea6', onAccent: '#ffffff', strong: '#262626', onStrong: '#ffffff', ok: '#1f7f37',
-        blobs: ['#ffd84d', '#ff8a65', '#64b5f6'], blobOp: .3 },
-      wheel: { segs: ['#e53935', '#fb8c00', '#fdd835', '#43a047', '#1e88e5', '#8e24aa', '#ec407a', '#00897b', '#6d4c41', '#7cb342', '#3949ab', '#f4511e'],
-        rim: 'zigzag', rimColor: '#262626', sep: '#ffffff', labelDark: '#1d1d1d', fade: '#ffffff',
-        hubBg: '#ffffff', hubRing: '#262626', hubInk: '#262626', pointerShape: 'pencil', pointer: '#fdd835' }
+      id: 'chalk', name: 'Chalkboard', font: 'patrick', weight: 400, dark: true, confetti: ['rect', 'circle'],
+      desc: 'A green slate board, chalky pastels, dashed chalk lines and a wooden frame.',
+      page: { bg: '#2f4a3a', surface: '#365441', raised: '#3e5e49', ink: '#f4f1e6', inkSoft: '#c8d3c2', line: '#57785f',
+        accent: '#f2c94c', accentDeep: '#b88f1d', onAccent: '#2b3a2c', strong: '#f4f1e6', onStrong: '#2f4a3a', ok: '#a6e3a0', warn: '#ffc27a',
+        blobs: ['#ffffff', '#ffffff', '#ffffff'], blobOp: .05 },
+      wheel: { segs: ['#f2a89f', '#f5cf8f', '#f1e89b', '#b8e0a3', '#a5dacd', '#a8c6ea', '#cab7e9', '#f0b7d3', '#f7dcb4', '#cde7b5', '#b9d9ee', '#e7c4c4'],
+        rim: 'frame', rimColor: '#a8743f', rimAccent: '#6e4521', sep: '#ffffff', sepDash: true, labelDark: '#24352a', fade: '#7f9686',
+        hubBg: '#2f4a3a', hubRing: '#a8743f', hubInk: '#f4f1e6', pointerShape: 'arrow', pointer: '#f4f1e6', pointer2: '#2f4a3a' }
     },
     {
-      id: 'calm', name: 'Calm Corner', font: 'nunito', weight: 800, calm: true,
-      desc: 'Quiet sage, oat and clay with a simple ring, a gentler spin, soft sounds and no confetti.',
-      page: { bg: '#f3f1ec', surface: '#faf9f6', raised: '#ffffff', ink: '#33383a', inkSoft: '#6a6f71', line: '#e0ddd4',
-        accent: '#6f8f7a', accentDeep: '#51705c', onAccent: '#ffffff', strong: '#33383a', onStrong: '#ffffff', ok: '#4a7757',
-        blobs: ['#dfe6dc', '#ece2d6', '#dde3e8'], blobOp: .8 },
-      wheel: { segs: ['#a9bfa8', '#d8c7ad', '#c9a99a', '#b7c4cf', '#d9d2c2', '#9fb3ad', '#cdb9c7', '#c2c9a5', '#e0c9b5', '#aebdb0', '#c8c0b3', '#b3bcc6'],
-        rim: 'calm', rimColor: '#d6d1c6', rimAccent: '#ffffff', sep: '#faf9f6', labelDark: '#2e3335', fade: '#f3f1ec',
-        hubBg: '#ffffff', hubRing: '#a9bfa8', hubInk: '#33383a', pointerShape: 'tab', pointer: '#6f8f7a' }
+      id: 'construction', name: 'Construction Crew', font: 'fredoka', weight: 700, confetti: ['rect', 'rect', 'circle'],
+      desc: 'Safety yellow and cone orange inside hazard stripes, with a traffic-cone pointer.',
+      page: { bg: '#f4f1ea', surface: '#fbfaf6', raised: '#ffffff', ink: '#22252a', inkSoft: '#5d636b', line: '#e2ddd0',
+        accent: '#ffb703', accentDeep: '#c48a00', onAccent: '#22252a', strong: '#22252a', onStrong: '#ffffff', ok: '#2d7a3a',
+        blobs: ['#ffd166', '#ffb38a', '#cfd8dc'], blobOp: .5 },
+      wheel: { segs: ['#ffc93c', '#ff8c1a', '#a9b1b9', '#4f7cac', '#d1495b', '#a0703f', '#b5d33d', '#ff6b35', '#e9c46a', '#6c7a89', '#f4a261', '#7fb069'],
+        rim: 'hazard', rimColor: '#ffc300', rimAccent: '#22252a', sep: '#ffffff', labelDark: '#22252a', fade: '#ffffff',
+        hubBg: '#ffc300', hubRing: '#22252a', hubInk: '#22252a', hubIcon: '👷', pointerShape: 'cone', pointer: '#ff6b35', pointer2: '#22252a' }
+    },
+    {
+      id: 'groovy', name: 'Groovy Smiley', font: 'shrikhand', weight: 400, labelFont: 'fredoka', labelWeight: 700, confetti: ['circle', 'rect', 'streamer'],
+      desc: 'Seventies orange, pink and mustard with a rainbow rim of daisies and a smiley pointer.',
+      page: { bg: '#fff0d4', surface: '#fff8e8', raised: '#fffdf6', ink: '#5a2d0c', inkSoft: '#8c5a33', line: '#f2d9a8',
+        accent: '#f0782a', accentDeep: '#b8521a', onAccent: '#ffffff', strong: '#5a2d0c', onStrong: '#ffffff', ok: '#3f7d3a',
+        blobs: ['#f6b93b', '#f25c9a', '#3fa9a0'], blobOp: .3 },
+      wheel: { segs: ['#f6b93b', '#f08a24', '#f25c9a', '#e8553e', '#a3b75c', '#3fa9a0', '#c59de0', '#ffb38a', '#ffd23f', '#d96c3d', '#7bc4b4', '#f48cb6'],
+        rim: 'groovy', rimColor: '#f08a24', rimAccent: '#f25c9a', rimAccent2: '#f6b93b', sep: '#fff8e8', labelDark: '#4a2209', fade: '#fff8e8',
+        hubBg: '#fff8e8', hubRing: '#f08a24', hubInk: '#5a2d0c', hubIcon: '🌼', pointerShape: 'smiley', pointer: '#ffd23f', pointer2: '#5a2d0c' }
+    },
+    {
+      id: 'heroes', name: 'Superheroes', font: 'bangers', weight: 400, confetti: ['star', 'rect', 'streamer'],
+      desc: 'Comic-book reds, blues and yellows, a starburst edge and a lightning-bolt pointer.',
+      page: { bg: '#e8f1ff', surface: '#f6faff', raised: '#ffffff', ink: '#14213d', inkSoft: '#47587a', line: '#cddcf5',
+        accent: '#e63946', accentDeep: '#a4161a', onAccent: '#ffffff', strong: '#14213d', onStrong: '#ffffff', ok: '#1f8a4c',
+        blobs: ['#ffd60a', '#e63946', '#1d6fe0'], blobOp: .22 },
+      wheel: { segs: ['#e63946', '#1d6fe0', '#ffd60a', '#2ec27e', '#8338ec', '#fb8500', '#4cc9f0', '#f72585', '#ffb703', '#3a86ff', '#06d6a0', '#ef476f'],
+        rim: 'burst', rimColor: '#ffd60a', rimAccent: '#14213d', sep: '#14213d', sepWidth: 1.6, labelDark: '#14213d', fade: '#ffffff',
+        hubBg: '#e63946', hubRing: '#14213d', hubInk: '#ffffff', hubIcon: '🦸', pointerShape: 'bolt', pointer: '#ffd60a', pointer2: '#14213d' }
     }
   ];
 
@@ -692,7 +694,7 @@
   // ---------- State ----------
   function defaultState() {
     return {
-      areas: clone(SAMPLE_AREAS), classSize: 16, namesText: '', order: 'random', themeId: 'carnival',
+      areas: clone(SAMPLE_AREAS), classSize: 16, namesText: '', order: 'random', themeId: 'rainbow',
       title: 'Clean-Up Spinner', subtitle: "Tap SPIN to find out where you're helping today!", hub: 'Tidy!', timerMin: 3,
       picks: [], absent: [], nextName: null, sound: true, rotation: 0, timerEnd: 0, timerTotal: 0
     };
@@ -703,7 +705,7 @@
       if (!raw) return null;
       const s = Object.assign(defaultState(), JSON.parse(raw));
       if (!Array.isArray(s.areas) || s.areas.length < 2) return null;
-      if (!THEMES.some((t) => t.id === s.themeId)) s.themeId = 'carnival';
+      if (!THEMES.some((t) => t.id === s.themeId)) s.themeId = 'rainbow';
       if (!Array.isArray(s.picks)) s.picks = [];
       if (!Array.isArray(s.absent)) s.absent = [];
       s.rotation = Number(s.rotation) || 0;
@@ -759,36 +761,106 @@
   }
 
   // ---------- Sound ----------
-  let actx = null;
+  // Bell-like chimes, a wooden clack and a party popper, all synthesized, through a small generated room.
+  let actx = null, master = null, verb = null, noiseBuf = null;
   function audio() {
     if (!state.sound) return null;
     if (!actx) {
-      try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; }
+      try {
+        actx = new (window.AudioContext || window.webkitAudioContext)();
+        master = actx.createDynamicsCompressor();
+        master.threshold.value = -14;
+        master.ratio.value = 4;
+        master.connect(actx.destination);
+        const len = Math.floor(actx.sampleRate * 1.4);
+        const ir = actx.createBuffer(2, len, actx.sampleRate);
+        for (let ch = 0; ch < 2; ch++) {
+          const d = ir.getChannelData(ch);
+          for (let k = 0; k < len; k++) d[k] = (Math.random() * 2 - 1) * Math.pow(1 - k / len, 3);
+        }
+        verb = actx.createConvolver();
+        verb.buffer = ir;
+        const wet = actx.createGain();
+        wet.gain.value = 0.22;
+        verb.connect(wet).connect(master);
+        noiseBuf = actx.createBuffer(1, actx.sampleRate, actx.sampleRate);
+        const nd = noiseBuf.getChannelData(0);
+        for (let k = 0; k < nd.length; k++) nd[k] = Math.random() * 2 - 1;
+      } catch (e) { actx = null; return null; }
     }
     if (actx.state === 'suspended') actx.resume();
     return actx;
   }
-  function tone(freq, at, dur, type, gain) {
+  function env(g, t, peak, attack, end) {
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(peak, t + attack);
+    g.gain.exponentialRampToValueAtTime(0.0001, end);
+  }
+  function bell(freq, at, dur, gain) {
     const a = audio();
     if (!a) return;
-    const g0 = (gain || 0.15) * (theme().calm ? 0.5 : 1);
+    const t = a.currentTime + at;
+    const out = a.createGain();
+    out.gain.value = gain;
+    out.connect(master);
+    out.connect(verb);
+    [[1, 1, 1], [2, 0.35, 0.6], [3.01, 0.12, 0.35], [4.2, 0.06, 0.2]].forEach(([mult, amp, life]) => {
+      const o = a.createOscillator(), g = a.createGain();
+      o.type = 'sine';
+      o.frequency.value = freq * mult;
+      env(g, t, amp, 0.006, t + dur * life);
+      o.connect(g).connect(out);
+      o.start(t);
+      o.stop(t + dur * life + 0.05);
+    });
+  }
+  function noise(at, dur, type, freq, q, gain, freqTo) {
+    const a = audio();
+    if (!a) return;
+    const t = a.currentTime + at;
+    const src = a.createBufferSource();
+    src.buffer = noiseBuf;
+    const f = a.createBiquadFilter();
+    f.type = type;
+    f.Q.value = q;
+    f.frequency.setValueAtTime(freq, t);
+    if (freqTo) f.frequency.exponentialRampToValueAtTime(freqTo, t + dur);
+    const g = a.createGain();
+    env(g, t, gain, Math.min(0.01, dur / 4), t + dur);
+    src.connect(f).connect(g).connect(master);
+    src.start(t, Math.random() * 0.5);
+    src.stop(t + dur + 0.02);
+  }
+  function thump(freq, at, dur, gain) {
+    const a = audio();
+    if (!a) return;
     const t = a.currentTime + at;
     const o = a.createOscillator(), g = a.createGain();
-    o.type = theme().calm ? 'sine' : (type || 'sine');
+    o.type = 'sine';
     o.frequency.setValueAtTime(freq, t);
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(g0, t + 0.01);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    o.connect(g).connect(a.destination);
+    o.frequency.exponentialRampToValueAtTime(freq * 0.5, t + dur);
+    env(g, t, gain, 0.003, t + dur);
+    o.connect(g).connect(master);
     o.start(t);
-    o.stop(t + dur + 0.05);
+    o.stop(t + dur + 0.02);
   }
+  const SPARKLE = [2093, 2349, 2637, 3136, 3520];
   const sfx = {
-    tick: () => tone(1250, 0, 0.035, 'square', 0.04),
-    win: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, i * 0.1, 0.3, 'triangle', 0.18)),
-    start: () => { tone(660, 0, 0.14, 'triangle', 0.15); tone(990, 0.12, 0.2, 'triangle', 0.15); },
-    timesUp: () => [880, 660, 880, 660, 1046].forEach((f, i) => tone(f, i * 0.22, 0.5, 'sine', 0.2)),
-    undo: () => tone(392, 0, 0.15, 'triangle', 0.12)
+    whoosh: () => noise(0, 0.6, 'bandpass', 300, 1.2, 0.16, 2400),
+    tick: () => { noise(0, 0.028, 'bandpass', 2800 + Math.random() * 600, 2, 0.2); thump(240, 0, 0.05, 0.12); },
+    win: () => {
+      noise(0, 0.14, 'highpass', 1400, 0.7, 0.35);
+      thump(120, 0, 0.12, 0.3);
+      [1046, 1318, 1568, 2093].forEach((f, i) => bell(f, 0.05 + i * 0.085, 0.9, 0.2));
+      [523, 659, 784, 1046].forEach((f) => bell(f, 0.42, 1.9, 0.12));
+      for (let k = 0; k < 8; k++) bell(SPARKLE[Math.floor(Math.random() * SPARKLE.length)], 0.5 + k * 0.07, 0.5, 0.05);
+    },
+    start: () => { bell(784, 0, 0.8, 0.2); bell(1175, 0.12, 1, 0.2); },
+    timesUp: () => {
+      [1046, 784, 1046, 1318, 1568].forEach((f, i) => bell(f, i * 0.22, 1.2, 0.22));
+      [523, 784, 1046].forEach((f) => bell(f, 1.2, 2, 0.14));
+    },
+    undo: () => { bell(659, 0, 0.9, 0.15); bell(523, 0.1, 0.9, 0.15); }
   };
 
   // ---------- Pointer shapes (viewBox 48 x 60, tip at the bottom) ----------
@@ -812,14 +884,14 @@
         body = `<path d="M15 3H33V28H43L24 57L5 28H15Z" fill="${c}" stroke="${c2}" stroke-width="2.5" stroke-linejoin="round"/>`; break;
       case 'drop':
         body = `<path d="M24 58C15 46 8 35 8 24A16 16 0 0 1 40 24C40 35 33 46 24 58Z" fill="${c}" stroke="#fff" stroke-width="2.5"/><ellipse cx="17" cy="21" rx="3.5" ry="6" fill="#fff" opacity=".55"/>`; break;
-      case 'leaf':
-        body = `<path d="M24 58C8 42 7 20 24 2C41 20 40 42 24 58Z" fill="${c}" stroke="#fff" stroke-width="2"/><path d="M24 8V52M24 22L16 15M24 32L32 25M24 41L17 35" stroke="${c2}" stroke-width="1.8" stroke-linecap="round" fill="none"/>`; break;
-      case 'star':
-        body = `<path d="M16 25H32L24 58Z" fill="${c}"/><path d="${starPath(24, 18, 17, 7.5)}" fill="${c}" stroke="${c2}" stroke-width="2" stroke-linejoin="round"/>`; break;
-      case 'pencil':
-        body = `<rect x="14" y="1" width="20" height="9" rx="3.5" fill="#f48fb1"/><rect x="14" y="9" width="20" height="5" fill="#b0bec5"/><rect x="14" y="14" width="20" height="24" fill="${c}"/><path d="M20.7 14V38M27.3 14V38" stroke="rgba(0,0,0,.18)" stroke-width="1.5"/><path d="M14 38H34L24 58Z" fill="#f3d2a2"/><path d="M20.3 51H27.7L24 58Z" fill="#262626"/>`; break;
-      case 'tab':
-        body = `<path d="M10 4H38Q42 4 41 8L27 52Q24 58 21 52L7 8Q6 4 10 4Z" fill="${c}"/>`; break;
+      case 'donut':
+        body = `<path d="M15 27H33L24 58Z" fill="${c}" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><circle cx="24" cy="18" r="16" fill="${c2}" stroke="#fff" stroke-width="2"/><path d="M24 4.5C31.5 4.5 37.5 10.5 37.5 18C35.5 21 33 19 31 22C28 25 26 21 22.5 24C19 27 17 22 13.5 23C11 21 10.5 19.5 10.5 18C10.5 10.5 16.5 4.5 24 4.5Z" fill="${c}"/><circle cx="24" cy="18" r="5" fill="#fff"/><path d="M17 11L19 9.5M29 9L31 11M33 16L34 18.5M14 16.5L15.5 14.5M27 25L29 24" stroke="#fff6a8" stroke-width="1.8" stroke-linecap="round"/>`; break;
+      case 'cone':
+        body = `<rect x="3" y="1" width="42" height="7" rx="2.5" fill="${c2}"/><path d="M8 8H40L26.3 54Q24 59 21.7 54Z" fill="${c}"/><path d="M12.4 20H35.6L33.4 27H14.6Z" fill="#fff"/><path d="M16.8 34H31.2L29.3 40H18.7Z" fill="#fff"/>`; break;
+      case 'smiley':
+        body = `<path d="M16 28H32L24 58Z" fill="${c}" stroke="${c2}" stroke-width="2.2" stroke-linejoin="round"/><circle cx="24" cy="18" r="16" fill="${c}" stroke="${c2}" stroke-width="2.5"/><ellipse cx="18.5" cy="14.5" rx="1.9" ry="3" fill="${c2}"/><ellipse cx="29.5" cy="14.5" rx="1.9" ry="3" fill="${c2}"/><path d="M16 21Q24 29.5 32 21" stroke="${c2}" stroke-width="2.6" stroke-linecap="round" fill="none"/>`; break;
+      case 'bolt':
+        body = `<path d="M16 1L10 30L21 30L24 59L38 22L27 22L32 1Z" fill="${c}" stroke="${c2}" stroke-width="2.6" stroke-linejoin="round"/>`; break;
       default:
         body = `<path d="M6 6Q24 -1 42 6Q44 8 43 11L26.5 55Q24 60 21.5 55L5 11Q4 8 6 6Z" fill="${c}"/>`;
     }
@@ -834,7 +906,8 @@
   }
 
   // ---------- Wheel drawing (shared by the big wheel and the design previews) ----------
-  const RIM_WIDTH = { lights: .042, petals: .08, thin: .03, frame: .065, waves: .062, leaves: .072, stars: .05, gumdrops: .058, zigzag: .062, calm: .03 };
+  const RIM_WIDTH = { lights: .042, petals: .08, thin: .03, frame: .065, waves: .062, stars: .05, sprinkles: .085, hazard: .07, groovy: .085, burst: .09 };
+  const hash = (k) => { const x = Math.sin(k * 12.9898) * 43758.5453; return x - Math.floor(x); };
 
   function canvasStar(ctx, x, y, R, r) {
     ctx.beginPath();
@@ -908,23 +981,6 @@
         ctx.globalAlpha = 1;
         break;
       }
-      case 'leaves': {
-        disk(r + rimW * 0.4, w.rimColor);
-        const count = Math.max(22, n * 3);
-        for (let k = 0; k < count; k++) {
-          ctx.save();
-          ctx.translate(c, c);
-          ctx.rotate(k * TAU / count);
-          ctx.translate(0, -(r + rimW * 0.5));
-          ctx.rotate(0.55);
-          ctx.beginPath(); ctx.ellipse(0, 0, rimW * 0.27, rimW * 0.52, 0, 0, TAU);
-          ctx.fillStyle = k % 2 ? w.rimAccent : w.rimAccent2; ctx.fill();
-          ctx.strokeStyle = 'rgba(255,255,255,.45)'; ctx.lineWidth = 1;
-          ctx.beginPath(); ctx.moveTo(0, -rimW * 0.42); ctx.lineTo(0, rimW * 0.42); ctx.stroke();
-          ctx.restore();
-        }
-        break;
-      }
       case 'stars': {
         disk(outer, w.rimColor);
         ctx.fillStyle = w.rimAccent;
@@ -940,36 +996,84 @@
         }
         break;
       }
-      case 'gumdrops': {
+      case 'sprinkles': {
         disk(outer, w.rimColor);
-        ctx.lineWidth = 2; ctx.strokeStyle = w.rimLine;
-        ctx.beginPath(); ctx.arc(c, c, outer - 1, 0, TAU); ctx.stroke();
-        const count = Math.max(18, n * 2);
+        // Frosting with a gently dripping outer edge.
+        ctx.beginPath();
+        for (let s = 0; s <= 720; s++) {
+          const a = s / 720 * TAU;
+          const drip = (1 + Math.sin(9 * a + Math.sin(3 * a) * 1.5)) / 2;
+          const [x, y] = at(a, outer - rimW * (0.26 + 0.2 * drip));
+          ctx[s ? 'lineTo' : 'moveTo'](x, y);
+        }
+        ctx.closePath(); ctx.fillStyle = w.rimAccent; ctx.fill();
+        const cols = ['#ffffff', '#ffd54f', '#4fc3f7', '#81c784', '#ba68c8', '#ff7043'];
+        ctx.lineCap = 'round';
+        ctx.lineWidth = Math.max(1.5, rimW * 0.08);
+        const count = 44;
         for (let k = 0; k < count; k++) {
-          const [x, y] = at(k * TAU / count - Math.PI / 2, r + rimW / 2);
-          ctx.beginPath(); ctx.arc(x, y, rimW * 0.3, 0, TAU); ctx.fillStyle = segColor(t, k); ctx.fill();
-          ctx.beginPath(); ctx.arc(x - rimW * 0.09, y - rimW * 0.09, rimW * 0.08, 0, TAU); ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.fill();
+          const a = k * TAU / count + (hash(k) - 0.5) * 0.1;
+          const [x, y] = at(a, r + rimW * (0.12 + 0.36 * hash(k + 7)));
+          const rot = hash(k + 3) * Math.PI, len = rimW * 0.11;
+          ctx.strokeStyle = cols[k % cols.length];
+          ctx.beginPath();
+          ctx.moveTo(x - Math.cos(rot) * len, y - Math.sin(rot) * len);
+          ctx.lineTo(x + Math.cos(rot) * len, y + Math.sin(rot) * len);
+          ctx.stroke();
         }
         break;
       }
-      case 'zigzag': {
+      case 'hazard': {
         disk(outer, w.rimColor);
-        const count = Math.max(28, n * 4);
+        const count = 40, step = TAU / count, skew = step * 0.45;
+        ctx.fillStyle = w.rimAccent;
         for (let k = 0; k < count; k++) {
-          const a0 = k * TAU / count - Math.PI / 2, a1 = a0 + TAU / count;
+          const a0 = k * step;
           ctx.beginPath();
           ctx.moveTo(...at(a0, r));
-          ctx.lineTo(...at((a0 + a1) / 2, outer - rimW * 0.14));
-          ctx.lineTo(...at(a1, r));
+          ctx.lineTo(...at(a0 + step / 2, r));
+          ctx.lineTo(...at(a0 + step / 2 + skew, outer));
+          ctx.lineTo(...at(a0 + skew, outer));
           ctx.closePath();
-          ctx.fillStyle = segColor(t, k); ctx.fill();
+          ctx.fill();
+        }
+        ctx.strokeStyle = w.rimAccent; ctx.lineWidth = Math.max(2, S * 0.006);
+        ctx.beginPath(); ctx.arc(c, c, outer - ctx.lineWidth / 2, 0, TAU); ctx.stroke();
+        ctx.beginPath(); ctx.arc(c, c, r + 1, 0, TAU); ctx.stroke();
+        break;
+      }
+      case 'groovy': {
+        disk(outer, w.rimColor);
+        disk(outer - rimW / 3, w.rimAccent);
+        disk(outer - rimW * 2 / 3, w.rimAccent2);
+        const count = Math.max(12, n * 2), pr = rimW * 0.17;
+        for (let k = 0; k < count; k++) {
+          const [x, y] = at(k * TAU / count - Math.PI / 2 + TAU / count / 2, r + rimW * 0.5);
+          ctx.fillStyle = '#ffffff';
+          for (let q = 0; q < 6; q++) {
+            const pa = q * TAU / 6;
+            ctx.beginPath();
+            ctx.ellipse(x + Math.cos(pa) * pr, y + Math.sin(pa) * pr, pr * 0.75, pr * 0.42, pa, 0, TAU);
+            ctx.fill();
+          }
+          ctx.beginPath(); ctx.arc(x, y, pr * 0.55, 0, TAU); ctx.fillStyle = '#ffd23f'; ctx.fill();
+          ctx.lineWidth = 1; ctx.strokeStyle = '#5a2d0c'; ctx.stroke();
         }
         break;
       }
-      case 'calm': {
-        disk(outer, w.rimColor);
-        ctx.lineWidth = 1.5; ctx.strokeStyle = w.rimAccent;
-        ctx.beginPath(); ctx.arc(c, c, r + rimW * 0.5, 0, TAU); ctx.stroke();
+      case 'burst': {
+        const spikes = 36;
+        ctx.beginPath();
+        for (let k = 0; k <= spikes * 2; k++) {
+          const a = k * Math.PI / spikes - Math.PI / 2;
+          ctx[k ? 'lineTo' : 'moveTo'](...at(a, k % 2 ? outer - rimW * 0.42 : outer - 1.5));
+        }
+        ctx.closePath();
+        ctx.fillStyle = w.rimColor; ctx.fill();
+        ctx.lineJoin = 'round'; ctx.lineWidth = Math.max(2, S * 0.006); ctx.strokeStyle = w.rimAccent; ctx.stroke();
+        disk(r + rimW * 0.32, w.rimAccent);
+        ctx.strokeStyle = '#ffffff'; ctx.lineWidth = Math.max(1.5, S * 0.004);
+        ctx.beginPath(); ctx.arc(c, c, r + rimW * 0.16, 0, TAU); ctx.stroke();
         break;
       }
       default: { // lights
@@ -985,7 +1089,7 @@
 
   function fitText(ctx, t, text, maxW, startSize, minSize) {
     let fs = startSize;
-    const set = () => { ctx.font = `${t.weight} ${fs}px ${FONTS[t.font]}`; };
+    const set = () => { ctx.font = `${t.labelWeight || t.weight} ${fs}px ${FONTS[t.labelFont || t.font]}`; };
     set();
     while (ctx.measureText(text).width > maxW && fs > minSize) { fs *= 0.93; set(); }
     let out = text;
@@ -1030,7 +1134,7 @@
 
     ctx.save();
     ctx.strokeStyle = w.sep;
-    ctx.lineWidth = Math.max(1.5, S * 0.007);
+    ctx.lineWidth = Math.max(1.5, S * 0.007 * (w.sepWidth || 1));
     ctx.lineCap = 'round';
     if (w.sepDash) ctx.setLineDash([S * 0.02, S * 0.016]);
     areas.forEach((_, i) => {
@@ -1054,7 +1158,7 @@
 
       const halfArc = Math.min(seg, Math.PI) / 2;
       const chord = 2 * r * 0.84 * Math.sin(halfArc);
-      const label = fitText(ctx, t, a.name, Math.min(chord * 0.86, r * 0.95), r * (t.font === 'patrick' ? 0.135 : 0.118), r * 0.06);
+      const label = fitText(ctx, t, a.name, Math.min(chord * 0.86, r * 0.95), r * ({ patrick: 0.135, bangers: 0.14 }[t.labelFont || t.font] || 0.118), r * 0.06);
       ctx.fillStyle = ink;
       ctx.fillText(label, 0, -r * 0.84);
       if (full) {
@@ -1203,12 +1307,13 @@
     const landAt = idx * seg + seg * (0.18 + Math.random() * 0.64);
     const start = state.rotation;
     const quick = reduceMotion();
-    const turns = quick ? 1 : t.calm ? 3 : 5 + Math.floor(Math.random() * 2);
+    const turns = quick ? 1 : 5 + Math.floor(Math.random() * 2);
     const target = start + turns * TAU + mod(mod(-landAt, TAU) - mod(start, TAU), TAU);
-    const duration = quick ? 900 : t.calm ? 2800 : 4300 + Math.random() * 900;
+    const duration = quick ? 900 : 4300 + Math.random() * 900;
 
     spinning = true;
     renderMain();
+    sfx.whoosh();
 
     let lastIdx = Math.floor(mod(-start, TAU) / seg);
     const ptr = els.pointer;
@@ -1295,11 +1400,10 @@
     everyone.textContent = openSpots() === 0 ? 'Every spot is filled. Let\'s get tidy!' : 'Every child has a job. Let\'s get tidy!';
     $('#result-timer').hidden = !done || timerRunning();
     $('#result-timer').textContent = `Start the ${state.timerMin}-minute timer`;
-    $('#result-next').textContent = done ? 'Done' : 'Next helper';
     sfx.win();
     announce(`${child ? child + ', ' : ''}${a.name}. ${a.desc || ''}`);
     openOverlay(resultEl);
-    if (!t.calm) confetti(t, i);
+    confetti(t, i);
   }
   function finishResult() {
     closeOverlay(resultEl);
@@ -1313,6 +1417,7 @@
   $('#result-timer').addEventListener('click', () => { finishResult(); startTimer(); });
 
   // ---------- Confetti ----------
+  // A burst from the wheel plus two cannons from the bottom corners, in each design's own shapes and colors.
   const confCanvas = $('#confetti');
   const confCtx = confCanvas.getContext('2d');
   let confParts = [];
@@ -1324,31 +1429,68 @@
     confCanvas.width = W * dpr;
     confCanvas.height = H * dpr;
     confCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const colors = [segColor(t, i), ...t.wheel.segs.slice(0, 5), '#ffffff'];
-    for (let k = 0; k < 150; k++) {
-      const a = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 1.1;
-      const sp = 7 + Math.random() * 10;
-      confParts.push({
-        x: W / 2, y: H * 0.42, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp,
-        w: 6 + Math.random() * 6, h: 8 + Math.random() * 8, rot: Math.random() * TAU, vr: (Math.random() - 0.5) * 0.4,
-        color: colors[k % colors.length], life: 0
-      });
-    }
+    const shapes = t.confetti || ['rect', 'circle', 'streamer'];
+    const colors = [segColor(t, i), segColor(t, i), ...t.wheel.segs.slice(0, 7), '#ffffff'];
+    const wr = $('#wheel-wrap').getBoundingClientRect();
+    const add = (x, y, dir, spread, vMin, vMax, count) => {
+      for (let k = 0; k < count; k++) {
+        const a = dir + (Math.random() - 0.5) * spread;
+        const v = vMin + Math.random() * (vMax - vMin);
+        confParts.push({
+          x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, size: 7 + Math.random() * 7,
+          shape: shapes[Math.floor(Math.random() * shapes.length)], color: colors[Math.floor(Math.random() * colors.length)],
+          rot: Math.random() * TAU, vr: (Math.random() - 0.5) * 0.3, phase: Math.random() * TAU, life: 0
+        });
+      }
+    };
+    add(wr.left + wr.width / 2, wr.top + wr.height / 2, -Math.PI / 2, TAU, 5, 15, 110);
+    add(0, H, -Math.PI / 3, 0.55, 15, 25, 85);
+    add(W, H, -2 * Math.PI / 3, 0.55, 15, 25, 85);
     if (!confRunning) { confRunning = true; requestAnimationFrame(confFrame); }
+  }
+  function drawPiece(p) {
+    const ctx = confCtx, s = p.size;
+    ctx.fillStyle = p.color;
+    ctx.strokeStyle = p.color;
+    switch (p.shape) {
+      case 'circle':
+        ctx.beginPath(); ctx.arc(0, 0, s * 0.36, 0, TAU); ctx.fill(); break;
+      case 'star':
+        canvasStar(ctx, 0, 0, s * 0.6, s * 0.26); break;
+      case 'sprinkle':
+        ctx.lineCap = 'round'; ctx.lineWidth = s * 0.3;
+        ctx.beginPath(); ctx.moveTo(-s * 0.45, 0); ctx.lineTo(s * 0.45, 0); ctx.stroke(); break;
+      case 'streamer': {
+        const wave = Math.sin(p.life * 0.2 + p.phase) * s * 0.6;
+        ctx.lineCap = 'round'; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.moveTo(-s, 0);
+        ctx.quadraticCurveTo(-s / 2, -wave, 0, 0);
+        ctx.quadraticCurveTo(s / 2, wave, s, 0);
+        ctx.stroke(); break;
+      }
+      default:
+        ctx.fillRect(-s / 2, -s * 0.3, s, s * 0.6 * Math.abs(Math.cos(p.rot * 1.3)) + 1);
+    }
   }
   function confFrame() {
     const W = window.innerWidth, H = window.innerHeight;
     confCtx.clearRect(0, 0, W, H);
-    confParts = confParts.filter((p) => p.y < H + 40 && p.life < 240);
+    confParts = confParts.filter((p) => p.y < H + 40 && p.x > -60 && p.x < W + 60 && p.life < 420);
     for (const p of confParts) {
       p.life++;
-      p.vy += 0.28; p.vx *= 0.985; p.vy *= 0.985;
+      p.vy += 0.32;
+      p.vx *= 0.988;
+      p.vy *= 0.988;
+      if (p.vy > 0) {
+        // Flutter down instead of dropping like a stone.
+        p.vx = p.vx * 0.96 + Math.sin(p.life * 0.12 + p.phase) * 0.35;
+        p.vy = Math.min(p.vy, p.shape === 'circle' || p.shape === 'sprinkle' ? 5 : 3.2);
+      }
       p.x += p.vx; p.y += p.vy; p.rot += p.vr;
       confCtx.save();
       confCtx.translate(p.x, p.y);
       confCtx.rotate(p.rot);
-      confCtx.fillStyle = p.color;
-      confCtx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h * Math.abs(Math.cos(p.rot * 1.7)) + 1);
+      drawPiece(p);
       confCtx.restore();
     }
     if (confParts.length) requestAnimationFrame(confFrame);
@@ -1803,7 +1945,8 @@
   if (document.fonts && document.fonts.load) {
     Promise.all([
       document.fonts.load(`700 20px "Fredoka"`), document.fonts.load(`600 20px "Fredoka"`),
-      document.fonts.load(`400 20px "Patrick Hand"`), document.fonts.load(`800 20px "Nunito"`)
+      document.fonts.load(`400 20px "Patrick Hand"`), document.fonts.load(`800 20px "Nunito"`),
+      document.fonts.load(`400 20px "Bangers"`), document.fonts.load(`400 20px "Shrikhand"`)
     ]).then(() => {
       drawMain();
       if (!setupEl.hidden && currentTab === 'wheels') drawDesignPreviews();
