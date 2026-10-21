@@ -1,0 +1,18 @@
+{
+  "id": "./",
+  "name": "Clean-Up Spinner",
+  "short_name": "Clean-Up",
+  "description": "A classroom clean-up spinner with 10 wheel designs, a class list and a tidy-up timer.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#fdf0e1",
+  "theme_color": "#fdf0e1",
+  "categories": ["education", "kids", "productivity"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
