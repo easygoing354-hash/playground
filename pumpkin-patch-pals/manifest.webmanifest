@@ -1,0 +1,18 @@
+{
+  "id": "./",
+  "name": "Pumpkin Patch Pals",
+  "short_name": "Pumpkin Pals",
+  "description": "Fall and Halloween classroom games for PreK-2: decorate a pumpkin, counting, ten frames, letters, sounds, rhyming, patterns, life cycle, memory and feelings.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#3b2f63",
+  "theme_color": "#3b2f63",
+  "categories": ["education", "kids", "games"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
