@@ -3,6 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#fdf0e1">
+<meta name="description" content="A classroom clean-up spinner with 10 wheel designs, a class list and a tidy-up timer.">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Clean-Up">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Clean-Up Spinner</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -217,6 +226,8 @@
   .result .job { margin: 2px 0 0; font-weight: 800; font-size: 1.12rem; max-width: 30ch; }
   .result .detail { margin: 0; font-weight: 700; color: var(--ink-soft); }
   .result .everyone { margin: 4px 0 0; font-weight: 800; color: var(--ok); }
+  .install-steps { text-align: left; margin: 6px 0 0; padding-left: 1.4em; display: grid; gap: 10px; font-weight: 700; max-width: 34ch; }
+  .share-glyph { display: inline-grid; width: 1.2em; height: 1.2em; vertical-align: -0.2em; color: var(--accent); }
   .result .buttons { display: grid; gap: 10px; width: 100%; margin-top: 12px; }
   .result .buttons .pill { width: 100%; min-height: 56px; font-size: 1.15rem; }
 
@@ -377,6 +388,7 @@
       <button class="pill" id="design-btn" type="button">Change wheel</button>
       <button class="pill strong" id="setup-btn" type="button">Teacher setup</button>
       <button class="pill" id="full-btn" type="button" hidden>Full screen</button>
+      <button class="pill" id="install-btn" type="button" hidden>Install app</button>
     </div>
   </header>
 
@@ -445,6 +457,22 @@
     <p class="job">Freeze! Look at your spot. Is it tidy?</p>
     <div class="buttons">
       <button class="pill accent" id="timesup-ok" type="button" data-autofocus>All tidy</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add to Home Screen steps (iPad and iPhone) -->
+<div class="overlay" id="install-overlay" hidden>
+  <div class="modal result" role="dialog" aria-modal="true" aria-labelledby="install-title">
+    <div class="big-icon" style="background:#fdf0e1"><img id="install-icon" alt="" width="84" height="84" style="border-radius:20px"></div>
+    <p class="station" id="install-title">Put the spinner on your home screen</p>
+    <ol class="install-steps">
+      <li>Tap the <b>Share</b> button <span class="share-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg></span> in Safari's toolbar.</li>
+      <li>Scroll down and tap <b>Add to Home Screen</b>.</li>
+      <li>Tap <b>Add</b>. The spinner opens full screen from its new icon, even without Wi-Fi.</li>
+    </ol>
+    <div class="buttons">
+      <button class="pill accent" id="install-ok" type="button" data-autofocus>Got it</button>
     </div>
   </div>
 </div>
@@ -1395,6 +1423,8 @@
     const root = document.documentElement.style;
     Object.entries(vars).forEach(([k, v]) => root.setProperty(k, v));
     root.colorScheme = t.dark ? 'dark' : 'light';
+    const themeMeta = document.querySelector('meta[name="theme-color"]');
+    if (themeMeta) themeMeta.content = p.bg;
     els.pointer.innerHTML = pointerSVG(t);
   }
 
@@ -1794,6 +1824,35 @@
     });
   }
 
+  // ---------- Install as an app ----------
+  (() => {
+    const btn = $('#install-btn');
+    const standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+    if (standalone) { els.full.hidden = true; return; }
+    if (!document.querySelector('link[rel="manifest"]')) return;
+    const isApple = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    let deferred = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferred = e;
+      btn.hidden = false;
+    });
+    window.addEventListener('appinstalled', () => { btn.hidden = true; announce('Clean-Up Spinner is installed.'); });
+    if (isApple) btn.hidden = false;
+    btn.addEventListener('click', async () => {
+      if (deferred) {
+        deferred.prompt();
+        const choice = await deferred.userChoice.catch(() => null);
+        if (choice && choice.outcome === 'accepted') btn.hidden = true;
+        deferred = null;
+      } else {
+        $('#install-icon').src = 'apple-touch-icon.png';
+        openOverlay($('#install-overlay'));
+      }
+    });
+    $('#install-ok').addEventListener('click', () => closeOverlay($('#install-overlay')));
+  })();
+
   // ---------- Teacher setup ----------
   const setupEl = $('#setup-overlay');
   const areaList = $('#area-list');
@@ -2131,6 +2190,11 @@
   if (timerRunning()) runTimer();
   else if (state.timerEnd) { state.timerEnd = 0; save(); }
 })();
+</script>
+<script>
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+    window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+  }
 </script>
 </body>
 </html>
