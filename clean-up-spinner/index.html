@@ -977,8 +977,8 @@
       }
     },
     construction: { // ratchet, drill, backup beeps, hammer and brass
-      whoosh: () => voice(110, 0, 0.8, 0.09, { type: 'sawtooth', freqTo: 520, filter: 700, filterTo: 2500, q: 4, vibrato: 30, vibratoDepth: 0.03 }),
-      tick: () => { noise(0, 0.02, 'bandpass', 3500, 3, 0.2); voice(950, 0, 0.025, 0.05, { type: 'square' }); },
+      whoosh: () => { noise(0, 0.5, 'highpass', 3000, 0.7, 0.1, 6000); for (let k = 0; k < 6; k++) noise(k * 0.05, 0.015, 'bandpass', 4200, 2.5, 0.15); },
+      tick: () => { noise(0, 0.015, 'bandpass', 4200, 2.5, 0.2); bell(2960 + Math.random() * 200, 0, 0.08, 0.02); },
       win: () => {
         [0, 0.22].forEach((at) => voice(1050, at, 0.15, 0.06, { type: 'square', hold: 0.1, filter: 2500 }));
         [0.5, 0.62].forEach((at) => { bell(740, at, 0.5, 0.14); bell(1109, at, 0.4, 0.08); noise(at, 0.05, 'bandpass', 3000, 2, 0.2); });
@@ -997,8 +997,8 @@
       }
     },
     heroes: { // punches, a cape swoosh and a fanfare
-      whoosh: () => noise(0, 0.45, 'bandpass', 500, 1.5, 0.2, 3500),
-      tick: () => { noise(0, 0.035, 'lowpass', 1500, 0.7, 0.25); thump(160, 0, 0.06, 0.18); },
+      whoosh: () => { noise(0, 0.45, 'bandpass', 900, 1.5, 0.2, 4500); voice(520, 0, 0.6, 0.05, { type: 'triangle', freqTo: 1560, attack: 0.05, wet: true }); },
+      tick: () => noise(0, 0.04, 'bandpass', 2200, 1.5, 0.22, 5000),
       win: () => {
         [392, 523, 659, 784].forEach((f, i) => brass(f, i * 0.11, 0.18, 0.1));
         [523, 659, 784, 1047].forEach((f) => brass(f, 0.5, 1.4, 0.07));
