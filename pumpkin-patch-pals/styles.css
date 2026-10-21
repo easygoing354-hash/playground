@@ -1,6 +1,3 @@
-@font-face { font-family: "Sniglet"; src: url("fonts/sniglet-extrabold.woff2") format("woff2"); font-weight: 800; font-display: swap; }
-@font-face { font-family: "Andika"; src: url("fonts/andika.woff2") format("woff2"); font-weight: 400; font-display: swap; }
-@font-face { font-family: "Andika"; src: url("fonts/andika-bold.woff2") format("woff2"); font-weight: 700; font-display: swap; }
 
 :root {
   --night: #3b2f63;
