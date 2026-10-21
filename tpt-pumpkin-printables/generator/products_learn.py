@@ -69,12 +69,12 @@ def number_cards(doc, title, sub, nums, cols, rows, art_fn=None):
 
 def seeds_card(c, R, n, cx, cy, size):
     """n pumpkin seeds arranged in rows of up to 5."""
-    rows = [5] * (n // 5) + ([n % 5] if n % 5 else [])
-    s = size * 0.3
+    rows = [2] * (n // 2) + ([1] if n % 2 else [])
+    s = size * 0.42
     for r, cnt in enumerate(rows):
-        yy = cy + (len(rows) - 1) * s * 0.55 - r * s * 1.1
+        yy = cy + (len(rows) - 1) * s * 0.45 - r * s * 0.9
         for i in range(cnt):
-            xx = cx + (i - (cnt - 1) / 2) * s * 0.62
+            xx = cx + (i - (cnt - 1) / 2) * s * 0.7
             R.draw(A.pumpkin_seed(), xx, yy, s)
 
 
@@ -170,7 +170,6 @@ def _cycle_page(c, R, answers=False):
     arrow(c, xs[2] - 6, my2, xs[1] + bw + 6, my2)
     arrow(c, xs[1] - 6, my2, xs[0] + bw + 6, my2)
     arrow(c, xs[0] + bw / 2, rows_y[1] + 6, xs[0] + bw / 2, rows_y[0] - bh - 44)
-    R.draw(A.pumpkin(), PAGE_W / 2, rows_y[1] - bh - 100, 110)
     L.text(c, "Word bank:  seed  •  sprout  •  vine  •  flower  •  green pumpkin  •  orange pumpkin",
            PAGE_W / 2, 50, 12, "Body")
 
@@ -305,7 +304,7 @@ def _scare_build(doc):
     c.rect(M, 170, PAGE_W - 2 * M, 12, stroke=1, fill=0)
     c.restoreState()
     doc.R.draw(A.sunflower(), PAGE_W - M - 50, y - 50, 80)
-    doc.R.draw(A.hay_bale(), M + 70, 120, 110)
+    doc.R.draw(A.hay_bale(), PAGE_W - M - 80, 105, 100)
     for x in range(int(M) + 30, int(PAGE_W - M), 60):
         c.line(x, 80, x + 10, 100)
     writing_page(doc, "My Scarecrow", "What is your scarecrow's name?", "My scarecrow's name is")
@@ -339,7 +338,7 @@ def _name_build(doc):
     pack_pages(doc, "Pumpkin Name Vine: Pumpkins", "Write one letter of your name on each pumpkin. Colour and cut.",
                pcs, double=False)
     pack_pages(doc, "Pumpkin Name Vine: Vines", "Cut out the vines. Glue the ends together for long names.",
-               [(A.vine_strip(), 520), (A.vine_strip(), 520), (A.vine_strip(), 520), (A.vine_strip(), 520)],
+               [(A.vine_strip(), 520), (A.vine_strip(), 520), (A.vine_strip(), 520)],
                double=False)
 
 
@@ -373,7 +372,7 @@ def _seed_build(doc):
     _seed_page(c, doc.R)
     nums = [3, 7, 1, 10, 5, 8, 2, 6, 9, 4]
     number_cards(doc, "Seed Cards", "Count the seeds. Cut out each card.", nums, 5, 2,
-                 art_fn=lambda c, R, n, cx, cy, s: seeds_card(c, R, n, cx, cy, s * 0.95))
+                 art_fn=lambda c, R, n, cx, cy, s: seeds_card(c, R, n, cx, cy, 120))
 
 
 add(28, "Pumpkin Seed Counting 1-10", _seed_build, example_page(_seed_page),
@@ -495,7 +494,8 @@ def _abc_build(doc):
         _abc_page(c, doc.R, part)
     low = [chr(97 + i) for i in range(26)]
     random.Random(31).shuffle(low)
-    kit.card_grid(doc, "Lowercase Letter Cards", "Cut apart the letter cards.", [None] * 30, 6, 5,
+    kit.card_grid(doc, "Lowercase Letter Cards", "Cut apart the letter cards.",
+                  [None] * 26 + [A.mini_pumpkin() for _ in range(4)], 6, 5,
                   labels=low + ["", "", "", ""], label_size=30)
 
 
@@ -685,12 +685,12 @@ def _size_page(c, R):
     for i, (w, s) in enumerate([("small", 40), ("medium", 62), ("big", 86)]):
         x = M + i * cw
         box(c, x + 6, 50, cw - 12, y - 60, 14)
-        R.draw(A.mini_pumpkin(), x + cw / 2, y - 40 - s / 2, s)
-        L.text(c, w, x + cw / 2, y - 110, 24, "Head")
+        R.draw(A.mini_pumpkin(), x + cw / 2, y - 106 + s / 2, s)
+        L.text(c, w, x + cw / 2, y - 140, 24, "Head")
         c.saveState()
         L.ink(c)
         c.setLineWidth(1)
-        c.line(x + 20, y - 124, x + cw - 20, y - 124)
+        c.line(x + 20, y - 154, x + cw - 20, y - 154)
         c.restoreState()
 
 
@@ -953,7 +953,7 @@ def _math_page(c, R, probs, op, answers=False):
             _group(c, R, a, M + 10, cy + 10, 280, cross=b)
             eq = f"{a} - {b} ="
             ans = a - b
-        L.text(c, eq, M + 400, cy - 9, 26, "Head", "right")
+        L.text(c, eq, M + 430, cy - 9, 26, "Head", "right")
         L.glue_box(c, PAGE_W - M - 110, cy - rh / 2 + 10, 90, rh - 20, None)
         if answers:
             L.text(c, str(ans), PAGE_W - M - 65, cy - 10, 28, "Head", color=L.PURPLE)
@@ -995,8 +995,8 @@ add(41, "Pumpkin Patch Subtraction", _math_build(SUB, "-"),
 def _topper_example(c, R, x, y, size):
     w, h = size * 0.62, size * 0.62
     c.saveState()
-    c.setFillColorRGB(1, 1, 1)
     L.ink(c)
+    c.setFillColorRGB(1, 1, 1)
     c.setLineWidth(1)
     c.rect(x - w / 2, y - size / 2, w, h, stroke=1, fill=1)
     for i in range(5):
