@@ -1,0 +1,2136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Clean-Up Spinner</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800;900&family=Patrick+Hand&family=Bangers&family=Shrikhand&display=swap">
+<style>
+  /* Layout: phones stack title, wheel, SPIN and crew; iPad landscape and computers put the wheel left and the crew right.
+     Each of the 10 wheel designs rewrites these tokens from script, so the whole room-facing screen changes with the design. */
+  :root {
+    --bg: #fdf0e1;
+    --surface: #fffaf2;
+    --raised: #ffffff;
+    --ink: #2a2350;
+    --ink-soft: #6a6386;
+    --line: #ecdcc8;
+    --accent: #f25f5c;
+    --accent-deep: #c8413f;
+    --on-accent: #ffffff;
+    --strong: #2a2350;
+    --on-strong: #ffffff;
+    --ok: #1f8a5a;
+    --warn: #b4561a;
+    --flash: #fde3c8;
+    --shadow: rgba(42, 35, 80, .18);
+    --scrim: rgba(30, 24, 60, .45);
+    --blob-a: #fcd56a;
+    --blob-b: #f8b9cb;
+    --blob-c: #a6dfd2;
+    --blob-op: .55;
+    --hub-bg: #ffffff;
+    --hub-ring: #2a2350;
+    --hub-ink: #2a2350;
+    --display: "Fredoka", "Arial Rounded MT Bold", ui-rounded, system-ui, sans-serif;
+    --display-weight: 700;
+    --body: "Nunito", ui-rounded, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { min-height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.45;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 20px 96px;
+    overflow-x: hidden;
+    transition: background-color .3s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulation; }
+  button:disabled { cursor: not-allowed; }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+  .blob { position: fixed; border-radius: 50%; z-index: 0; pointer-events: none; opacity: var(--blob-op); transition: background-color .3s ease; }
+  .blob.a { width: 280px; height: 280px; background: var(--blob-a); left: -130px; top: 130px; }
+  .blob.b { width: 220px; height: 220px; background: var(--blob-b); right: -80px; top: -50px; }
+  .blob.c { width: 320px; height: 320px; background: var(--blob-c); right: -120px; bottom: -100px; }
+
+  main { position: relative; z-index: 1; max-width: 1240px; margin: 0 auto; display: grid; gap: 22px; }
+
+  header { display: grid; gap: 10px; }
+  h1 {
+    font-family: var(--display); font-weight: var(--display-weight); margin: 0;
+    font-size: clamp(2.1rem, 7vw, 3.2rem); line-height: 1.05; text-wrap: balance;
+  }
+  h1 span { color: var(--accent); }
+  .lede { margin: 0; color: var(--ink-soft); font-weight: 700; font-size: 1.08rem; max-width: 48ch; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+
+  .pill {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 48px; padding: 10px 18px; border-radius: 999px;
+    background: var(--raised); border: 2px solid var(--line); color: var(--ink);
+    font-weight: 800; font-size: 1rem; line-height: 1.1; text-align: center;
+    transition: transform .12s ease, background-color .2s ease, border-color .2s ease;
+  }
+  .pill:active:not(:disabled) { transform: scale(.97); }
+  .pill:disabled { opacity: .45; }
+  .pill.strong { background: var(--strong); border-color: var(--strong); color: var(--on-strong); }
+  .pill.outline { background: transparent; border-color: var(--strong); }
+  .pill.accent { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+  .pill.small { min-height: 40px; padding: 6px 14px; font-size: .92rem; }
+  .pill svg { width: 18px; height: 18px; flex: none; }
+
+  .stage { display: grid; gap: 26px; align-items: start; }
+  .spin-col { display: grid; justify-items: center; gap: 18px; padding-top: 20px; min-width: 0; }
+
+  .wheel-wrap { position: relative; width: min(100%, 520px); aspect-ratio: 1; max-width: 100%; }
+  .wheel-shadow { position: absolute; inset: 3%; border-radius: 50%; box-shadow: 0 18px 36px var(--shadow); }
+  .wheel-clip { position: absolute; inset: 0; overflow: hidden; }
+  #wheel { display: block; width: 100%; height: 100%; will-change: transform; }
+  .pointer {
+    position: absolute; left: 50%; top: -5%; width: 11%; aspect-ratio: 48 / 60; transform: translateX(-50%);
+    z-index: 2; filter: drop-shadow(0 3px 2px rgba(0, 0, 0, .25));
+  }
+  .pointer svg { display: block; width: 100%; height: 100%; transform-origin: 50% 15%; overflow: visible; }
+  .pointer.tick svg { animation: tick .14s ease-out; }
+  @keyframes tick { 0% { transform: rotate(0); } 40% { transform: rotate(-16deg); } 100% { transform: rotate(0); } }
+  .hub {
+    position: absolute; left: 50%; top: 50%; width: 23%; aspect-ratio: 1; transform: translate(-50%, -50%);
+    border-radius: 50%; border: 5px solid var(--hub-ring); background: var(--hub-bg); color: var(--hub-ink);
+    font-family: var(--display); font-weight: var(--display-weight);
+    display: grid; place-content: center; justify-items: center; gap: 0; padding: 0; z-index: 2;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .25); container-type: inline-size; line-height: 1;
+  }
+  .hub:disabled { cursor: default; }
+  .hub-word { font-size: 1.1rem; font-size: 25cqi; }
+  .hub-ico { font-size: 1.6rem; font-size: 38cqi; line-height: 1.05; }
+  .hub-ico + .hub-word { font-size: .8rem; font-size: 17cqi; }
+
+  .spin-row { display: grid; justify-items: center; gap: 14px; width: 100%; }
+  .next-up {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 12px;
+    padding: 8px 8px 8px 18px; border-radius: 999px; background: var(--raised); border: 2px solid var(--line);
+    max-width: 100%;
+  }
+  .next-up .label { font-weight: 800; color: var(--ink-soft); font-size: .9rem; text-transform: uppercase; letter-spacing: .06em; }
+  .next-up .who-next { font-family: var(--display); font-weight: var(--display-weight); font-size: 1.5rem; line-height: 1.1; overflow-wrap: anywhere; }
+
+  .spin-btn {
+    width: min(100%, 360px); min-height: 72px; border: 0; border-radius: 999px;
+    background: var(--accent); color: var(--on-accent);
+    font-family: var(--display); font-weight: var(--display-weight); font-size: 2.2rem; letter-spacing: .06em;
+    box-shadow: 0 7px 0 var(--accent-deep), 0 14px 24px var(--shadow);
+    transition: transform .08s ease, box-shadow .08s ease, opacity .2s ease;
+  }
+  .spin-btn:active:not(:disabled) { transform: translateY(5px); box-shadow: 0 2px 0 var(--accent-deep), 0 6px 12px var(--shadow); }
+  .spin-btn:disabled { opacity: .55; }
+  .spin-btn.done { font-size: 1.5rem; letter-spacing: .02em; }
+  .key-hint { margin: -4px 0 0; color: var(--ink-soft); font-weight: 700; font-size: .85rem; }
+  .key-hint kbd { font: inherit; font-weight: 800; padding: 1px 7px; border-radius: 6px; border: 2px solid var(--line); background: var(--raised); }
+  @media (hover: none) { .key-hint { display: none; } }
+
+  .crew {
+    background: var(--surface); border: 2px solid var(--line); border-radius: 26px;
+    padding: 22px 18px 18px; display: grid; gap: 14px; min-width: 0;
+  }
+  .crew h2 { font-family: var(--display); font-weight: var(--display-weight); font-size: 1.7rem; margin: 0; line-height: 1.1; }
+  .crew .count { margin: 2px 0 0; color: var(--ink-soft); font-weight: 700; }
+  .crew .count.all { color: var(--ok); }
+  .crew ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .crew li {
+    display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: center; gap: 12px;
+    padding: 8px 14px 8px 9px; background: var(--raised); border: 1.5px solid var(--line); border-radius: 14px;
+  }
+  .crew li.flash { animation: flash 1.6s ease-out; }
+  @keyframes flash { 0%, 30% { background: var(--flash); } 100% { background: var(--raised); } }
+  .chip { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; font-size: 1.35rem; line-height: 1; overflow: hidden; }
+  .num-icon {
+    width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+    background: #ffffff; color: #2a2350; border: 2.5px solid #2a2350;
+    font-family: "Fredoka", system-ui, sans-serif; font-weight: 700; font-size: .85rem; line-height: 1;
+  }
+  .blocks-icon { display: inline-grid; width: 1.15em; height: 1.15em; }
+  .blocks-icon svg { width: 100%; height: 100%; display: block; }
+  .crew .mid { display: grid; gap: 4px; min-width: 0; }
+  .crew .name { font-weight: 800; overflow-wrap: anywhere; }
+  .crew .who { display: flex; flex-wrap: wrap; gap: 4px; }
+  .crew .who span { font-size: .8rem; font-weight: 800; padding: 1px 9px; border-radius: 999px; background: var(--bg); border: 1px solid var(--line); }
+  .crew li.full .name { text-decoration: line-through; text-decoration-thickness: 2px; color: var(--ink-soft); }
+  .crew li.full .chip { opacity: .6; }
+  .crew .tally { font-weight: 800; color: var(--ink-soft); font-variant-numeric: tabular-nums; white-space: nowrap; font-size: .95rem; }
+  .crew li.full .tally { color: var(--ok); }
+  .crew .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-top: 12px; border-top: 2px dashed var(--line); }
+  .crew .actions .wide { grid-column: 1 / -1; }
+  .crew .actions .pill { width: 100%; padding-inline: 12px; }
+
+  /* Timer pill */
+  .timer {
+    position: fixed; z-index: 30; left: 50%; transform: translateX(-50%);
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    display: flex; align-items: center; gap: 12px; padding: 8px 8px 8px 20px;
+    background: var(--strong); color: var(--on-strong); border-radius: 999px;
+    box-shadow: 0 10px 24px var(--shadow); max-width: calc(100% - 32px);
+  }
+  .timer .clock { font-family: var(--display); font-weight: var(--display-weight); font-size: 1.8rem; font-variant-numeric: tabular-nums; min-width: 3.2ch; }
+  .timer .label { font-weight: 800; font-size: .95rem; opacity: .85; white-space: nowrap; }
+  .timer .bar { width: 90px; height: 10px; border-radius: 99px; background: rgba(127, 127, 127, .35); overflow: hidden; }
+  .timer .bar i { display: block; height: 100%; width: 100%; background: var(--accent); border-radius: inherit; transform-origin: left; }
+  .timer button { border: 0; border-radius: 999px; padding: 10px 18px; background: var(--accent); color: var(--on-accent); font-weight: 800; min-height: 44px; }
+  @media (max-width: 400px) { .timer .label, .timer .bar { display: none; } }
+
+  /* Overlays */
+  .overlay {
+    position: fixed; inset: 0; z-index: 50; background: var(--scrim);
+    display: grid; place-items: center; padding: 16px;
+    padding-top: calc(16px + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    animation: fade .18s ease-out;
+  }
+  @keyframes fade { from { opacity: 0; } }
+  .modal {
+    width: min(100%, 480px); max-height: 100%; overflow: auto; background: var(--surface); color: var(--ink);
+    border-radius: 28px; padding: 24px; box-shadow: 0 24px 60px var(--shadow);
+    animation: pop .26s cubic-bezier(.2, 1.4, .4, 1);
+  }
+  @keyframes pop { from { transform: scale(.88); opacity: 0; } }
+
+  .result { text-align: center; display: grid; gap: 8px; justify-items: center; padding-block: 28px 22px; }
+  .result .big-icon {
+    width: 116px; height: 116px; border-radius: 34px; display: grid; place-items: center; font-size: 3.8rem; line-height: 1;
+    box-shadow: inset 0 -6px 0 rgba(0, 0, 0, .1);
+  }
+  .result .big-icon .num-icon { width: 66px; height: 66px; font-size: 2.1rem; border-width: 5px; }
+  .result .kicker { color: var(--ink-soft); font-weight: 800; text-transform: uppercase; letter-spacing: .08em; font-size: .85rem; margin: 8px 0 0; overflow-wrap: anywhere; }
+  .result .kicker b { color: var(--accent); font-size: 1.15rem; letter-spacing: .02em; text-transform: none; }
+  .result .station { font-family: var(--display); font-weight: var(--display-weight); font-size: clamp(2.1rem, 8vw, 2.9rem); line-height: 1.05; margin: 0; overflow-wrap: anywhere; }
+  .result .job { margin: 2px 0 0; font-weight: 800; font-size: 1.12rem; max-width: 30ch; }
+  .result .detail { margin: 0; font-weight: 700; color: var(--ink-soft); }
+  .result .everyone { margin: 4px 0 0; font-weight: 800; color: var(--ok); }
+  .result .buttons { display: grid; gap: 10px; width: 100%; margin-top: 12px; }
+  .result .buttons .pill { width: 100%; min-height: 56px; font-size: 1.15rem; }
+
+  /* Teacher setup panel */
+  .panel {
+    width: min(100%, 800px); height: min(100%, 940px); display: flex; flex-direction: column;
+    background: var(--surface); color: var(--ink); border-radius: 28px; overflow: hidden;
+    box-shadow: 0 24px 60px var(--shadow); animation: pop .26s cubic-bezier(.2, 1.3, .4, 1);
+  }
+  .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 20px 24px 6px; }
+  .panel-head h3 { font-family: var(--display); font-weight: var(--display-weight); font-size: 1.8rem; margin: 0; line-height: 1.1; }
+  .panel-head .pill { min-width: 7rem; font-size: 1.1rem; }
+  .tabs { display: flex; gap: 6px; padding: 0 20px; border-bottom: 2px solid var(--line); overflow-x: auto; scrollbar-width: none; }
+  .tabs button {
+    background: none; border: 0; padding: 12px 8px; min-height: 50px; font-weight: 800; color: var(--ink-soft);
+    border-bottom: 4px solid transparent; margin-bottom: -2px; white-space: nowrap; font-size: 1rem;
+  }
+  .tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+  .panel-body { flex: 1; overflow: auto; padding: 20px 24px 36px; overscroll-behavior: contain; }
+  .pane { display: grid; gap: 16px; }
+  .help { margin: 0; color: var(--ink-soft); font-weight: 700; font-size: .95rem; max-width: 62ch; }
+
+  .summary { background: var(--bg); border: 2px solid var(--line); border-radius: 20px; padding: 18px; display: grid; gap: 12px; }
+  .summary h4 { margin: 0; font-family: var(--display); font-weight: var(--display-weight); font-size: 1.45rem; line-height: 1.15; }
+  .status { margin: -6px 0 0; font-weight: 800; font-size: .95rem; }
+  .status.ok { color: var(--ok); }
+  .status.warn { color: var(--warn); }
+  .kids-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+  .kids-row .lbl { font-weight: 800; flex-basis: 100%; }
+  .kids-row .note { font-weight: 700; color: var(--ink-soft); font-size: .9rem; }
+  .summary .pill { justify-self: start; }
+
+  .stepper { display: inline-flex; align-items: center; gap: 10px; }
+  .stepper button {
+    width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--line); background: var(--raised);
+    font-weight: 900; font-size: 1.3rem; line-height: 1; display: grid; place-items: center; padding: 0;
+  }
+  .stepper button:disabled { opacity: .35; }
+  .stepper output { min-width: 2.2ch; text-align: center; font-family: var(--display); font-weight: var(--display-weight); font-size: 1.45rem; font-variant-numeric: tabular-nums; }
+
+  input[type="text"], textarea {
+    width: 100%; min-width: 0; font: inherit; font-weight: 700; color: var(--ink); background: var(--raised);
+    border: 2px solid var(--line); border-radius: 14px; padding: 10px 12px;
+  }
+  input[type="text"]:focus, textarea:focus { border-color: var(--accent); outline: none; }
+  textarea { min-height: 240px; line-height: 1.6; resize: vertical; }
+
+  .area-list { display: grid; gap: 12px; }
+  .area-card {
+    display: grid; grid-template-columns: 68px minmax(0, 1fr);
+    grid-template-areas: "pic name" "pic desc" "foot foot" "picker picker";
+    gap: 8px 12px; padding: 14px; background: var(--raised); border: 2px solid var(--line); border-radius: 20px;
+  }
+  .area-card .pic {
+    grid-area: pic; align-self: center; width: 64px; height: 64px; border-radius: 50%;
+    border: 3px solid var(--raised); box-shadow: 0 0 0 2px var(--line); font-size: 2rem; line-height: 1;
+    display: grid; place-items: center; padding: 0;
+  }
+  .area-card .pic .num-icon { width: 34px; height: 34px; font-size: 1.1rem; }
+  .area-card .name-in { grid-area: name; font-size: 1.12rem; font-weight: 800; }
+  .area-card .desc-in { grid-area: desc; font-size: .95rem; font-weight: 600; }
+  .area-foot { grid-area: foot; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .area-foot .unit { font-weight: 800; color: var(--ink-soft); font-size: .9rem; }
+  .area-foot .spacer { flex: 1 1 auto; }
+  .picker { grid-area: picker; display: grid; gap: 10px; padding-top: 10px; border-top: 2px dashed var(--line); }
+  .picker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); gap: 6px; }
+  .picker-grid button { height: 48px; border-radius: 12px; border: 2px solid var(--line); background: var(--surface); font-size: 1.55rem; line-height: 1; padding: 0; display: grid; place-items: center; }
+  .picker-grid button[aria-pressed="true"] { border-color: var(--accent); }
+  .picker-own { display: flex; gap: 8px; align-items: center; }
+  .picker-own label { font-weight: 800; font-size: .9rem; white-space: nowrap; }
+  .picker-own input { max-width: 7rem; text-align: center; font-size: 1.3rem; }
+  .add-row { width: 100%; border-style: dashed; }
+  .pane-foot { display: flex; flex-wrap: wrap; gap: 10px; padding-top: 6px; }
+
+  .field { display: grid; gap: 6px; }
+  .field > label, .field > .lbl { font-weight: 800; font-size: .85rem; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-soft); }
+  .words { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; background: var(--bg); border: 2px solid var(--line); border-radius: 20px; padding: 18px; }
+  .words .span2 { grid-column: 1 / -1; }
+  .seg-ctrl { display: flex; flex-wrap: wrap; gap: 8px; }
+  .seg-ctrl button[aria-pressed="true"] { background: var(--strong); border-color: var(--strong); color: var(--on-strong); }
+  .names-meta { margin: 0; font-weight: 800; color: var(--ink-soft); }
+  .pane h4.sec { margin: 6px 0 0; font-family: var(--display); font-weight: var(--display-weight); font-size: 1.4rem; }
+
+  .design-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .design-card {
+    display: grid; gap: 8px; align-content: start; text-align: left; padding: 16px 14px 14px; border-radius: 22px;
+    border: 2px solid; transition: transform .12s ease;
+  }
+  .design-card:active { transform: scale(.98); }
+  .design-card[aria-pressed="true"] { outline: 4px solid var(--accent); outline-offset: 2px; }
+  .mini { position: relative; width: min(86%, 250px); justify-self: center; aspect-ratio: 1; margin-top: 8px; }
+  .mini canvas { display: block; width: 100%; height: 100%; }
+  .mini .mptr { position: absolute; left: 50%; top: -6%; width: 12%; aspect-ratio: 48 / 60; transform: translateX(-50%); filter: drop-shadow(0 2px 1px rgba(0, 0, 0, .25)); }
+  .mini .mptr svg { display: block; width: 100%; height: 100%; overflow: visible; }
+  .mini .mhub {
+    position: absolute; left: 50%; top: 50%; width: 23%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%;
+    border: 3px solid; display: grid; place-content: center; justify-items: center; container-type: inline-size; line-height: 1;
+  }
+  .mini .mhub .hub-word { font-size: .7rem; font-size: 25cqi; font-weight: 700; }
+  .mini .mhub .hub-ico { font-size: 1rem; font-size: 38cqi; }
+  .mini .mhub .hub-ico + .hub-word { font-size: .5rem; font-size: 17cqi; }
+  .design-card .dname { font-size: 1.2rem; line-height: 1.15; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+  .design-card .tag { font-family: var(--body); font-size: .72rem; font-weight: 900; text-transform: uppercase; letter-spacing: .06em; padding: 3px 9px; border-radius: 999px; }
+  .design-card .ddesc { font-size: .88rem; font-weight: 700; line-height: 1.35; }
+
+  @media (max-width: 640px) {
+    .overlay.setup-ov { place-items: end stretch; padding: 0; padding-top: calc(12px + env(safe-area-inset-top, 0px)); }
+    .panel { width: 100%; height: 100%; border-radius: 26px 26px 0 0; }
+    .panel-head, .panel-body {
+      padding-left: max(18px, env(safe-area-inset-left, 0px)); padding-right: max(18px, env(safe-area-inset-right, 0px));
+    }
+    .panel-body { padding-bottom: calc(36px + env(safe-area-inset-bottom, 0px)); }
+    .words { grid-template-columns: 1fr; }
+    .design-grid { gap: 10px; }
+    .design-card { padding: 12px 10px; }
+    .design-card .ddesc { display: none; }
+  }
+  @media (min-width: 1200px) {
+    .overlay.setup-ov { place-items: stretch end; background: rgba(0, 0, 0, .12); }
+    .panel { width: 560px; height: 100%; }
+  }
+
+  #confetti { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 60; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  @media (min-width: 900px) {
+    body { padding-block: 28px 96px; }
+    header { grid-template-columns: minmax(0, 1fr) auto; align-items: end; column-gap: 24px; }
+    header .toolbar { justify-content: flex-end; margin: 0; }
+    .stage { grid-template-columns: minmax(0, 1.15fr) minmax(320px, .85fr); gap: 36px; }
+    .wheel-wrap { width: clamp(300px, calc(100svh - 300px), 620px); }
+    .spin-col { gap: 14px; }
+    .spin-row { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; }
+    .spin-btn { width: min(100%, 300px); min-height: 66px; }
+    .crew { margin-top: 8px; padding: 18px 16px 16px; gap: 12px; }
+    .crew ul { gap: 6px; }
+    .crew li { padding: 5px 12px 5px 7px; }
+    .chip { width: 36px; height: 36px; font-size: 1.2rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  }
+</style>
+</head>
+<body>
+<div class="blob a" aria-hidden="true"></div>
+<div class="blob b" aria-hidden="true"></div>
+<div class="blob c" aria-hidden="true"></div>
+
+<main>
+  <header>
+    <div>
+      <h1 id="page-title">Clean-Up <span>Spinner</span></h1>
+      <p class="lede" id="page-sub">Tap SPIN to find out where you're helping today!</p>
+    </div>
+    <div class="toolbar">
+      <button class="pill" id="sound-btn" type="button" aria-pressed="true"></button>
+      <button class="pill" id="design-btn" type="button">Change wheel</button>
+      <button class="pill strong" id="setup-btn" type="button">Teacher setup</button>
+      <button class="pill" id="full-btn" type="button" hidden>Full screen</button>
+    </div>
+  </header>
+
+  <div class="stage">
+    <section class="spin-col" aria-label="Spinner">
+      <div class="wheel-wrap" id="wheel-wrap">
+        <div class="wheel-shadow" aria-hidden="true"></div>
+        <div class="wheel-clip"><canvas id="wheel" role="img" aria-label="Clean-up wheel"></canvas></div>
+        <div class="pointer" id="pointer" aria-hidden="true"></div>
+        <button class="hub" id="hub" type="button" aria-label="Spin the wheel"></button>
+      </div>
+      <div class="spin-row">
+        <div class="next-up" id="next-up" hidden>
+          <span class="label">Up next</span>
+          <span class="who-next" id="next-name"></span>
+          <button class="pill small" id="skip-btn" type="button">Away today</button>
+        </div>
+        <button class="spin-btn" id="spin-btn" type="button">SPIN!</button>
+      </div>
+      <p class="key-hint">or press <kbd>Space</kbd></p>
+    </section>
+
+    <section class="crew" aria-labelledby="crew-title">
+      <div>
+        <h2 id="crew-title">Clean-up crew</h2>
+        <p class="count" id="crew-count"></p>
+      </div>
+      <ul id="crew-list"></ul>
+      <div class="actions">
+        <button class="pill" id="undo-btn" type="button">Undo spin</button>
+        <button class="pill" id="timer-btn" type="button">Start 3-min timer</button>
+        <button class="pill outline wide" id="reset-btn" type="button">Start a new clean-up</button>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div class="timer" id="timer" hidden>
+  <span class="clock" id="timer-clock">3:00</span>
+  <span class="label">tidy time</span>
+  <span class="bar" aria-hidden="true"><i id="timer-bar"></i></span>
+  <button type="button" id="timer-stop">Stop</button>
+</div>
+
+<!-- Spin result -->
+<div class="overlay" id="result-overlay" hidden>
+  <div class="modal result" role="dialog" aria-modal="true" aria-labelledby="result-station">
+    <div class="big-icon" id="result-icon"></div>
+    <p class="kicker" id="result-kicker">You're helping at</p>
+    <p class="station" id="result-station"></p>
+    <p class="job" id="result-job"></p>
+    <p class="detail" id="result-detail"></p>
+    <p class="everyone" id="result-everyone" hidden></p>
+    <div class="buttons">
+      <button class="pill accent" id="result-next" type="button" data-autofocus>I'm on it!</button>
+      <button class="pill" id="result-timer" type="button" hidden>Start the timer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Time's up -->
+<div class="overlay" id="timesup-overlay" hidden>
+  <div class="modal result" role="dialog" aria-modal="true" aria-labelledby="timesup-title">
+    <div class="big-icon" style="background:#fcd56a">⏰</div>
+    <p class="station" id="timesup-title">Time's up!</p>
+    <p class="job">Freeze! Look at your spot. Is it tidy?</p>
+    <div class="buttons">
+      <button class="pill accent" id="timesup-ok" type="button" data-autofocus>All tidy</button>
+    </div>
+  </div>
+</div>
+
+<!-- Teacher setup -->
+<div class="overlay setup-ov" id="setup-overlay" hidden>
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="setup-title">
+    <div class="panel-head">
+      <h3 id="setup-title">Teacher setup</h3>
+      <button class="pill accent" type="button" data-close>Done</button>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Setup sections">
+      <button type="button" role="tab" id="tab-areas" aria-controls="pane-areas" aria-selected="true">Areas and helpers</button>
+      <button type="button" role="tab" id="tab-class" aria-controls="pane-class" aria-selected="false">Class list</button>
+      <button type="button" role="tab" id="tab-wheels" aria-controls="pane-wheels" aria-selected="false">Wheels</button>
+    </div>
+    <div class="panel-body" id="panel-body">
+      <section class="pane" id="pane-areas" role="tabpanel" aria-labelledby="tab-areas">
+        <div class="summary">
+          <h4 id="sum-title"></h4>
+          <p class="status" id="sum-status"></p>
+          <div class="kids-row">
+            <span class="lbl" id="kids-lbl">Children in my class</span>
+            <div class="stepper" role="group" aria-labelledby="kids-lbl">
+              <button type="button" id="kids-minus" aria-label="One fewer child">−</button>
+              <output id="kids-out" aria-live="polite">16</output>
+              <button type="button" id="kids-plus" aria-label="One more child">+</button>
+            </div>
+            <span class="note" id="kids-note"></span>
+          </div>
+          <button class="pill strong" id="fit-btn" type="button">Fit spots to my class</button>
+        </div>
+        <p class="help">Type your own area names, pick a picture, and set how many helpers each area needs. The wheel changes as you type. Bigger areas come up more often, so every spot gets filled.</p>
+        <div class="area-list" id="area-list"></div>
+        <button class="pill add-row" id="add-area" type="button">+ Add an area</button>
+        <div class="pane-foot">
+          <button class="pill small" id="sample-btn" type="button">Start over with the sample areas</button>
+        </div>
+      </section>
+
+      <section class="pane" id="pane-class" role="tabpanel" aria-labelledby="tab-class" hidden>
+        <p class="help">Add your students and the spinner calls each child up by name, then shows where everyone is helping. Leave the list empty to spin for spots only.</p>
+        <div class="field">
+          <label for="names-input">Class list, one name per line</label>
+          <textarea id="names-input" spellcheck="false" autocomplete="off" placeholder="Ava&#10;Ben&#10;Carlos&#10;Dani"></textarea>
+        </div>
+        <p class="names-meta" id="names-meta"></p>
+        <div class="field">
+          <span class="lbl" id="order-lbl">Who spins next</span>
+          <div class="seg-ctrl" role="group" aria-labelledby="order-lbl">
+            <button class="pill" type="button" data-order="random" aria-pressed="true">Random child</button>
+            <button class="pill" type="button" data-order="list">Class list order</button>
+          </div>
+        </div>
+        <p class="help">If a child is out today, tap <b>Away today</b> under the wheel. They'll be skipped until you start a new clean-up.</p>
+        <div class="pane-foot">
+          <button class="pill small" id="clear-names" type="button">Clear the class list</button>
+        </div>
+      </section>
+
+      <section class="pane" id="pane-wheels" role="tabpanel" aria-labelledby="tab-wheels" hidden>
+        <div class="words">
+          <div class="field span2">
+            <label for="title-in">Spinner title</label>
+            <input type="text" id="title-in" maxlength="40" autocomplete="off">
+          </div>
+          <div class="field span2">
+            <label for="sub-in">Instructions under the title</label>
+            <input type="text" id="sub-in" maxlength="90" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="hub-in">Word in the middle</label>
+            <input type="text" id="hub-in" maxlength="8" autocomplete="off">
+          </div>
+          <div class="field">
+            <span class="lbl" id="timer-lbl">Clean-up timer (minutes)</span>
+            <div class="stepper" role="group" aria-labelledby="timer-lbl">
+              <button type="button" id="tmin-minus" aria-label="One minute less">−</button>
+              <output id="tmin-out">3</output>
+              <button type="button" id="tmin-plus" aria-label="One minute more">+</button>
+            </div>
+          </div>
+        </div>
+        <h4 class="sec">Choose a wheel design</h4>
+        <p class="help">Each design has its own look and sounds. Tap one to hear it. Your areas, helpers and class list stay the same.</p>
+        <div class="design-grid" id="design-grid"></div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<canvas id="confetti" aria-hidden="true"></canvas>
+<div class="sr" id="live" aria-live="polite"></div>
+
+<script>
+(() => {
+  const TAU = Math.PI * 2;
+  const STORE_KEY = 'cleanup-spinner-v2';
+  const MAX_AREAS = 12;
+  const MAX_SLOTS = 30;
+  const FONTS = {
+    fredoka: '"Fredoka", "Arial Rounded MT Bold", ui-rounded, system-ui, sans-serif',
+    patrick: '"Patrick Hand", "Chalkboard SE", "Comic Sans MS", cursive',
+    nunito: '"Nunito", ui-rounded, system-ui, sans-serif',
+    bangers: '"Bangers", Impact, "Arial Black", sans-serif',
+    shrikhand: '"Shrikhand", "Cooper Black", Georgia, serif'
+  };
+  const EMOJI_FONT = '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
+  const PICTURES = ['🍳', '🍽️', 'abc', '🧸', '🧩', '🧱', '📚', '📖', '🎨', '🖍️', '✏️', '✂️', '📎', '🧹', '🧽', '🧺', '🪣', '🗑️', '♻️',
+    '🪴', '💧', '🧴', '🧃', '🍎', '🚗', '🎲', '🎵', '💻', '🖌️', '📦', '🎒', '🧥', '👟', '⚽', '🏀', '🔬', '🌎', '🧪', '🐠',
+    '⭐', '🌈', '1', '2', '3', '4', '5', '6'];
+
+  // ---------- The 10 wheel designs ----------
+  const THEMES = [
+    {
+      id: 'rainbow', name: 'Rainbow Bright', font: 'fredoka', weight: 700, confetti: ['rect', 'circle', 'streamer'],
+      desc: 'Bright rainbow slices, a navy rim with marquee lights and a classic arrow.',
+      page: { bg: '#fdf0e1', surface: '#fffaf2', raised: '#ffffff', ink: '#2a2350', inkSoft: '#6a6386', line: '#ecdcc8',
+        accent: '#f25f5c', accentDeep: '#c8413f', onAccent: '#ffffff', strong: '#2a2350', onStrong: '#ffffff', ok: '#1f8a5a',
+        blobs: ['#fcd56a', '#f8b9cb', '#a6dfd2'], blobOp: .55 },
+      wheel: { segs: ['#f2625f', '#f7a24a', '#f9cf4a', '#6cc76a', '#82d8c4', '#8ac8f2', '#a78ee8', '#f592b8', '#5fb3a1', '#ec8a5c', '#c3d95a', '#7a9cf0'],
+        rim: 'lights', rimColor: '#2a2350', rimAccent: '#fff3c4', sep: '#ffffff', labelDark: '#2a2350', fade: '#ffffff',
+        hubBg: '#ffffff', hubRing: '#2a2350', hubInk: '#2a2350', pointerShape: 'triangle', pointer: '#2a2350' }
+    },
+    {
+      id: 'pastel', name: 'Pastel Bloom', font: 'fredoka', weight: 700, confetti: ['circle', 'rect', 'streamer'],
+      desc: 'Soft rose, coral, lavender and mint with a petal edge and a heart pointer.',
+      page: { bg: '#fdeef1', surface: '#fff7f9', raised: '#ffffff', ink: '#4a3046', inkSoft: '#866780', line: '#f3d6de',
+        accent: '#ef7d90', accentDeep: '#c75a6c', onAccent: '#ffffff', strong: '#4a3046', onStrong: '#ffffff', ok: '#2a8a65',
+        blobs: ['#ffd3dd', '#e4d8ff', '#c9f0e1'], blobOp: .75 },
+      wheel: { segs: ['#f7b3c2', '#f9c4a7', '#fbe2a1', '#c6e7bf', '#b6e5da', '#bcd6f3', '#d5c7f2', '#f4c5df', '#ffd6b8', '#cfeccd', '#e2d2f7', '#ffe3ec'],
+        rim: 'petals', rimColor: '#ffffff', rimAccent: '#f7b8c8', rimLine: '#f0cdd7', sep: '#ffffff', labelDark: '#4a3046', fade: '#ffffff',
+        hubBg: '#ffffff', hubRing: '#f4a6b8', hubInk: '#4a3046', hubIcon: '🌸', pointerShape: 'heart', pointer: '#ef7d90' }
+    },
+    {
+      id: 'boho', name: 'Boho Rainbow', font: 'fredoka', weight: 600, confetti: ['circle', 'rect'],
+      desc: 'Earthy terracotta, sage and mustard, a map-pin pointer and a rainbow in the middle.',
+      page: { bg: '#f5ede3', surface: '#fbf7f1', raised: '#fffdf9', ink: '#4a3a2e', inkSoft: '#85705e', line: '#e6d8c6',
+        accent: '#c4694a', accentDeep: '#98492f', onAccent: '#ffffff', strong: '#4a3a2e', onStrong: '#ffffff', ok: '#56794a',
+        blobs: ['#ecd0a8', '#deb09b', '#bfcdb2'], blobOp: .55 },
+      wheel: { segs: ['#cf8366', '#e2b293', '#e6c07a', '#a6b791', '#8ea58b', '#9bb1b6', '#c39a8a', '#d8b79f', '#b49f78', '#7f999b', '#d9a07a', '#b8b49a'],
+        rim: 'thin', rimColor: '#b2694f', rimAccent: '#fbf3e6', sep: '#fbf3e6', labelDark: '#3e2f25', fade: '#f6efe6',
+        hubBg: '#fbf3e6', hubRing: '#b2694f', hubInk: '#4a3a2e', hubIcon: '🌈', pointerShape: 'pin', pointer: '#b2694f', pointer2: '#fbf3e6' }
+    },
+    {
+      id: 'ocean', name: 'Under the Sea', font: 'fredoka', weight: 700, confetti: ['circle', 'circle', 'rect'],
+      desc: 'Sea blues and seafoam with a wavy edge, bubbles on the rim and a water-drop pointer.',
+      page: { bg: '#e4f4f8', surface: '#f3fbfc', raised: '#ffffff', ink: '#0f3b52', inkSoft: '#4c7183', line: '#c5e3eb',
+        accent: '#ff8a5c', accentDeep: '#d0623a', onAccent: '#ffffff', strong: '#0f3b52', onStrong: '#ffffff', ok: '#1b7f63',
+        blobs: ['#a9e1ef', '#c7f0e4', '#ffd9c7'], blobOp: .7 },
+      wheel: { segs: ['#6fb8e8', '#8fd3ea', '#a7e6dc', '#c4efd2', '#7ec8e3', '#5fc9b8', '#a9cdf5', '#86e0d0', '#ffc8a8', '#9adbe8', '#b9e4f7', '#7fd1c0'],
+        rim: 'waves', rimColor: '#1d6fa3', rimAccent: '#e6f8ff', sep: '#ffffff', labelDark: '#0f3b52', fade: '#ffffff',
+        hubBg: '#ffffff', hubRing: '#1d6fa3', hubInk: '#0f3b52', hubIcon: '🐙', pointerShape: 'drop', pointer: '#1d6fa3' }
+    },
+    {
+      id: 'space', name: 'Outer Space', font: 'fredoka', weight: 700, dark: true, confetti: ['star', 'star', 'circle'],
+      desc: 'A deep night sky, glowing planet colors, a starry rim and a star pointer.',
+      page: { bg: '#14123a', surface: '#1e1b4b', raised: '#28245e', ink: '#f2efff', inkSoft: '#b9b3e3', line: '#3a3580',
+        accent: '#ffcc4d', accentDeep: '#c4961a', onAccent: '#1e1b4b', strong: '#f2efff', onStrong: '#1e1b4b', ok: '#6ee7b7', warn: '#ffb86b',
+        blobs: ['#6d4fd8', '#d94f9a', '#3fa7d6'], blobOp: .3 },
+      wheel: { segs: ['#7c5cff', '#ff6fb5', '#3fc6ff', '#ffcc4d', '#5be3b0', '#ff8a5c', '#a78bfa', '#4f9dff', '#f472b6', '#34d399', '#fbbf24', '#60a5fa'],
+        rim: 'stars', rimColor: '#0d0b2a', rimAccent: '#ffe28a', sep: 'rgba(255,255,255,.75)', labelDark: '#1b1640', fade: '#3a3570',
+        hubBg: '#1e1b4b', hubRing: '#ffcc4d', hubInk: '#ffffff', hubIcon: '🚀', pointerShape: 'star', pointer: '#ffcc4d', pointer2: '#ffffff' }
+    },
+    {
+      id: 'donut', name: 'Donut Shop', font: 'fredoka', weight: 700, confetti: ['sprinkle', 'sprinkle', 'circle'],
+      desc: 'Frosting pinks, chocolate and vanilla on a sprinkle-covered donut, with a donut pointer.',
+      page: { bg: '#fdf1ea', surface: '#fffaf6', raised: '#ffffff', ink: '#4e2a1e', inkSoft: '#875c4b', line: '#f1dccf',
+        accent: '#f06292', accentDeep: '#c2185b', onAccent: '#ffffff', strong: '#4e2a1e', onStrong: '#ffffff', ok: '#2e7d5b',
+        blobs: ['#f8bbd0', '#ffe0b2', '#b3e5fc'], blobOp: .6 },
+      wheel: { segs: ['#f7a1c4', '#8d5a3b', '#fde7b0', '#9fe2c8', '#f48fb1', '#9bb8f0', '#fbe17a', '#e0a25e', '#c39bd3', '#ffb3a7', '#6d4330', '#b8e0f5'],
+        rim: 'sprinkles', rimColor: '#e3a861', rimAccent: '#f7a1c4', sep: '#fffaf6', labelDark: '#4e2a1e', fade: '#ffffff',
+        hubBg: '#ffffff', hubRing: '#f06292', hubInk: '#4e2a1e', hubIcon: '🍩', pointerShape: 'donut', pointer: '#f06292', pointer2: '#e3a861' }
+    },
+    {
+      id: 'chalk', name: 'Chalkboard', font: 'patrick', weight: 400, dark: true, confetti: ['rect', 'circle'],
+      desc: 'A green slate board, chalky pastels, dashed chalk lines and a wooden frame.',
+      page: { bg: '#2f4a3a', surface: '#365441', raised: '#3e5e49', ink: '#f4f1e6', inkSoft: '#c8d3c2', line: '#57785f',
+        accent: '#f2c94c', accentDeep: '#b88f1d', onAccent: '#2b3a2c', strong: '#f4f1e6', onStrong: '#2f4a3a', ok: '#a6e3a0', warn: '#ffc27a',
+        blobs: ['#ffffff', '#ffffff', '#ffffff'], blobOp: .05 },
+      wheel: { segs: ['#f2a89f', '#f5cf8f', '#f1e89b', '#b8e0a3', '#a5dacd', '#a8c6ea', '#cab7e9', '#f0b7d3', '#f7dcb4', '#cde7b5', '#b9d9ee', '#e7c4c4'],
+        rim: 'frame', rimColor: '#a8743f', rimAccent: '#6e4521', sep: '#ffffff', sepDash: true, labelDark: '#24352a', fade: '#7f9686',
+        hubBg: '#2f4a3a', hubRing: '#a8743f', hubInk: '#f4f1e6', pointerShape: 'arrow', pointer: '#f4f1e6', pointer2: '#2f4a3a' }
+    },
+    {
+      id: 'construction', name: 'Construction Crew', font: 'fredoka', weight: 700, confetti: ['rect', 'rect', 'circle'],
+      desc: 'Safety yellow and cone orange inside hazard stripes, with a traffic-cone pointer.',
+      page: { bg: '#f4f1ea', surface: '#fbfaf6', raised: '#ffffff', ink: '#22252a', inkSoft: '#5d636b', line: '#e2ddd0',
+        accent: '#ffb703', accentDeep: '#c48a00', onAccent: '#22252a', strong: '#22252a', onStrong: '#ffffff', ok: '#2d7a3a',
+        blobs: ['#ffd166', '#ffb38a', '#cfd8dc'], blobOp: .5 },
+      wheel: { segs: ['#ffc93c', '#ff8c1a', '#a9b1b9', '#4f7cac', '#d1495b', '#a0703f', '#b5d33d', '#ff6b35', '#e9c46a', '#6c7a89', '#f4a261', '#7fb069'],
+        rim: 'hazard', rimColor: '#ffc300', rimAccent: '#22252a', sep: '#ffffff', labelDark: '#22252a', fade: '#ffffff',
+        hubBg: '#ffc300', hubRing: '#22252a', hubInk: '#22252a', hubIcon: '👷', pointerShape: 'cone', pointer: '#ff6b35', pointer2: '#22252a' }
+    },
+    {
+      id: 'groovy', name: 'Groovy Smiley', font: 'shrikhand', weight: 400, labelFont: 'fredoka', labelWeight: 700, confetti: ['circle', 'rect', 'streamer'],
+      desc: 'Seventies orange, pink and mustard with a rainbow rim of daisies and a smiley pointer.',
+      page: { bg: '#fff0d4', surface: '#fff8e8', raised: '#fffdf6', ink: '#5a2d0c', inkSoft: '#8c5a33', line: '#f2d9a8',
+        accent: '#f0782a', accentDeep: '#b8521a', onAccent: '#ffffff', strong: '#5a2d0c', onStrong: '#ffffff', ok: '#3f7d3a',
+        blobs: ['#f6b93b', '#f25c9a', '#3fa9a0'], blobOp: .3 },
+      wheel: { segs: ['#f6b93b', '#f08a24', '#f25c9a', '#e8553e', '#a3b75c', '#3fa9a0', '#c59de0', '#ffb38a', '#ffd23f', '#d96c3d', '#7bc4b4', '#f48cb6'],
+        rim: 'groovy', rimColor: '#f08a24', rimAccent: '#f25c9a', rimAccent2: '#f6b93b', sep: '#fff8e8', labelDark: '#4a2209', fade: '#fff8e8',
+        hubBg: '#fff8e8', hubRing: '#f08a24', hubInk: '#5a2d0c', hubIcon: '🌼', pointerShape: 'smiley', pointer: '#ffd23f', pointer2: '#5a2d0c' }
+    },
+    {
+      id: 'heroes', name: 'Superheroes', font: 'bangers', weight: 400, confetti: ['star', 'rect', 'streamer'],
+      desc: 'Comic-book reds, blues and yellows, a starburst edge and a lightning-bolt pointer.',
+      page: { bg: '#e8f1ff', surface: '#f6faff', raised: '#ffffff', ink: '#14213d', inkSoft: '#47587a', line: '#cddcf5',
+        accent: '#e63946', accentDeep: '#a4161a', onAccent: '#ffffff', strong: '#14213d', onStrong: '#ffffff', ok: '#1f8a4c',
+        blobs: ['#ffd60a', '#e63946', '#1d6fe0'], blobOp: .22 },
+      wheel: { segs: ['#e63946', '#1d6fe0', '#ffd60a', '#2ec27e', '#8338ec', '#fb8500', '#4cc9f0', '#f72585', '#ffb703', '#3a86ff', '#06d6a0', '#ef476f'],
+        rim: 'burst', rimColor: '#ffd60a', rimAccent: '#14213d', sep: '#14213d', sepWidth: 1.6, labelDark: '#14213d', fade: '#ffffff',
+        hubBg: '#e63946', hubRing: '#14213d', hubInk: '#ffffff', hubIcon: '🦸', pointerShape: 'bolt', pointer: '#ffd60a', pointer2: '#14213d' }
+    }
+  ];
+
+  const SAMPLE_AREAS = [
+    { id: 'kitchen', name: 'Kitchen', icon: '🍳', slots: 5, desc: 'Put the food, pots and dishes back' },
+    { id: 'carpet', name: 'Carpet', icon: 'abc', slots: 5, desc: 'Put the toys and blocks in their bins' },
+    { id: 'books', name: 'Book Center', icon: '📚', slots: 1, desc: 'Stand the books up on the shelf' },
+    { id: 'craft', name: 'Craft Table', icon: '🎨', slots: 2, desc: 'Close the markers and stack the paper' },
+    { id: 'table1', name: 'Table 1', icon: '1', slots: 1, desc: 'Wipe the table and push in the chairs' },
+    { id: 'table2', name: 'Table 2', icon: '2', slots: 1, desc: 'Wipe the table and push in the chairs' },
+    { id: 'sandbox', name: 'Sandbox / Floor', icon: '🧹', slots: 1, desc: 'Sweep up sand and pick things up off the floor' }
+  ];
+
+  const $ = (s) => document.querySelector(s);
+  const clone = (o) => JSON.parse(JSON.stringify(o));
+  const mod = (a, n) => ((a % n) + n) % n;
+  const uid = () => 'a' + Math.random().toString(36).slice(2, 9);
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isNumIcon = (icon) => /^\d{1,2}$/.test(icon);
+  // Toy blocks lettered A, B, C. No emoji shows alphabet blocks, so they are drawn.
+  const BLOCKS = [
+    { x: 2, y: 20, fill: '#f2625f', ink: '#ffffff', ch: 'A' },
+    { x: 21, y: 20, fill: '#4f9dff', ink: '#ffffff', ch: 'B' },
+    { x: 11.5, y: 2.5, fill: '#f9cf4a', ink: '#2a2350', ch: 'C' }
+  ];
+  const BLOCKS_SVG = '<svg viewBox="0 0 40 40" aria-hidden="true">' + BLOCKS.map((b) =>
+    `<rect x="${b.x}" y="${b.y}" width="17" height="17" rx="3" fill="${b.fill}" stroke="#2a2350" stroke-width="1.6"/>` +
+    `<rect x="${b.x + 2.5}" y="${b.y + 2.5}" width="12" height="12" rx="1.5" fill="none" stroke="#ffffff" stroke-opacity=".55" stroke-width="1.2"/>` +
+    `<text x="${b.x + 8.5}" y="${b.y + 12.6}" text-anchor="middle" font-family="Fredoka, Arial Rounded MT Bold, sans-serif" font-weight="700" font-size="11" fill="${b.ink}">${b.ch}</text>`
+  ).join('') + '</svg>';
+
+  function hexRgb(hex) {
+    const v = parseInt(hex.slice(1), 16);
+    return [(v >> 16) & 255, (v >> 8) & 255, v & 255];
+  }
+  function mix(a, b, t) {
+    const A = hexRgb(a), B = hexRgb(b);
+    return '#' + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, '0')).join('');
+  }
+  function rgba(hex, a) { const [r, g, b] = hexRgb(hex); return `rgba(${r},${g},${b},${a})`; }
+  function luminance(hex) {
+    return hexRgb(hex).map((v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); })
+      .reduce((s, v, i) => s + v * [0.2126, 0.7152, 0.0722][i], 0);
+  }
+
+  // ---------- State ----------
+  function defaultState() {
+    return {
+      areas: clone(SAMPLE_AREAS), classSize: 16, namesText: '', order: 'random', themeId: 'rainbow',
+      title: 'Clean-Up Spinner', subtitle: "Tap SPIN to find out where you're helping today!", hub: 'Tidy!', timerMin: 3,
+      picks: [], absent: [], nextName: null, sound: true, rotation: 0, timerEnd: 0, timerTotal: 0
+    };
+  }
+  function load() {
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      if (!raw) return null;
+      const s = Object.assign(defaultState(), JSON.parse(raw));
+      if (!Array.isArray(s.areas) || s.areas.length < 2) return null;
+      if (!THEMES.some((t) => t.id === s.themeId)) s.themeId = 'rainbow';
+      if (!Array.isArray(s.picks)) s.picks = [];
+      if (!Array.isArray(s.absent)) s.absent = [];
+      s.rotation = Number(s.rotation) || 0;
+      s.areas.forEach((a) => { if (a.id === 'carpet' && a.icon === '🧸') a.icon = 'abc'; });
+      return s;
+    } catch (e) { return null; }
+  }
+  function save() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { /* storage unavailable */ }
+  }
+  let state = load() || defaultState();
+
+  const theme = () => THEMES.find((t) => t.id === state.themeId) || THEMES[0];
+  const segColor = (t, i) => t.wheel.segs[i % t.wheel.segs.length];
+  const filledOf = (a) => state.picks.reduce((n, p) => n + (p.areaId === a.id ? 1 : 0), 0);
+  const remainingOf = (a) => Math.max(0, a.slots - filledOf(a));
+  const totalSpots = () => state.areas.reduce((s, a) => s + a.slots, 0);
+  const openSpots = () => state.areas.reduce((s, a) => s + remainingOf(a), 0);
+
+  let namesCache = null;
+  function names() {
+    if (namesCache) return namesCache;
+    const seen = new Set();
+    namesCache = state.namesText.split(/\r?\n/).map((n) => n.trim().replace(/\s+/g, ' ')).filter((n) => n && !seen.has(n) && seen.add(n));
+    return namesCache;
+  }
+  function waiting() {
+    const picked = new Set(state.picks.map((p) => p.name).filter(Boolean));
+    const away = new Set(state.absent);
+    return names().filter((n) => !picked.has(n) && !away.has(n));
+  }
+  function ensureNext() {
+    const list = waiting();
+    if (!list.length) { state.nextName = null; return; }
+    if (state.nextName && list.includes(state.nextName)) return;
+    state.nextName = state.order === 'list' ? list[0] : list[Math.floor(Math.random() * list.length)];
+  }
+  function canSpin() {
+    return openSpots() > 0 && (names().length === 0 || waiting().length > 0);
+  }
+  function clampPicks() {
+    const counts = {};
+    const byId = Object.fromEntries(state.areas.map((a) => [a.id, a]));
+    const keep = [];
+    // Keep the earliest picks; trim the latest when an area shrinks or disappears.
+    for (const p of state.picks) {
+      const a = byId[p.areaId];
+      if (!a) continue;
+      counts[p.areaId] = (counts[p.areaId] || 0) + 1;
+      if (counts[p.areaId] <= a.slots) keep.push(p);
+    }
+    state.picks = keep;
+    ensureNext();
+  }
+
+  // ---------- Sound ----------
+  // Bell-like chimes, a wooden clack and a party popper, all synthesized, through a small generated room.
+  let actx = null, master = null, verb = null, noiseBuf = null;
+  function audio() {
+    if (!state.sound) return null;
+    if (!actx) {
+      try {
+        actx = new (window.AudioContext || window.webkitAudioContext)();
+        master = actx.createDynamicsCompressor();
+        master.threshold.value = -14;
+        master.ratio.value = 4;
+        master.connect(actx.destination);
+        const len = Math.floor(actx.sampleRate * 1.4);
+        const ir = actx.createBuffer(2, len, actx.sampleRate);
+        for (let ch = 0; ch < 2; ch++) {
+          const d = ir.getChannelData(ch);
+          for (let k = 0; k < len; k++) d[k] = (Math.random() * 2 - 1) * Math.pow(1 - k / len, 3);
+        }
+        verb = actx.createConvolver();
+        verb.buffer = ir;
+        const wet = actx.createGain();
+        wet.gain.value = 0.22;
+        verb.connect(wet).connect(master);
+        noiseBuf = actx.createBuffer(1, actx.sampleRate, actx.sampleRate);
+        const nd = noiseBuf.getChannelData(0);
+        for (let k = 0; k < nd.length; k++) nd[k] = Math.random() * 2 - 1;
+      } catch (e) { actx = null; return null; }
+    }
+    if (actx.state === 'suspended') actx.resume();
+    return actx;
+  }
+  function env(g, t, peak, attack, end, hold) {
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(peak, t + attack);
+    if (hold) g.gain.setValueAtTime(peak, t + attack + hold);
+    g.gain.exponentialRampToValueAtTime(0.0001, end);
+  }
+  // One synth voice: oscillator(s), optional filter sweep, pitch glide and vibrato.
+  function voice(freq, at, dur, gain, o) {
+    o = o || {};
+    const a = audio();
+    if (!a) return;
+    const t = a.currentTime + at;
+    const out = a.createGain();
+    env(out, t, gain, o.attack || 0.005, t + dur, o.hold);
+    out.connect(master);
+    if (o.wet) out.connect(verb);
+    let dest = out;
+    if (o.filter) {
+      const f = a.createBiquadFilter();
+      f.type = o.filterType || 'lowpass';
+      f.Q.value = o.q || 1;
+      f.frequency.setValueAtTime(o.filter, t);
+      if (o.filterTo) f.frequency.exponentialRampToValueAtTime(o.filterTo, t + dur);
+      f.connect(out);
+      dest = f;
+    }
+    (o.detune || [0]).forEach((d) => {
+      const osc = a.createOscillator();
+      osc.type = o.type || 'sine';
+      osc.detune.value = d;
+      osc.frequency.setValueAtTime(freq, t);
+      if (o.freqTo) osc.frequency.exponentialRampToValueAtTime(o.freqTo, t + (o.glide || dur));
+      if (o.vibrato) {
+        const lfo = a.createOscillator(), depth = a.createGain();
+        lfo.frequency.value = o.vibrato;
+        depth.gain.value = freq * (o.vibratoDepth || 0.02);
+        lfo.connect(depth).connect(osc.frequency);
+        lfo.start(t);
+        lfo.stop(t + dur + 0.05);
+      }
+      osc.connect(dest);
+      osc.start(t);
+      osc.stop(t + dur + 0.05);
+    });
+  }
+  function bell(freq, at, dur, gain) {
+    const a = audio();
+    if (!a) return;
+    const t = a.currentTime + at;
+    const out = a.createGain();
+    out.gain.value = gain;
+    out.connect(master);
+    out.connect(verb);
+    [[1, 1, 1], [2, 0.35, 0.6], [3.01, 0.12, 0.35], [4.2, 0.06, 0.2]].forEach(([mult, amp, life]) => {
+      const o = a.createOscillator(), g = a.createGain();
+      o.type = 'sine';
+      o.frequency.value = freq * mult;
+      env(g, t, amp, 0.006, t + dur * life);
+      o.connect(g).connect(out);
+      o.start(t);
+      o.stop(t + dur * life + 0.05);
+    });
+  }
+  function noise(at, dur, type, freq, q, gain, freqTo) {
+    const a = audio();
+    if (!a) return;
+    const t = a.currentTime + at;
+    const src = a.createBufferSource();
+    src.buffer = noiseBuf;
+    const f = a.createBiquadFilter();
+    f.type = type;
+    f.Q.value = q;
+    f.frequency.setValueAtTime(freq, t);
+    if (freqTo) f.frequency.exponentialRampToValueAtTime(freqTo, t + dur);
+    const g = a.createGain();
+    env(g, t, gain, Math.min(0.01, dur / 4), t + dur);
+    src.connect(f).connect(g).connect(master);
+    src.start(t, Math.random() * 0.5);
+    src.stop(t + dur + 0.02);
+  }
+  function thump(freq, at, dur, gain) {
+    const a = audio();
+    if (!a) return;
+    const t = a.currentTime + at;
+    const o = a.createOscillator(), g = a.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(freq, t);
+    o.frequency.exponentialRampToValueAtTime(freq * 0.5, t + dur);
+    env(g, t, gain, 0.003, t + dur);
+    o.connect(g).connect(master);
+    o.start(t);
+    o.stop(t + dur + 0.02);
+  }
+  const SPARKLE = [2093, 2349, 2637, 3136, 3520];
+  const sparkles = (at, n, gain) => { for (let k = 0; k < n; k++) bell(SPARKLE[Math.floor(Math.random() * SPARKLE.length)], at + k * 0.07, 0.5, gain); };
+  const brass = (f, at, dur, gain) => voice(f, at, dur, gain, { type: 'sawtooth', detune: [-7, 7], filter: 2200, attack: 0.04, hold: dur * 0.55, wet: true });
+  const organ = (f, at, dur, gain) => { voice(f, at, dur, gain, { attack: 0.01, hold: dur * 0.6 }); voice(f * 2, at, dur, gain * 0.5, { attack: 0.01, hold: dur * 0.6 }); voice(f * 3, at, dur, gain * 0.3, { attack: 0.01, hold: dur * 0.6 }); };
+  const bloop = (f, at, gain) => voice(f, at, 0.07, gain, { freqTo: f * 2.3, glide: 0.06 });
+
+  // Each design spins, ticks and lands with its own sounds.
+  const SOUND_KITS = {
+    rainbow: { // game show
+      whoosh: () => noise(0, 0.6, 'bandpass', 300, 1.2, 0.16, 2400),
+      tick: () => { noise(0, 0.018, 'highpass', 3500, 0.7, 0.16); voice(2400 + Math.random() * 300, 0, 0.03, 0.035, { type: 'triangle' }); },
+      win: () => {
+        noise(0, 0.14, 'highpass', 1400, 0.7, 0.35);
+        thump(120, 0, 0.12, 0.3);
+        [1046, 1318, 1568, 2093].forEach((f, i) => bell(f, 0.05 + i * 0.085, 0.9, 0.2));
+        [523, 659, 784, 1046].forEach((f) => bell(f, 0.42, 1.9, 0.12));
+        sparkles(0.5, 8, 0.05);
+      }
+    },
+    pastel: { // music box and harp
+      whoosh: () => noise(0, 0.7, 'lowpass', 400, 0.7, 0.1, 1500),
+      tick: () => bell(2637 + Math.random() * 300, 0, 0.25, 0.05),
+      win: () => {
+        [1047, 1319, 1568, 1319, 2093].forEach((f, i) => bell(f, i * 0.13, 1.2, 0.16));
+        [523, 587, 659, 784, 880, 1047, 1175, 1319, 1568, 1760].forEach((f, i) => voice(f, 0.75 + i * 0.035, 0.7, 0.06, { type: 'triangle', wet: true }));
+      }
+    },
+    boho: { // wood block, rain stick and kalimba
+      whoosh: () => noise(0, 0.9, 'bandpass', 2500, 0.8, 0.08, 5000),
+      tick: () => { const f = [1175, 1319, 1480, 1760][Math.floor(Math.random() * 4)]; voice(f, 0, 0.18, 0.07); voice(f * 3, 0, 0.03, 0.02); },
+      win: () => {
+        [587, 740, 880, 988, 1175, 880, 1175].forEach((f, i) => {
+          voice(f, i * 0.11, 0.9, 0.2, { wet: true });
+          voice(f * 3, i * 0.11, 0.12, 0.05);
+        });
+        [294, 440, 740].forEach((f) => voice(f, 0.8, 1.6, 0.06, { type: 'triangle', attack: 0.2, wet: true }));
+      }
+    },
+    ocean: { // bubbles, a wave and steel drums
+      whoosh: () => noise(0, 1, 'lowpass', 250, 0.7, 0.16, 1400),
+      tick: () => bloop(380 + Math.random() * 140, 0, 0.14),
+      win: () => {
+        for (let k = 0; k < 10; k++) bloop(300 + k * 80 + Math.random() * 60, k * 0.05, 0.12);
+        [523, 659, 784, 1047, 784, 1047].forEach((f, i) => {
+          voice(f, 0.55 + i * 0.12, 0.6, 0.14, { wet: true });
+          voice(f * 2, 0.55 + i * 0.12, 0.3, 0.05);
+          voice(f * 3, 0.55 + i * 0.12, 0.15, 0.03);
+        });
+      }
+    },
+    space: { // lasers and a sci-fi chord
+      whoosh: () => voice(80, 0, 0.8, 0.1, { type: 'sawtooth', freqTo: 600, filter: 400, filterTo: 4000, q: 6 }),
+      tick: () => voice(1800, 0, 0.05, 0.05, { type: 'square', freqTo: 500, glide: 0.05, filter: 3000 }),
+      win: () => {
+        [523, 784, 1047, 1319, 1568, 2093].forEach((f, i) => voice(f, i * 0.06, 0.4, 0.08, { type: 'square', filter: 3000, wet: true }));
+        [262, 392, 523, 659].forEach((f) => voice(f, 0.35, 2, 0.05, { type: 'sawtooth', detune: [-12, 12], filter: 800, filterTo: 2400, attack: 0.3, hold: 0.6, wet: true }));
+        voice(1319, 0.35, 1.8, 0.05, { vibrato: 5, attack: 0.2, wet: true });
+        sparkles(0.6, 6, 0.04);
+      }
+    },
+    donut: { // boops, a shop-door bell and a ukulele
+      whoosh: () => { noise(0, 0.6, 'highpass', 4500, 0.7, 0.09); [1568, 1760, 2093, 2349, 2637].forEach((f, i) => bell(f, i * 0.06, 0.4, 0.05)); },
+      tick: () => bell(3136 + Math.random() * 500, 0, 0.14, 0.035),
+      win: () => {
+        noise(0, 0.08, 'highpass', 2000, 0.7, 0.2);
+        bell(2637, 0, 1.1, 0.18);
+        bell(2093, 0.16, 1.3, 0.18);
+        [523, 659, 784, 880, 784, 1047].forEach((f, i) => voice(f, 0.35 + i * 0.1, 0.35, 0.16, { type: 'triangle', filter: 2500, filterTo: 900, wet: true }));
+      }
+    },
+    chalk: { // chalk taps and the school chime
+      whoosh: () => noise(0, 0.5, 'bandpass', 1800, 0.6, 0.1, 900),
+      tick: () => { noise(0, 0.018, 'highpass', 4000, 0.7, 0.18); thump(900, 0, 0.02, 0.04); },
+      win: () => {
+        [659, 523, 587, 392].forEach((f, i) => bell(f, i * 0.32, 1.4, 0.2));
+        [523, 659, 784].forEach((f) => bell(f, 1.35, 2, 0.12));
+      }
+    },
+    construction: { // ratchet, drill, backup beeps, hammer and brass
+      whoosh: () => { noise(0, 0.5, 'highpass', 3000, 0.7, 0.1, 6000); for (let k = 0; k < 6; k++) noise(k * 0.05, 0.015, 'bandpass', 4200, 2.5, 0.15); },
+      tick: () => { noise(0, 0.015, 'bandpass', 4200, 2.5, 0.2); bell(2960 + Math.random() * 200, 0, 0.08, 0.02); },
+      win: () => {
+        [0, 0.22].forEach((at) => voice(1050, at, 0.15, 0.06, { type: 'square', hold: 0.1, filter: 2500 }));
+        [0.5, 0.62].forEach((at) => { bell(740, at, 0.5, 0.14); bell(1109, at, 0.4, 0.08); noise(at, 0.05, 'bandpass', 3000, 2, 0.2); });
+        brass(392, 0.85, 0.2, 0.1);
+        [262, 330, 392, 523].forEach((f) => brass(f, 1.05, 1.3, 0.07));
+      }
+    },
+    groovy: { // wah guitar, organ stabs and tambourine
+      whoosh: () => voice(110, 0, 0.7, 0.08, { type: 'sawtooth', filter: 300, filterTo: 3000, q: 10, vibrato: 6 }),
+      tick: () => voice(220 + Math.random() * 40, 0, 0.06, 0.08, { type: 'sawtooth', filter: 2200, filterTo: 500, q: 6 }),
+      win: () => {
+        const chord = [262, 330, 392, 466, 523];
+        [[0, 0.14], [0.18, 0.14], [0.45, 1.1]].forEach(([at, dur]) => chord.forEach((f) => organ(f, at, dur, 0.035)));
+        [0, 0.18, 0.3, 0.45, 0.6, 0.75, 0.9].forEach((at) => noise(at, 0.12, 'highpass', 6000, 0.7, 0.12));
+        voice(131, 0.45, 0.6, 0.2, { type: 'triangle', freqTo: 262, glide: 0.15 });
+      }
+    },
+    heroes: { // punches, a cape swoosh and a fanfare
+      whoosh: () => { noise(0, 0.45, 'bandpass', 900, 1.5, 0.2, 4500); voice(520, 0, 0.6, 0.05, { type: 'triangle', freqTo: 1560, attack: 0.05, wet: true }); },
+      tick: () => noise(0, 0.04, 'bandpass', 2200, 1.5, 0.22, 5000),
+      win: () => {
+        [392, 523, 659, 784].forEach((f, i) => brass(f, i * 0.11, 0.18, 0.1));
+        [523, 659, 784, 1047].forEach((f) => brass(f, 0.5, 1.4, 0.07));
+        thump(98, 0.5, 0.8, 0.4);
+        noise(0.5, 1.6, 'highpass', 5000, 0.5, 0.16);
+      }
+    }
+  };
+  const kit = () => SOUND_KITS[theme().id] || SOUND_KITS.rainbow;
+  const sfx = {
+    whoosh: () => kit().whoosh(),
+    tick: () => kit().tick(),
+    win: () => kit().win(),
+    start: () => { bell(784, 0, 0.8, 0.2); bell(1175, 0.12, 1, 0.2); },
+    timesUp: () => {
+      [1046, 784, 1046, 1318, 1568].forEach((f, i) => bell(f, i * 0.22, 1.2, 0.22));
+      [523, 784, 1046].forEach((f) => bell(f, 1.2, 2, 0.14));
+    },
+    undo: () => { bell(659, 0, 0.9, 0.15); bell(523, 0.1, 0.9, 0.15); }
+  };
+
+  // ---------- Pointer shapes (viewBox 48 x 60, tip at the bottom) ----------
+  function starPath(cx, cy, R, r) {
+    let d = '';
+    for (let k = 0; k < 10; k++) {
+      const rad = k % 2 ? r : R, a = -Math.PI / 2 + k * Math.PI / 5;
+      d += (k ? 'L' : 'M') + (cx + Math.cos(a) * rad).toFixed(1) + ' ' + (cy + Math.sin(a) * rad).toFixed(1);
+    }
+    return d + 'Z';
+  }
+  function pointerSVG(t) {
+    const c = t.wheel.pointer, c2 = t.wheel.pointer2 || '#ffffff';
+    let body;
+    switch (t.wheel.pointerShape) {
+      case 'heart':
+        body = `<path d="M24 58C24 58 3 41 3 22C3 12 10 5 17.5 5C21 5 23 7 24 10C25 7 27 5 30.5 5C38 5 45 12 45 22C45 41 24 58 24 58Z" fill="${c}" stroke="#fff" stroke-width="3"/><ellipse cx="14.5" cy="18" rx="3.5" ry="6" fill="#fff" opacity=".45" transform="rotate(-25 14.5 18)"/>`; break;
+      case 'pin':
+        body = `<path d="M24 58C24 58 7 36 7 22A17 17 0 0 1 41 22C41 36 24 58 24 58Z" fill="${c}" stroke="${c2}" stroke-width="2.5"/><circle cx="24" cy="22" r="7" fill="${c2}"/>`; break;
+      case 'arrow':
+        body = `<path d="M15 3H33V28H43L24 57L5 28H15Z" fill="${c}" stroke="${c2}" stroke-width="2.5" stroke-linejoin="round"/>`; break;
+      case 'drop':
+        body = `<path d="M24 58C15 46 8 35 8 24A16 16 0 0 1 40 24C40 35 33 46 24 58Z" fill="${c}" stroke="#fff" stroke-width="2.5"/><ellipse cx="17" cy="21" rx="3.5" ry="6" fill="#fff" opacity=".55"/>`; break;
+      case 'donut':
+        body = `<path d="M15 27H33L24 58Z" fill="${c}" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><circle cx="24" cy="18" r="16" fill="${c2}" stroke="#fff" stroke-width="2"/><path d="M24 4.5C31.5 4.5 37.5 10.5 37.5 18C35.5 21 33 19 31 22C28 25 26 21 22.5 24C19 27 17 22 13.5 23C11 21 10.5 19.5 10.5 18C10.5 10.5 16.5 4.5 24 4.5Z" fill="${c}"/><circle cx="24" cy="18" r="5" fill="#fff"/><path d="M17 11L19 9.5M29 9L31 11M33 16L34 18.5M14 16.5L15.5 14.5M27 25L29 24" stroke="#fff6a8" stroke-width="1.8" stroke-linecap="round"/>`; break;
+      case 'cone':
+        body = `<rect x="3" y="1" width="42" height="7" rx="2.5" fill="${c2}"/><path d="M8 8H40L26.3 54Q24 59 21.7 54Z" fill="${c}"/><path d="M12.4 20H35.6L33.4 27H14.6Z" fill="#fff"/><path d="M16.8 34H31.2L29.3 40H18.7Z" fill="#fff"/>`; break;
+      case 'smiley':
+        body = `<path d="M16 28H32L24 58Z" fill="${c}" stroke="${c2}" stroke-width="2.2" stroke-linejoin="round"/><circle cx="24" cy="18" r="16" fill="${c}" stroke="${c2}" stroke-width="2.5"/><ellipse cx="18.5" cy="14.5" rx="1.9" ry="3" fill="${c2}"/><ellipse cx="29.5" cy="14.5" rx="1.9" ry="3" fill="${c2}"/><path d="M16 21Q24 29.5 32 21" stroke="${c2}" stroke-width="2.6" stroke-linecap="round" fill="none"/>`; break;
+      case 'bolt':
+        body = `<path d="M16 1L10 30L21 30L24 59L38 22L27 22L32 1Z" fill="${c}" stroke="${c2}" stroke-width="2.6" stroke-linejoin="round"/>`; break;
+      default:
+        body = `<path d="M6 6Q24 -1 42 6Q44 8 43 11L26.5 55Q24 60 21.5 55L5 11Q4 8 6 6Z" fill="${c}"/>`;
+    }
+    return `<svg viewBox="0 0 48 60" aria-hidden="true">${body}</svg>`;
+  }
+  function hubHTML(t) {
+    const word = `<span class="hub-word">${esc(state.hub || 'Spin!')}</span>`;
+    return t.wheel.hubIcon ? `<span class="hub-ico">${t.wheel.hubIcon}</span>${word}` : word;
+  }
+  function iconHTML(icon) {
+    if (icon === 'abc') return `<span class="blocks-icon">${BLOCKS_SVG}</span>`;
+    return isNumIcon(icon) ? `<span class="num-icon">${esc(icon)}</span>` : esc(icon);
+  }
+
+  // ---------- Wheel drawing (shared by the big wheel and the design previews) ----------
+  const RIM_WIDTH = { lights: .042, petals: .08, thin: .03, frame: .065, waves: .062, stars: .05, sprinkles: .085, hazard: .07, groovy: .085, burst: .09 };
+  const hash = (k) => { const x = Math.sin(k * 12.9898) * 43758.5453; return x - Math.floor(x); };
+
+  function canvasStar(ctx, x, y, R, r) {
+    ctx.beginPath();
+    for (let k = 0; k < 10; k++) {
+      const rad = k % 2 ? r : R, a = -Math.PI / 2 + k * Math.PI / 5;
+      ctx[k ? 'lineTo' : 'moveTo'](x + Math.cos(a) * rad, y + Math.sin(a) * rad);
+    }
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  function drawRim(ctx, t, S, c, outer, r, rimW, n) {
+    const w = t.wheel;
+    const at = (a, rad) => [c + Math.cos(a) * rad, c + Math.sin(a) * rad];
+    const disk = (rad, fill) => { ctx.beginPath(); ctx.arc(c, c, rad, 0, TAU); ctx.fillStyle = fill; ctx.fill(); };
+    const ring = Math.max(16, n * 2);
+    switch (w.rim) {
+      case 'petals': {
+        const pr = rimW * 0.5, count = Math.max(18, n * 3);
+        disk(outer - pr, w.rimColor);
+        for (let k = 0; k < count; k++) {
+          const [x, y] = at(k * TAU / count - Math.PI / 2, outer - pr);
+          ctx.beginPath(); ctx.arc(x, y, pr, 0, TAU);
+          ctx.fillStyle = k % 2 ? w.rimColor : w.rimAccent; ctx.fill();
+          ctx.lineWidth = 1.5; ctx.strokeStyle = w.rimLine; ctx.stroke();
+        }
+        disk(r + rimW * 0.18, w.rimColor);
+        break;
+      }
+      case 'thin': {
+        disk(outer, w.rimColor);
+        const count = Math.max(21, n * 3);
+        ctx.fillStyle = w.rimAccent;
+        for (let k = 0; k < count; k++) {
+          const [x, y] = at(k * TAU / count - Math.PI / 2, r + rimW / 2);
+          ctx.beginPath(); ctx.arc(x, y, rimW * 0.16, 0, TAU); ctx.fill();
+        }
+        break;
+      }
+      case 'frame': {
+        disk(outer, w.rimColor);
+        ctx.save();
+        ctx.strokeStyle = w.rimAccent; ctx.globalAlpha = 0.45; ctx.lineWidth = Math.max(1, S * 0.003);
+        for (let k = 0; k < 4; k++) {
+          ctx.setLineDash([S * (0.05 + k * 0.01), S * 0.02, S * 0.012, S * 0.03]);
+          ctx.beginPath(); ctx.arc(c, c, r + rimW * (0.2 + k * 0.2), k, k + TAU); ctx.stroke();
+        }
+        ctx.restore();
+        ctx.lineWidth = Math.max(2, S * 0.008); ctx.strokeStyle = 'rgba(0,0,0,.35)';
+        ctx.beginPath(); ctx.arc(c, c, r + 1, 0, TAU); ctx.stroke();
+        ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(255,255,255,.2)';
+        ctx.beginPath(); ctx.arc(c, c, outer - 1.5, 0, TAU); ctx.stroke();
+        break;
+      }
+      case 'waves': {
+        const amp = rimW * 0.38, K = 24;
+        ctx.beginPath();
+        for (let s = 0; s <= 720; s++) {
+          const a = s / 720 * TAU;
+          const rad = outer - amp * (1 - Math.cos(K * a)) / 2;
+          const [x, y] = at(a, rad);
+          ctx[s ? 'lineTo' : 'moveTo'](x, y);
+        }
+        ctx.closePath(); ctx.fillStyle = w.rimColor; ctx.fill();
+        ctx.fillStyle = w.rimAccent;
+        for (let k = 0; k < ring; k++) {
+          const a = k * TAU / ring - Math.PI / 2;
+          const [x, y] = at(a, r + rimW * 0.38);
+          ctx.globalAlpha = 0.9; ctx.beginPath(); ctx.arc(x, y, rimW * (k % 2 ? 0.1 : 0.15), 0, TAU); ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+        break;
+      }
+      case 'stars': {
+        disk(outer, w.rimColor);
+        ctx.fillStyle = w.rimAccent;
+        for (let k = 0; k < ring; k++) {
+          const [x, y] = at(k * TAU / ring - Math.PI / 2, r + rimW / 2);
+          const R = rimW * (k % 2 ? 0.2 : 0.3);
+          canvasStar(ctx, x, y, R, R * 0.45);
+        }
+        ctx.fillStyle = 'rgba(255,255,255,.6)';
+        for (let k = 0; k < ring * 2; k++) {
+          const [x, y] = at((k + 0.5) * TAU / (ring * 2) - Math.PI / 2, r + rimW * (k % 2 ? 0.28 : 0.72));
+          ctx.beginPath(); ctx.arc(x, y, Math.max(0.8, rimW * 0.05), 0, TAU); ctx.fill();
+        }
+        break;
+      }
+      case 'sprinkles': {
+        disk(outer, w.rimColor);
+        // Frosting with a gently dripping outer edge.
+        ctx.beginPath();
+        for (let s = 0; s <= 720; s++) {
+          const a = s / 720 * TAU;
+          const drip = (1 + Math.sin(9 * a + Math.sin(3 * a) * 1.5)) / 2;
+          const [x, y] = at(a, outer - rimW * (0.26 + 0.2 * drip));
+          ctx[s ? 'lineTo' : 'moveTo'](x, y);
+        }
+        ctx.closePath(); ctx.fillStyle = w.rimAccent; ctx.fill();
+        const cols = ['#ffffff', '#ffd54f', '#4fc3f7', '#81c784', '#ba68c8', '#ff7043'];
+        ctx.lineCap = 'round';
+        ctx.lineWidth = Math.max(1.5, rimW * 0.08);
+        const count = 44;
+        for (let k = 0; k < count; k++) {
+          const a = k * TAU / count + (hash(k) - 0.5) * 0.1;
+          const [x, y] = at(a, r + rimW * (0.12 + 0.36 * hash(k + 7)));
+          const rot = hash(k + 3) * Math.PI, len = rimW * 0.11;
+          ctx.strokeStyle = cols[k % cols.length];
+          ctx.beginPath();
+          ctx.moveTo(x - Math.cos(rot) * len, y - Math.sin(rot) * len);
+          ctx.lineTo(x + Math.cos(rot) * len, y + Math.sin(rot) * len);
+          ctx.stroke();
+        }
+        break;
+      }
+      case 'hazard': {
+        disk(outer, w.rimColor);
+        const count = 40, step = TAU / count, skew = step * 0.45;
+        ctx.fillStyle = w.rimAccent;
+        for (let k = 0; k < count; k++) {
+          const a0 = k * step;
+          ctx.beginPath();
+          ctx.moveTo(...at(a0, r));
+          ctx.lineTo(...at(a0 + step / 2, r));
+          ctx.lineTo(...at(a0 + step / 2 + skew, outer));
+          ctx.lineTo(...at(a0 + skew, outer));
+          ctx.closePath();
+          ctx.fill();
+        }
+        ctx.strokeStyle = w.rimAccent; ctx.lineWidth = Math.max(2, S * 0.006);
+        ctx.beginPath(); ctx.arc(c, c, outer - ctx.lineWidth / 2, 0, TAU); ctx.stroke();
+        ctx.beginPath(); ctx.arc(c, c, r + 1, 0, TAU); ctx.stroke();
+        break;
+      }
+      case 'groovy': {
+        disk(outer, w.rimColor);
+        disk(outer - rimW / 3, w.rimAccent);
+        disk(outer - rimW * 2 / 3, w.rimAccent2);
+        const count = Math.max(12, n * 2), pr = rimW * 0.17;
+        for (let k = 0; k < count; k++) {
+          const [x, y] = at(k * TAU / count - Math.PI / 2 + TAU / count / 2, r + rimW * 0.5);
+          ctx.fillStyle = '#ffffff';
+          for (let q = 0; q < 6; q++) {
+            const pa = q * TAU / 6;
+            ctx.beginPath();
+            ctx.ellipse(x + Math.cos(pa) * pr, y + Math.sin(pa) * pr, pr * 0.75, pr * 0.42, pa, 0, TAU);
+            ctx.fill();
+          }
+          ctx.beginPath(); ctx.arc(x, y, pr * 0.55, 0, TAU); ctx.fillStyle = '#ffd23f'; ctx.fill();
+          ctx.lineWidth = 1; ctx.strokeStyle = '#5a2d0c'; ctx.stroke();
+        }
+        break;
+      }
+      case 'burst': {
+        const spikes = 36;
+        ctx.beginPath();
+        for (let k = 0; k <= spikes * 2; k++) {
+          const a = k * Math.PI / spikes - Math.PI / 2;
+          ctx[k ? 'lineTo' : 'moveTo'](...at(a, k % 2 ? outer - rimW * 0.42 : outer - 1.5));
+        }
+        ctx.closePath();
+        ctx.fillStyle = w.rimColor; ctx.fill();
+        ctx.lineJoin = 'round'; ctx.lineWidth = Math.max(2, S * 0.006); ctx.strokeStyle = w.rimAccent; ctx.stroke();
+        disk(r + rimW * 0.32, w.rimAccent);
+        ctx.strokeStyle = '#ffffff'; ctx.lineWidth = Math.max(1.5, S * 0.004);
+        ctx.beginPath(); ctx.arc(c, c, r + rimW * 0.16, 0, TAU); ctx.stroke();
+        break;
+      }
+      default: { // lights
+        disk(outer, w.rimColor);
+        ctx.fillStyle = w.rimAccent;
+        for (let k = 0; k < ring; k++) {
+          const [x, y] = at(k * TAU / ring - Math.PI / 2, r + rimW / 2);
+          ctx.beginPath(); ctx.arc(x, y, rimW * 0.2, 0, TAU); ctx.fill();
+        }
+      }
+    }
+  }
+
+  function fitText(ctx, t, text, maxW, startSize, minSize) {
+    let fs = startSize;
+    const set = () => { ctx.font = `${t.labelWeight || t.weight} ${fs}px ${FONTS[t.labelFont || t.font]}`; };
+    set();
+    while (ctx.measureText(text).width > maxW && fs > minSize) { fs *= 0.93; set(); }
+    let out = text;
+    while (ctx.measureText(out).width > maxW && out.length > 2) out = out.slice(0, -2) + '…';
+    return out;
+  }
+
+  function drawIcon(ctx, t, icon, y, size, ink) {
+    if (icon === 'abc') {
+      const k = size * 1.1 / 40;
+      ctx.save();
+      ctx.translate(-20 * k, y - 20 * k);
+      ctx.scale(k, k);
+      BLOCKS.forEach((b) => {
+        ctx.beginPath(); ctx.roundRect(b.x, b.y, 17, 17, 3);
+        ctx.fillStyle = b.fill; ctx.fill();
+        ctx.lineWidth = 1.6; ctx.strokeStyle = '#2a2350'; ctx.stroke();
+        ctx.beginPath(); ctx.roundRect(b.x + 2.5, b.y + 2.5, 12, 12, 1.5);
+        ctx.lineWidth = 1.2; ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.stroke();
+        ctx.fillStyle = b.ink;
+        ctx.font = `700 11px ${FONTS.fredoka}`;
+        ctx.fillText(b.ch, b.x + 8.5, b.y + 9);
+      });
+      ctx.restore();
+    } else if (isNumIcon(icon)) {
+      ctx.beginPath(); ctx.arc(0, y, size * 0.46, 0, TAU);
+      ctx.fillStyle = '#ffffff'; ctx.fill();
+      ctx.lineWidth = Math.max(2, size * 0.09); ctx.strokeStyle = ink; ctx.stroke();
+      ctx.fillStyle = ink;
+      ctx.font = `700 ${size * 0.52}px ${FONTS.fredoka}`;
+      ctx.fillText(icon, 0, y + size * 0.03);
+    } else {
+      ctx.font = `${size}px ${EMOJI_FONT}`;
+      ctx.fillStyle = ink;
+      ctx.fillText(icon, 0, y + size * 0.06);
+    }
+  }
+
+  function drawWheel(ctx, S, t, areas, remOf) {
+    const w = t.wheel;
+    const n = areas.length;
+    const c = S / 2;
+    const outer = c - S * 0.008;
+    const rimW = S * RIM_WIDTH[w.rim];
+    const r = outer - rimW;
+    const seg = TAU / n;
+    const badgeInk = w.labelDark;
+
+    ctx.clearRect(0, 0, S, S);
+    drawRim(ctx, t, S, c, outer, r, rimW, n);
+
+    areas.forEach((a, i) => {
+      const a0 = i * seg - Math.PI / 2;
+      ctx.beginPath(); ctx.moveTo(c, c); ctx.arc(c, c, r, a0, a0 + seg); ctx.closePath();
+      ctx.fillStyle = remOf(a) === 0 ? mix(segColor(t, i), w.fade, 0.6) : segColor(t, i);
+      ctx.fill();
+    });
+
+    ctx.save();
+    ctx.strokeStyle = w.sep;
+    ctx.lineWidth = Math.max(1.5, S * 0.007 * (w.sepWidth || 1));
+    ctx.lineCap = 'round';
+    if (w.sepDash) ctx.setLineDash([S * 0.02, S * 0.016]);
+    areas.forEach((_, i) => {
+      const a = i * seg - Math.PI / 2;
+      ctx.beginPath(); ctx.moveTo(c, c); ctx.lineTo(c + Math.cos(a) * r, c + Math.sin(a) * r); ctx.stroke();
+    });
+    if (w.sepDash) { ctx.beginPath(); ctx.arc(c, c, r - S * 0.004, 0, TAU); ctx.stroke(); }
+    ctx.restore();
+
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    areas.forEach((a, i) => {
+      const rem = remOf(a);
+      const full = rem === 0;
+      const fill = full ? mix(segColor(t, i), w.fade, 0.6) : segColor(t, i);
+      const ink = luminance(fill) > 0.33 ? w.labelDark : '#ffffff';
+      ctx.save();
+      ctx.translate(c, c);
+      ctx.rotate(i * seg + seg / 2);
+      ctx.globalAlpha = full ? 0.55 : 1;
+
+      const halfArc = Math.min(seg, Math.PI) / 2;
+      const chord = 2 * r * 0.84 * Math.sin(halfArc);
+      const label = fitText(ctx, t, a.name, Math.min(chord * 0.86, r * 0.95), r * ({ patrick: 0.135, bangers: 0.14 }[t.labelFont || t.font] || 0.118), r * 0.06);
+      ctx.fillStyle = ink;
+      ctx.fillText(label, 0, -r * 0.84);
+      if (full) {
+        const lw = ctx.measureText(label).width;
+        ctx.fillRect(-lw / 2, -r * 0.84 - 1, lw, Math.max(1.5, S * 0.005));
+      }
+
+      const iconSize = Math.min(r * 0.2, 2 * r * 0.6 * Math.sin(halfArc) * 0.62);
+      drawIcon(ctx, t, a.icon, -r * 0.6, iconSize, w.labelDark);
+
+      ctx.globalAlpha = 1;
+      const br = Math.max(S * 0.02, r * 0.065);
+      const by = -r * 0.37;
+      ctx.beginPath(); ctx.arc(0, by, br, 0, TAU);
+      ctx.fillStyle = '#ffffff'; ctx.fill();
+      ctx.lineWidth = Math.max(1.2, S * 0.004);
+      ctx.strokeStyle = full ? '#1f8a5a' : badgeInk; ctx.stroke();
+      ctx.fillStyle = full ? '#1f8a5a' : badgeInk;
+      ctx.font = `700 ${br * 1.15}px ${FONTS.fredoka}`;
+      ctx.fillText(full ? '✓' : String(rem), 0, by + br * 0.06);
+      ctx.restore();
+    });
+  }
+
+  function sizeCanvas(cv) {
+    const size = cv.clientWidth;
+    if (!size) return null;
+    const dpr = Math.min(window.devicePixelRatio || 1, 3);
+    const px = Math.round(size * dpr);
+    if (cv.width !== px) { cv.width = px; cv.height = px; }
+    const ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx, size };
+  }
+
+  // ---------- Main screen ----------
+  const canvas = $('#wheel');
+  const els = {
+    title: $('#page-title'), sub: $('#page-sub'), sound: $('#sound-btn'), design: $('#design-btn'), setup: $('#setup-btn'),
+    full: $('#full-btn'), hub: $('#hub'), pointer: $('#pointer'), spin: $('#spin-btn'), nextUp: $('#next-up'),
+    nextName: $('#next-name'), skip: $('#skip-btn'), crewTitle: $('#crew-title'), count: $('#crew-count'),
+    list: $('#crew-list'), undo: $('#undo-btn'), timerBtn: $('#timer-btn'), reset: $('#reset-btn'), live: $('#live')
+  };
+  const SOUND_ON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
+  const SOUND_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M17 9l5 6M22 9l-5 6"/></svg>';
+
+  function announce(msg) { els.live.textContent = msg; }
+
+  function applyTheme() {
+    const t = theme(), p = t.page, w = t.wheel;
+    const vars = {
+      '--bg': p.bg, '--surface': p.surface, '--raised': p.raised, '--ink': p.ink, '--ink-soft': p.inkSoft, '--line': p.line,
+      '--accent': p.accent, '--accent-deep': p.accentDeep, '--on-accent': p.onAccent, '--strong': p.strong, '--on-strong': p.onStrong,
+      '--ok': p.ok, '--warn': p.warn || '#b4561a', '--flash': mix(p.accent, p.raised, 0.72),
+      '--shadow': t.dark ? 'rgba(0,0,0,.45)' : rgba(p.ink, 0.18), '--scrim': t.dark ? 'rgba(0,0,0,.6)' : rgba(p.ink, 0.45),
+      '--blob-a': p.blobs[0], '--blob-b': p.blobs[1], '--blob-c': p.blobs[2], '--blob-op': p.blobOp,
+      '--hub-bg': w.hubBg, '--hub-ring': w.hubRing, '--hub-ink': w.hubInk,
+      '--display': FONTS[t.font], '--display-weight': t.weight
+    };
+    const root = document.documentElement.style;
+    Object.entries(vars).forEach(([k, v]) => root.setProperty(k, v));
+    root.colorScheme = t.dark ? 'dark' : 'light';
+    els.pointer.innerHTML = pointerSVG(t);
+  }
+
+  function drawMain() {
+    const got = sizeCanvas(canvas);
+    if (got) drawWheel(got.ctx, got.size, theme(), state.areas, remainingOf);
+  }
+  function applyRotation(rad) { canvas.style.transform = `rotate(${rad}rad)`; }
+
+  function renderTitle() {
+    const words = (state.title || 'Clean-Up Spinner').trim().split(/\s+/);
+    const last = words.length > 1 ? words.pop() : null;
+    els.title.innerHTML = esc(words.join(' ')) + (last ? ` <span>${esc(last)}</span>` : '');
+    els.sub.textContent = state.subtitle;
+    els.sub.hidden = !state.subtitle.trim();
+  }
+
+  function renderMain() {
+    const t = theme();
+    const total = totalSpots();
+    const open = openSpots();
+    const roster = names();
+    const wait = waiting();
+    const spinnable = canSpin();
+    if (roster.length) ensureNext();
+
+    renderTitle();
+    els.sound.innerHTML = (state.sound ? SOUND_ON : SOUND_OFF) + `<span>${state.sound ? 'Sound on' : 'Sound off'}</span>`;
+    els.sound.setAttribute('aria-pressed', String(state.sound));
+    els.hub.innerHTML = hubHTML(t);
+    canvas.setAttribute('aria-label', `${t.name} wheel with ${state.areas.length} clean-up areas`);
+
+    els.nextUp.hidden = !(roster.length && spinnable && state.nextName);
+    els.nextName.textContent = state.nextName || '';
+
+    els.count.classList.toggle('all', !spinnable);
+    if (!spinnable && open === 0) els.count.textContent = `All ${total} spots are filled. Let's tidy!`;
+    else if (!spinnable) els.count.textContent = `Every child has a job. ${open} spot${open === 1 ? '' : 's'} left open.`;
+    else if (roster.length) els.count.textContent = `${open} of ${total} spots open · ${wait.length} ${wait.length === 1 ? 'child' : 'children'} waiting`;
+    else els.count.textContent = `${open} of ${total} helper${total === 1 ? '' : 's'} still needed`;
+
+    els.list.innerHTML = state.areas.map((a, i) => {
+      const f = filledOf(a);
+      const full = f >= a.slots;
+      const who = state.picks.filter((p) => p.areaId === a.id && p.name).map((p) => `<span>${esc(p.name)}</span>`).join('');
+      return `<li class="${full ? 'full' : ''}" data-id="${esc(a.id)}">
+        <span class="chip" style="background:${mix(segColor(t, i), t.page.raised, t.dark ? 0.15 : 0.4)}">${iconHTML(a.icon)}</span>
+        <span class="mid"><span class="name">${esc(a.name)}</span>${who ? `<span class="who">${who}</span>` : ''}</span>
+        <span class="tally">${full ? '✓ ' : ''}${Math.min(f, a.slots)} of ${a.slots}</span>
+      </li>`;
+    }).join('');
+
+    els.spin.disabled = spinning || !spinnable;
+    els.spin.classList.toggle('done', !spinnable);
+    els.spin.textContent = spinnable ? 'SPIN!' : 'All done!';
+    els.hub.disabled = spinning || !spinnable;
+    els.skip.disabled = spinning;
+    els.undo.disabled = spinning || state.picks.length === 0;
+    els.reset.disabled = spinning;
+    els.design.disabled = spinning;
+    els.setup.disabled = spinning;
+    updateTimerButton();
+    drawMain();
+  }
+
+  // ---------- Spin ----------
+  let spinning = false;
+
+  function spin() {
+    if (spinning || !canSpin()) return;
+    audio();
+    ensureNext();
+    const child = names().length ? state.nextName : null;
+    const open = state.areas.filter((a) => remainingOf(a) > 0);
+    // Weighted by open spots, so every remaining spot is equally likely.
+    let roll = Math.random() * open.reduce((s, a) => s + remainingOf(a), 0);
+    let pick = open[open.length - 1];
+    for (const a of open) { roll -= remainingOf(a); if (roll < 0) { pick = a; break; } }
+
+    const t = theme();
+    const n = state.areas.length;
+    const seg = TAU / n;
+    const idx = state.areas.indexOf(pick);
+    const landAt = idx * seg + seg * (0.18 + Math.random() * 0.64);
+    const start = state.rotation;
+    const quick = reduceMotion();
+    const turns = quick ? 1 : 5 + Math.floor(Math.random() * 2);
+    const target = start + turns * TAU + mod(mod(-landAt, TAU) - mod(start, TAU), TAU);
+    const duration = quick ? 900 : 4300 + Math.random() * 900;
+
+    spinning = true;
+    renderMain();
+    sfx.whoosh();
+
+    let lastIdx = Math.floor(mod(-start, TAU) / seg);
+    const ptr = els.pointer;
+    const t0 = performance.now();
+    const frame = (now) => {
+      const k = Math.min(1, (now - t0) / duration);
+      const rot = start + (target - start) * (1 - Math.pow(1 - k, 4));
+      applyRotation(rot);
+      const under = Math.floor(mod(-rot, TAU) / seg);
+      if (under !== lastIdx) {
+        lastIdx = under;
+        sfx.tick();
+        ptr.classList.remove('tick');
+        void ptr.offsetWidth;
+        ptr.classList.add('tick');
+      }
+      if (k < 1) { requestAnimationFrame(frame); return; }
+      state.rotation = mod(target, TAU);
+      applyRotation(state.rotation);
+      state.picks.push({ areaId: pick.id, name: child });
+      state.nextName = null;
+      ensureNext();
+      spinning = false;
+      save();
+      renderMain();
+      showResult(pick, idx, child);
+    };
+    requestAnimationFrame(frame);
+  }
+
+  // ---------- Overlays ----------
+  let lastFocus = null;
+  const openStack = [];
+  function openOverlay(el) {
+    lastFocus = document.activeElement;
+    el.hidden = false;
+    openStack.push(el);
+    const target = el.querySelector('[data-autofocus]') || el.querySelector('button');
+    if (target) target.focus({ preventScroll: true });
+  }
+  function closeOverlay(el) {
+    if (!el || el.hidden) return;
+    el.hidden = true;
+    const i = openStack.indexOf(el);
+    if (i >= 0) openStack.splice(i, 1);
+    if (lastFocus && document.contains(lastFocus) && !lastFocus.disabled) lastFocus.focus({ preventScroll: true });
+  }
+  const resultEl = $('#result-overlay');
+  document.querySelectorAll('.overlay').forEach((ov) => {
+    ov.addEventListener('click', (e) => {
+      if (e.target === ov || e.target.closest('[data-close]')) {
+        if (ov === resultEl) finishResult(); else closeOverlay(ov);
+      }
+    });
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && openStack.length) {
+      const top = openStack[openStack.length - 1];
+      if (top === resultEl) finishResult(); else closeOverlay(top);
+      return;
+    }
+    const tag = document.activeElement && document.activeElement.tagName;
+    if ((e.code === 'Space' || e.key === ' ') && !openStack.length && !/^(INPUT|TEXTAREA|BUTTON|SELECT)$/.test(tag)) {
+      e.preventDefault();
+      spin();
+    }
+  });
+
+  let lastPickId = null;
+  function showResult(a, i, child) {
+    const t = theme();
+    lastPickId = a.id;
+    const icon = $('#result-icon');
+    icon.style.background = segColor(t, i);
+    icon.innerHTML = iconHTML(a.icon);
+    $('#result-kicker').innerHTML = child ? `<b>${esc(child)}</b>, you're helping at` : "You're helping at";
+    $('#result-station').textContent = a.name;
+    $('#result-job').textContent = a.desc || '';
+    $('#result-job').hidden = !a.desc;
+    $('#result-detail').textContent = `Helper ${filledOf(a)} of ${a.slots} here`;
+    const done = !canSpin();
+    const everyone = $('#result-everyone');
+    everyone.hidden = !done;
+    everyone.textContent = openSpots() === 0 ? 'Every spot is filled. Let\'s get tidy!' : 'Every child has a job. Let\'s get tidy!';
+    $('#result-timer').hidden = !done || timerRunning();
+    $('#result-timer').textContent = `Start the ${state.timerMin}-minute timer`;
+    sfx.win();
+    announce(`${child ? child + ', ' : ''}${a.name}. ${a.desc || ''}`);
+    openOverlay(resultEl);
+    confetti(t, i);
+  }
+  function finishResult() {
+    closeOverlay(resultEl);
+    if (lastPickId) {
+      const li = els.list.querySelector(`li[data-id="${CSS.escape(lastPickId)}"]`);
+      if (li) { li.classList.remove('flash'); void li.offsetWidth; li.classList.add('flash'); }
+    }
+    if (!els.spin.disabled) els.spin.focus({ preventScroll: true });
+  }
+  $('#result-next').addEventListener('click', finishResult);
+  $('#result-timer').addEventListener('click', () => { finishResult(); startTimer(); });
+
+  // ---------- Confetti ----------
+  // A burst from the wheel plus two cannons from the bottom corners, in each design's own shapes and colors.
+  const confCanvas = $('#confetti');
+  const confCtx = confCanvas.getContext('2d');
+  let confParts = [];
+  let confRunning = false;
+  function confetti(t, i) {
+    if (reduceMotion()) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const W = window.innerWidth, H = window.innerHeight;
+    confCanvas.width = W * dpr;
+    confCanvas.height = H * dpr;
+    confCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const shapes = t.confetti || ['rect', 'circle', 'streamer'];
+    const colors = [segColor(t, i), segColor(t, i), ...t.wheel.segs.slice(0, 7), '#ffffff'];
+    const wr = $('#wheel-wrap').getBoundingClientRect();
+    const add = (x, y, dir, spread, vMin, vMax, count) => {
+      for (let k = 0; k < count; k++) {
+        const a = dir + (Math.random() - 0.5) * spread;
+        const v = vMin + Math.random() * (vMax - vMin);
+        confParts.push({
+          x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, size: 7 + Math.random() * 7,
+          shape: shapes[Math.floor(Math.random() * shapes.length)], color: colors[Math.floor(Math.random() * colors.length)],
+          rot: Math.random() * TAU, vr: (Math.random() - 0.5) * 0.3, phase: Math.random() * TAU, life: 0
+        });
+      }
+    };
+    add(wr.left + wr.width / 2, wr.top + wr.height / 2, -Math.PI / 2, TAU, 5, 15, 110);
+    add(0, H, -Math.PI / 3, 0.55, 15, 25, 85);
+    add(W, H, -2 * Math.PI / 3, 0.55, 15, 25, 85);
+    if (!confRunning) { confRunning = true; requestAnimationFrame(confFrame); }
+  }
+  function drawPiece(p) {
+    const ctx = confCtx, s = p.size;
+    ctx.fillStyle = p.color;
+    ctx.strokeStyle = p.color;
+    switch (p.shape) {
+      case 'circle':
+        ctx.beginPath(); ctx.arc(0, 0, s * 0.36, 0, TAU); ctx.fill(); break;
+      case 'star':
+        canvasStar(ctx, 0, 0, s * 0.6, s * 0.26); break;
+      case 'sprinkle':
+        ctx.lineCap = 'round'; ctx.lineWidth = s * 0.3;
+        ctx.beginPath(); ctx.moveTo(-s * 0.45, 0); ctx.lineTo(s * 0.45, 0); ctx.stroke(); break;
+      case 'streamer': {
+        const wave = Math.sin(p.life * 0.2 + p.phase) * s * 0.6;
+        ctx.lineCap = 'round'; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.moveTo(-s, 0);
+        ctx.quadraticCurveTo(-s / 2, -wave, 0, 0);
+        ctx.quadraticCurveTo(s / 2, wave, s, 0);
+        ctx.stroke(); break;
+      }
+      default:
+        ctx.fillRect(-s / 2, -s * 0.3, s, s * 0.6 * Math.abs(Math.cos(p.rot * 1.3)) + 1);
+    }
+  }
+  function confFrame() {
+    const W = window.innerWidth, H = window.innerHeight;
+    confCtx.clearRect(0, 0, W, H);
+    confParts = confParts.filter((p) => p.y < H + 40 && p.x > -60 && p.x < W + 60 && p.life < 420);
+    for (const p of confParts) {
+      p.life++;
+      p.vy += 0.32;
+      p.vx *= 0.988;
+      p.vy *= 0.988;
+      if (p.vy > 0) {
+        // Flutter down instead of dropping like a stone.
+        p.vx = p.vx * 0.96 + Math.sin(p.life * 0.12 + p.phase) * 0.35;
+        p.vy = Math.min(p.vy, p.shape === 'circle' || p.shape === 'sprinkle' ? 5 : 3.2);
+      }
+      p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+      confCtx.save();
+      confCtx.translate(p.x, p.y);
+      confCtx.rotate(p.rot);
+      drawPiece(p);
+      confCtx.restore();
+    }
+    if (confParts.length) requestAnimationFrame(confFrame);
+    else { confRunning = false; confCtx.clearRect(0, 0, W, H); }
+  }
+
+  // ---------- Timer ----------
+  const timerEl = $('#timer');
+  let timerInterval = 0;
+  const timerRunning = () => state.timerEnd > Date.now();
+
+  function updateTimerButton() {
+    els.timerBtn.textContent = timerRunning() ? 'Stop timer' : `Start ${state.timerMin}-min timer`;
+  }
+  function startTimer() {
+    audio();
+    state.timerTotal = state.timerMin * 60000;
+    state.timerEnd = Date.now() + state.timerTotal;
+    save();
+    sfx.start();
+    announce(`${state.timerMin} minute clean-up timer started.`);
+    runTimer();
+  }
+  function runTimer() {
+    timerEl.hidden = false;
+    clearInterval(timerInterval);
+    timerInterval = setInterval(tickTimer, 250);
+    tickTimer();
+    updateTimerButton();
+  }
+  function tickTimer() {
+    const left = Math.max(0, state.timerEnd - Date.now());
+    const secs = Math.ceil(left / 1000);
+    $('#timer-clock').textContent = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
+    $('#timer-bar').style.transform = `scaleX(${state.timerTotal ? left / state.timerTotal : 0})`;
+    if (left <= 0) {
+      stopTimer();
+      sfx.timesUp();
+      announce("Time's up!");
+      openOverlay($('#timesup-overlay'));
+    }
+  }
+  function stopTimer() {
+    clearInterval(timerInterval);
+    state.timerEnd = 0;
+    save();
+    timerEl.hidden = true;
+    updateTimerButton();
+  }
+  els.timerBtn.addEventListener('click', () => (timerRunning() ? stopTimer() : startTimer()));
+  $('#timer-stop').addEventListener('click', stopTimer);
+  $('#timesup-ok').addEventListener('click', () => closeOverlay($('#timesup-overlay')));
+
+  // ---------- Two-tap confirm ----------
+  function confirmTap(btn, armedLabel, action) {
+    if (btn.dataset.armed) {
+      clearTimeout(btn._disarm);
+      delete btn.dataset.armed;
+      btn.classList.remove('accent');
+      btn.textContent = btn.dataset.label;
+      action();
+      return;
+    }
+    btn.dataset.label = btn.textContent;
+    btn.dataset.armed = '1';
+    btn.classList.add('accent');
+    btn.textContent = armedLabel;
+    btn._disarm = setTimeout(() => {
+      delete btn.dataset.armed;
+      btn.classList.remove('accent');
+      btn.textContent = btn.dataset.label;
+    }, 3000);
+  }
+
+  // ---------- Main controls ----------
+  function resetRound() {
+    state.picks = [];
+    state.absent = [];
+    state.nextName = null;
+    ensureNext();
+  }
+  els.spin.addEventListener('click', spin);
+  els.hub.addEventListener('click', spin);
+  els.sound.addEventListener('click', () => {
+    state.sound = !state.sound;
+    save();
+    renderMain();
+    if (state.sound) sfx.start();
+  });
+  els.skip.addEventListener('click', () => {
+    const n = state.nextName;
+    if (!n) return;
+    state.absent.push(n);
+    state.nextName = null;
+    ensureNext();
+    save();
+    renderMain();
+    announce(`${n} is marked away for this clean-up.`);
+  });
+  els.undo.addEventListener('click', () => {
+    const p = state.picks.pop();
+    if (!p) return;
+    if (p.name) state.nextName = p.name;
+    const a = state.areas.find((x) => x.id === p.areaId);
+    sfx.undo();
+    save();
+    renderMain();
+    announce(`Undid the last spin${a ? ': ' + a.name : ''}.`);
+  });
+  els.reset.addEventListener('click', () => {
+    if (!state.picks.length && !state.absent.length) { announce('Nothing to clear yet.'); return; }
+    confirmTap(els.reset, 'Tap again to clear every spot', () => {
+      resetRound();
+      save();
+      renderMain();
+      announce('New clean-up started. Every spot is open.');
+    });
+  });
+  if (document.fullscreenEnabled && document.documentElement.requestFullscreen) {
+    els.full.hidden = false;
+    els.full.addEventListener('click', () => {
+      if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+      else document.documentElement.requestFullscreen().catch(() => { els.full.hidden = true; });
+    });
+    document.addEventListener('fullscreenchange', () => {
+      els.full.textContent = document.fullscreenElement ? 'Exit full screen' : 'Full screen';
+    });
+  }
+
+  // ---------- Teacher setup ----------
+  const setupEl = $('#setup-overlay');
+  const areaList = $('#area-list');
+  const TABS = { areas: $('#tab-areas'), class: $('#tab-class'), wheels: $('#tab-wheels') };
+  let currentTab = 'areas';
+
+  function setTab(name) {
+    currentTab = name;
+    Object.entries(TABS).forEach(([k, btn]) => {
+      const on = k === name;
+      btn.setAttribute('aria-selected', String(on));
+      btn.tabIndex = on ? 0 : -1;
+      $('#' + btn.getAttribute('aria-controls')).hidden = !on;
+    });
+    $('#panel-body').scrollTop = 0;
+    if (name === 'areas') { renderSummary(); renderAreaCards(); }
+    if (name === 'class') renderClassPane();
+    if (name === 'wheels') renderWheelsPane();
+  }
+  Object.entries(TABS).forEach(([k, btn]) => btn.addEventListener('click', () => setTab(k)));
+  $('.tabs').addEventListener('keydown', (e) => {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    const keys = Object.keys(TABS);
+    const next = keys[mod(keys.indexOf(currentTab) + (e.key === 'ArrowRight' ? 1 : -1), keys.length)];
+    setTab(next);
+    TABS[next].focus();
+  });
+  function openSetup(tab) {
+    openOverlay(setupEl);
+    setTab(tab);
+    TABS[tab].focus({ preventScroll: true });
+  }
+  els.setup.addEventListener('click', () => openSetup('areas'));
+  els.design.addEventListener('click', () => openSetup('wheels'));
+
+  function changed() {
+    clampPicks();
+    save();
+    renderMain();
+    if (currentTab === 'areas') renderSummary();
+    if (currentTab === 'wheels' && !setupEl.hidden) scheduleDesigns();
+  }
+
+  // Areas and helpers
+  function kidsCount() { return names().length || state.classSize; }
+  function renderSummary() {
+    const spots = totalSpots(), n = state.areas.length, kids = kidsCount();
+    $('#sum-title').textContent = `${spots} helper spot${spots === 1 ? '' : 's'} in ${n} areas`;
+    const st = $('#sum-status');
+    if (spots === kids) { st.className = 'status ok'; st.textContent = 'Every child gets a job, and every spot is filled.'; }
+    else if (spots > kids) { st.className = 'status warn'; st.textContent = `${spots - kids} more spot${spots - kids === 1 ? '' : 's'} than children. Some spots will stay empty.`; }
+    else { st.className = 'status warn'; st.textContent = `${kids - spots} ${kids - spots === 1 ? 'child' : 'children'} won't get a spot. Add helpers or tap Fit spots to my class.`; }
+    const fromList = names().length > 0;
+    $('#kids-out').textContent = kids;
+    $('#kids-minus').disabled = fromList || state.classSize <= 1;
+    $('#kids-plus').disabled = fromList || state.classSize >= 60;
+    $('#kids-note').textContent = fromList ? 'Counted from your class list' : '';
+    $('#fit-btn').disabled = spots === kids;
+  }
+  $('#kids-minus').addEventListener('click', () => { state.classSize = Math.max(1, state.classSize - 1); save(); renderSummary(); });
+  $('#kids-plus').addEventListener('click', () => { state.classSize = Math.min(60, state.classSize + 1); save(); renderSummary(); });
+  $('#fit-btn').addEventListener('click', () => {
+    const target = kidsCount();
+    const areas = state.areas;
+    if (target <= areas.length) {
+      areas.forEach((a) => { a.slots = 1; });
+    } else {
+      // Keep each area's share of the class, at least 1 helper each, largest remainders first.
+      const W = areas.reduce((s, a) => s + a.slots, 0);
+      const exact = areas.map((a) => (a.slots / W) * target);
+      const alloc = exact.map((x) => Math.max(1, Math.floor(x)));
+      let diff = target - alloc.reduce((s, v) => s + v, 0);
+      const order = exact.map((x, i) => [x - Math.floor(x), i]).sort((p, q) => q[0] - p[0]).map((p) => p[1]);
+      for (let k = 0; diff > 0; k++) { alloc[order[k % order.length]]++; diff--; }
+      for (let k = order.length - 1; diff < 0; k = (k - 1 + order.length) % order.length) {
+        if (alloc[order[k]] > 1) { alloc[order[k]]--; diff++; }
+      }
+      areas.forEach((a, i) => { a.slots = Math.min(MAX_SLOTS, alloc[i]); });
+    }
+    renderAreaCards();
+    changed();
+    announce(`Helper spots now add up to ${totalSpots()}.`);
+  });
+
+  function areaCardHTML(a, i) {
+    const t = theme();
+    return `<div class="area-card" data-id="${esc(a.id)}">
+      <button type="button" class="pic" style="background:${segColor(t, i)}" aria-expanded="false" aria-label="Change the picture for ${esc(a.name)}">${iconHTML(a.icon)}</button>
+      <input type="text" class="name-in" id="name-${esc(a.id)}" value="${esc(a.name)}" maxlength="28" aria-label="Area name" autocomplete="off">
+      <input type="text" class="desc-in" id="desc-${esc(a.id)}" value="${esc(a.desc || '')}" maxlength="80" placeholder="What does this helper do?" aria-label="What this helper does" autocomplete="off">
+      <div class="area-foot">
+        <div class="stepper" role="group" aria-label="Helpers for ${esc(a.name)}">
+          <button type="button" data-step="-1" aria-label="Fewer helpers" ${a.slots <= 1 ? 'disabled' : ''}>−</button>
+          <output>${a.slots}</output>
+          <button type="button" data-step="1" aria-label="More helpers" ${a.slots >= MAX_SLOTS ? 'disabled' : ''}>+</button>
+        </div>
+        <span class="unit">helper${a.slots === 1 ? '' : 's'}</span>
+        <span class="spacer"></span>
+        <button type="button" class="pill small" data-remove ${state.areas.length <= 2 ? 'disabled' : ''}>Remove</button>
+      </div>
+      <div class="picker" hidden>
+        <div class="picker-grid">${PICTURES.map((p) => `<button type="button" data-pic="${esc(p)}" aria-pressed="${p === a.icon}" aria-label="Use ${p === 'abc' ? 'ABC blocks' : isNumIcon(p) ? 'number ' + p : p}">${iconHTML(p)}</button>`).join('')}</div>
+        <div class="picker-own">
+          <label for="own-${esc(a.id)}">Or type any emoji</label>
+          <input type="text" id="own-${esc(a.id)}" class="own-in" maxlength="12" autocomplete="off">
+        </div>
+      </div>
+    </div>`;
+  }
+  function renderAreaCards() {
+    areaList.innerHTML = state.areas.map(areaCardHTML).join('');
+    $('#add-area').disabled = state.areas.length >= MAX_AREAS;
+    $('#add-area').textContent = state.areas.length >= MAX_AREAS ? `${MAX_AREAS} areas is the most a wheel holds` : '+ Add an area';
+  }
+  function firstGlyph(str) {
+    const s = str.trim();
+    if (!s) return '';
+    if (/^\d/.test(s)) return s.match(/^\d{1,2}/)[0];
+    if (window.Intl && Intl.Segmenter) {
+      const it = new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(s)[Symbol.iterator]().next();
+      return it.value ? it.value.segment : s;
+    }
+    return Array.from(s).slice(0, 2).join('');
+  }
+  function areaFromEvent(e) {
+    const card = e.target.closest('.area-card');
+    if (!card) return [null, null];
+    return [card, state.areas.find((a) => a.id === card.dataset.id)];
+  }
+  areaList.addEventListener('input', (e) => {
+    const [, a] = areaFromEvent(e);
+    if (!a) return;
+    if (e.target.classList.contains('name-in')) a.name = e.target.value;
+    else if (e.target.classList.contains('desc-in')) a.desc = e.target.value;
+    else return;
+    save();
+    renderMain();
+  });
+  areaList.addEventListener('focusout', (e) => {
+    const [, a] = areaFromEvent(e);
+    if (a && e.target.classList.contains('name-in') && !a.name.trim()) {
+      a.name = `Area ${state.areas.indexOf(a) + 1}`;
+      e.target.value = a.name;
+      save();
+      renderMain();
+    }
+  });
+  function setIcon(card, a, icon) {
+    a.icon = icon;
+    card.querySelector('.pic').innerHTML = iconHTML(icon);
+    card.querySelectorAll('[data-pic]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.pic === icon)));
+    save();
+    renderMain();
+  }
+  areaList.addEventListener('change', (e) => {
+    const [card, a] = areaFromEvent(e);
+    if (!a || !e.target.classList.contains('own-in')) return;
+    const g = firstGlyph(e.target.value);
+    if (g) setIcon(card, a, g);
+  });
+  areaList.addEventListener('click', (e) => {
+    const [card, a] = areaFromEvent(e);
+    if (!a) return;
+    const idx = state.areas.indexOf(a);
+    if (e.target.closest('.pic')) {
+      const picker = card.querySelector('.picker');
+      picker.hidden = !picker.hidden;
+      card.querySelector('.pic').setAttribute('aria-expanded', String(!picker.hidden));
+      return;
+    }
+    const pic = e.target.closest('[data-pic]');
+    if (pic) {
+      setIcon(card, a, pic.dataset.pic);
+      card.querySelector('.picker').hidden = true;
+      card.querySelector('.pic').setAttribute('aria-expanded', 'false');
+      card.querySelector('.pic').focus();
+      return;
+    }
+    const step = e.target.closest('[data-step]');
+    if (step) {
+      a.slots = Math.min(MAX_SLOTS, Math.max(1, a.slots + Number(step.dataset.step)));
+      card.querySelector('output').textContent = a.slots;
+      card.querySelector('.unit').textContent = a.slots === 1 ? 'helper' : 'helpers';
+      card.querySelector('[data-step="-1"]').disabled = a.slots <= 1;
+      card.querySelector('[data-step="1"]').disabled = a.slots >= MAX_SLOTS;
+      changed();
+      return;
+    }
+    if (e.target.closest('[data-remove]') && state.areas.length > 2) {
+      state.areas.splice(idx, 1);
+      renderAreaCards();
+      changed();
+      announce(`${a.name} removed.`);
+      const next = areaList.querySelectorAll('.name-in')[Math.min(idx, state.areas.length - 1)];
+      if (next) next.focus();
+    }
+  });
+  $('#add-area').addEventListener('click', () => {
+    if (state.areas.length >= MAX_AREAS) return;
+    const a = { id: uid(), name: `Area ${state.areas.length + 1}`, icon: '⭐', slots: 1, desc: '' };
+    state.areas.push(a);
+    renderAreaCards();
+    changed();
+    const input = document.getElementById('name-' + a.id);
+    if (input) { input.focus(); input.select(); }
+  });
+  $('#sample-btn').addEventListener('click', (e) => {
+    confirmTap(e.currentTarget, 'Tap again to replace your areas', () => {
+      state.areas = clone(SAMPLE_AREAS);
+      resetRound();
+      renderAreaCards();
+      changed();
+      announce('Sample areas restored.');
+    });
+  });
+
+  // Class list
+  const namesInput = $('#names-input');
+  function renderClassPane() {
+    if (document.activeElement !== namesInput) namesInput.value = state.namesText;
+    const n = names().length;
+    $('#names-meta').textContent = n ? `${n} ${n === 1 ? 'child' : 'children'} in your class list` : 'No names yet. The spinner will hand out spots without names.';
+    document.querySelectorAll('[data-order]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.order === state.order)));
+    $('#clear-names').disabled = !state.namesText.trim();
+  }
+  namesInput.addEventListener('input', () => {
+    state.namesText = namesInput.value;
+    namesCache = null;
+    ensureNext();
+    save();
+    renderMain();
+    renderClassPane();
+  });
+  document.querySelectorAll('[data-order]').forEach((b) => b.addEventListener('click', () => {
+    state.order = b.dataset.order;
+    state.nextName = null;
+    ensureNext();
+    save();
+    renderMain();
+    renderClassPane();
+  }));
+  $('#clear-names').addEventListener('click', (e) => {
+    confirmTap(e.currentTarget, 'Tap again to clear all names', () => {
+      state.namesText = '';
+      namesCache = null;
+      state.picks.forEach((p) => { p.name = null; });
+      state.absent = [];
+      state.nextName = null;
+      save();
+      renderMain();
+      renderClassPane();
+      announce('Class list cleared.');
+    });
+  });
+
+  // Wheels: words, timer and the 10 designs
+  const designGrid = $('#design-grid');
+  function renderWheelsPane() {
+    const fill = (id, v) => { const el = $(id); if (document.activeElement !== el) el.value = v; };
+    fill('#title-in', state.title);
+    fill('#sub-in', state.subtitle);
+    fill('#hub-in', state.hub);
+    $('#tmin-out').textContent = state.timerMin;
+    $('#tmin-minus').disabled = state.timerMin <= 1;
+    $('#tmin-plus').disabled = state.timerMin >= 15;
+    renderDesigns();
+  }
+  function renderDesigns() {
+    designGrid.innerHTML = THEMES.map((t) => {
+      const on = t.id === state.themeId;
+      const p = t.page, w = t.wheel;
+      return `<button type="button" class="design-card" data-theme="${t.id}" aria-pressed="${on}"
+          style="background:${p.surface};border-color:${p.line};color:${p.ink}">
+        <span class="mini">
+          <canvas aria-hidden="true"></canvas>
+          <span class="mptr">${pointerSVG(t)}</span>
+          <span class="mhub" style="background:${w.hubBg};border-color:${w.hubRing};color:${w.hubInk};font-family:${FONTS[t.font].replace(/"/g, "'")}">${hubHTML(t)}</span>
+        </span>
+        <span class="dname" style="font-family:${FONTS[t.font].replace(/"/g, "'")};font-weight:${t.weight}">${esc(t.name)}${on ? `<span class="tag" style="background:${p.accent};color:${p.onAccent}">In use</span>` : ''}</span>
+        <span class="ddesc" style="color:${p.inkSoft}">${esc(t.desc)}</span>
+      </button>`;
+    }).join('');
+    requestAnimationFrame(drawDesignPreviews);
+  }
+  function drawDesignPreviews() {
+    designGrid.querySelectorAll('.design-card').forEach((card) => {
+      const t = THEMES.find((x) => x.id === card.dataset.theme);
+      const got = sizeCanvas(card.querySelector('canvas'));
+      if (got) drawWheel(got.ctx, got.size, t, state.areas, remainingOf);
+    });
+  }
+  let designTimer = 0;
+  function scheduleDesigns() { clearTimeout(designTimer); designTimer = setTimeout(renderDesigns, 250); }
+  designGrid.addEventListener('click', (e) => {
+    const card = e.target.closest('[data-theme]');
+    if (!card) return;
+    if (card.dataset.theme === state.themeId) { sfx.win(); return; }
+    state.themeId = card.dataset.theme;
+    save();
+    applyTheme();
+    renderMain();
+    renderDesigns();
+    designGrid.querySelector(`[data-theme="${state.themeId}"]`).focus({ preventScroll: true });
+    sfx.win();
+    announce(`${theme().name} design is on.`);
+  });
+  $('#title-in').addEventListener('input', (e) => { state.title = e.target.value; save(); renderTitle(); });
+  $('#sub-in').addEventListener('input', (e) => { state.subtitle = e.target.value; save(); renderTitle(); });
+  $('#hub-in').addEventListener('input', (e) => { state.hub = e.target.value; save(); renderMain(); scheduleDesigns(); });
+  $('#title-in').addEventListener('change', (e) => { if (!state.title.trim()) { state.title = 'Clean-Up Spinner'; e.target.value = state.title; save(); renderTitle(); } });
+  $('#tmin-minus').addEventListener('click', () => { state.timerMin = Math.max(1, state.timerMin - 1); save(); renderWheelsPane(); updateTimerButton(); });
+  $('#tmin-plus').addEventListener('click', () => { state.timerMin = Math.min(15, state.timerMin + 1); save(); renderWheelsPane(); updateTimerButton(); });
+
+  // ---------- Boot ----------
+  applyTheme();
+  applyRotation(state.rotation);
+  ensureNext();
+  renderMain();
+  if (window.ResizeObserver) {
+    new ResizeObserver(drawMain).observe($('#wheel-wrap'));
+    new ResizeObserver(() => { if (!setupEl.hidden && currentTab === 'wheels') drawDesignPreviews(); }).observe(designGrid);
+  } else {
+    window.addEventListener('resize', drawMain);
+  }
+  if (document.fonts && document.fonts.load) {
+    Promise.all([
+      document.fonts.load(`700 20px "Fredoka"`), document.fonts.load(`600 20px "Fredoka"`),
+      document.fonts.load(`400 20px "Patrick Hand"`), document.fonts.load(`800 20px "Nunito"`),
+      document.fonts.load(`400 20px "Bangers"`), document.fonts.load(`400 20px "Shrikhand"`)
+    ]).then(() => {
+      drawMain();
+      if (!setupEl.hidden && currentTab === 'wheels') drawDesignPreviews();
+    }, () => {});
+  }
+  if (timerRunning()) runTimer();
+  else if (state.timerEnd) { state.timerEnd = 0; save(); }
+})();
+</script>
+</body>
+</html>
