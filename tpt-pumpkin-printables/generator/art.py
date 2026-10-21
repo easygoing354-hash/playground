@@ -1267,3 +1267,26 @@ def mask_bat():
     a.poly([(-6, 18), (-3, 26), (0, 18)], "paper", w=1)
     a.poly([(6, 18), (3, 26), (0, 18)], "paper", w=1)
     return a
+
+
+def crayon(fill="orange"):
+    a = Art()
+    a.path("M -30 -10 L 26 -10 L 26 10 L -30 10 C -34 6 -34 -6 -30 -10 Z", fill)
+    a.path("M 26 -10 L 46 -3 C 48 -2 48 2 46 3 L 26 10 Z", fill)
+    a.line(-18, -10, -18, 10, w=1.4)
+    a.line(14, -10, 14, 10, w=1.4)
+    return a
+
+
+def puppet_arm():
+    a = Art()
+    a.rect(-46, -7, 70, 14, 7, "leaf2")
+    lf = Art().path("M 0 0 C 8 -14 26 -16 34 -8 C 28 2 14 8 0 0 Z", "leaf")
+    a.add(lf, dx=18, dy=0)
+    return a
+
+
+def shoe():
+    a = Art()
+    a.path("M -40 10 C -42 -8 -26 -14 -10 -12 C 10 -10 28 -16 40 -4 C 46 4 42 14 30 14 L -34 14 C -38 14 -40 12 -40 10 Z", "stem")
+    return a

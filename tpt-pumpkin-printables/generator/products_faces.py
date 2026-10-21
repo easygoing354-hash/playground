@@ -37,7 +37,7 @@ def pieces_from(parts, k=K):
 
 def craft(num, title, parts, extras=(), behind=(), prompt=None, starter=None, skills=None,
           steps=None, tip=None, grades="PreK - 2", sub=None, extra_pages=None, pieces_title=None,
-          template_title=None):
+          template_title=None, wtitle=None):
     composite = assembled(parts, behind)
 
     def build(doc):
@@ -47,7 +47,7 @@ def craft(num, title, parts, extras=(), behind=(), prompt=None, starter=None, sk
         if extra_pages:
             extra_pages(doc)
         if prompt:
-            writing_page(doc, f"My {title}", prompt, starter)
+            writing_page(doc, wtitle or f"My {title}", prompt, starter)
 
     PRODUCTS.append(dict(num=num, title=title, build=build, example=example_of(composite),
                          skills=skills or CRAFT_SKILLS, steps=steps or CRAFT_STEPS, tip=tip,
@@ -82,7 +82,7 @@ craft(1, "Build a Jack-o'-Lantern", face("triangle", "triangle", "grin"),
       + ex_pieces([A.nose("down"), A.nose("circle")], 13)
       + ex_pieces([A.mouth("smile"), A.mouth("zigzag")], 36),
       extra_pages=_classic_black,
-      prompt="What does your jack-o'-lantern look like?", starter="My jack-o'-lantern is",
+      wtitle="My Jack-o'-Lantern", prompt="What does your jack-o'-lantern look like?", starter="My jack-o'-lantern is",
       tip="For a quick no-colour version, print the template on orange paper and use the black pieces page.")
 
 # 2 Silly faces
@@ -91,7 +91,7 @@ craft(2, "Silly Pumpkin Faces",
       extras=ex_pieces([A.eye("spiral"), A.eye("cute")], 22, True)
       + ex_pieces([A.mouth("tongue"), A.mouth("wavy")], 36)
       + ex_pieces([A.mustache()], 34) + ex_pieces([A.glasses()], 54) + ex_pieces([A.nose("button")], 15),
-      prompt="Make your pumpkin as silly as you can!", starter="My pumpkin is silly because",
+      wtitle="My Silly Pumpkin", prompt="Make your pumpkin as silly as you can!", starter="My pumpkin is silly because",
       tip="Read a silly fall picture book first. Then let students vote for the silliest pumpkin!")
 
 # 3 Spooky faces
@@ -101,7 +101,7 @@ craft(3, "Spooky Pumpkin Faces",
       extras=ex_pieces([A.eye("moon"), A.eye("x"), A.eye("cat")], 20, True)
       + ex_pieces([A.mouth("vampire"), A.mouth("stitch"), A.mouth("zigzag")], 36)
       + ex_pieces([A.brow(), A.brow()], 18),
-      prompt="Is your pumpkin spooky or silly-spooky?", starter="My spooky pumpkin says",
+      wtitle="My Spooky Pumpkin", prompt="Is your pumpkin spooky or silly-spooky?", starter="My spooky pumpkin says",
       tip="Turn the finished pumpkins into a 'Guess Whose Pumpkin?' game with names hidden on the back.")
 
 # 4 Cute / kawaii
@@ -111,7 +111,7 @@ craft(4, "Cute Pumpkin Faces",
        (A.hair_bow(), 22, -32, 28, False, 15)],
       extras=ex_pieces([A.eye("heart"), A.eye("happy"), A.eye("star")], 18, True)
       + ex_pieces([A.mouth("smile")], 30) + ex_pieces([A.nose("circle")], 10),
-      prompt="Give your pumpkin a name!", starter="My pumpkin's name is",
+      wtitle="My Cute Pumpkin", prompt="Give your pumpkin a name!", starter="My pumpkin's name is",
       tip="Pink cheeks look great with a little cotton ball of crayon shavings rubbed on.")
 
 
@@ -129,11 +129,11 @@ def _feelings_build(doc):
         cx = L.M + (i % cols + 0.5) * cw
         cy = y - (i // cols + 0.5) * ch
         kit.draw_fit(doc.R, A.pumpkin(ribs=False, vine=False), cx, cy + 14, cw * 0.92, ch * 0.78)
-        L.glue_box(c, cx - 50, cy - 10, 100, 70, "glue face")
+        L.glue_box(c, cx - 48, cy - 16, 96, 62, None)
         L.fit_text(c, emo, cx, cy - ch / 2 + 6, cw - 10, 22, "Head")
     order = [3, 0, 5, 1, 4, 2]
-    kit.card_grid(doc, "Feeling Faces", "Colour and cut out each face card.",
-                  [A.emotion_face(A.EMOTIONS[i]) for i in order], 3, 2, art_frac=0.8)
+    kit.card_grid(doc, "Feeling Faces", "Colour and cut out each face card (2 sets per page).",
+                  [A.emotion_face(A.EMOTIONS[i]) for i in order] * 2, 3, 4, art_frac=0.62)
     c = doc.page()
     y = L.header(c, doc.R, "Today I Feel...", "Draw a face on the pumpkin to show how you feel today.")
     kit.draw_fit(doc.R, A.pumpkin(ribs=False), L.PAGE_W / 2, y - 200, 400, 380)
@@ -167,7 +167,7 @@ PRODUCTS.append(dict(
 
 def _shape_record(doc):
     c = doc.page()
-    y = L.header(c, doc.R, "My Shape Pumpkin", "Count the shapes you used. Write the number.")
+    y = L.header(c, doc.R, "Shape Count", "Count the shapes you used. Write the number.")
     kinds = ["circle", "square", "triangle", "rectangle", "oval", "hexagon", "star", "heart"]
     rh = (y - 60) / 4
     for i, k in enumerate(kinds):
@@ -193,7 +193,7 @@ craft(6, "Shape Jack-o'-Lanterns",
                ("rhombus", 14)]],
       skills=["Identify and name 2D shapes", "Count and record", "Composing shapes to make a picture",
               "Fine-motor cutting"],
-      extra_pages=_shape_record, prompt="Which shapes did you use?", starter="I used",
+      extra_pages=_shape_record, wtitle="My Shape Pumpkin", prompt="Which shapes did you use?", starter="I used",
       steps=["Name each 2D shape on the pieces pages together.",
              "Students colour, then cut out the pumpkin and the shapes they want.",
              "Build a face using only shapes, then glue it down.",
@@ -210,7 +210,7 @@ craft(7, "Pumpkin Dress-Up",
        (A.bow_tie(), 0, 46, 34)],
       extras=ex_pieces([A.witch_hat()], 56) + ex_pieces([A.crown()], 46) + ex_pieces([A.hair_bow()], 30)
       + ex_pieces([A.nose("triangle")], 12) + ex_pieces([A.eye("triangle")], 18, True),
-      prompt="Where is your pumpkin going all dressed up?", starter="My pumpkin is going to",
+      wtitle="My Dressed-Up Pumpkin", prompt="Where is your pumpkin going all dressed up?", starter="My pumpkin is going to",
       tip="Pair with a fall dress-up day: students design a pumpkin that matches their own outfit.")
 
 # ---------------------------------------------------------------------------
