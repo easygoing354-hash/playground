@@ -1,0 +1,736 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0;padding:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Preschool Unfiltered</title>
+<meta name="description" content="Classroom-tested preschool printables and interactive tools from Preschool Unfiltered, available on Teachers Pay Teachers.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@500;700;800;900&family=Lexend:wght@300;400;500;600&family=Gochi+Hand&display=swap">
+<style>
+/* Layout: bulletin-board classroom. A plum construction-paper hero with a live spinner,
+   scalloped border trim between sections, laminated product cards on butter-yellow paper. */
+:root {
+  --paper: #FFF7DF;        /* butter construction paper */
+  --paper-2: #FDEFC6;      /* deeper paper for bands */
+  --card: #FFFFFF;
+  --ink: #2E2147;          /* plum ink for text */
+  --ink-soft: #5E5277;
+  --line: #EADFC0;
+  --plum: #3B2A5C;         /* brand plum, from the product covers */
+  --plum-2: #4A3872;
+  --on-plum: #FFF4DA;
+  --sun: #FFC83D;          /* sunny yellow */
+  --pumpkin: #F2862A;      /* pumpkin orange, main accent */
+  --pumpkin-ink: #B85310;
+  --leaf: #4E9C62;
+  --berry: #E3566C;
+  --sky: #4AA3C8;
+  --tile: #FFF1CF;
+  --chip: #FFFFFF;
+  --chip-on: var(--plum);
+  --chip-on-ink: #FFF4DA;
+  --shadow: 0 2px 0 rgba(46,33,71,.08), 0 10px 24px -12px rgba(46,33,71,.28);
+  --f-display: "Grandstander", "Baloo 2", "Comic Sans MS", system-ui, sans-serif;
+  --f-body: "Lexend", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-hand: "Gochi Hand", "Bradley Hand", "Segoe Print", cursive;
+  --r: 18px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #1C1529; --paper-2: #241B36; --card: #2B2142; --ink: #FFF1DA; --ink-soft: #CDBFE0;
+    --line: #3D3157; --plum: #3B2A5C; --plum-2: #4A3872; --on-plum: #FFF4DA;
+    --pumpkin-ink: #FFB06B; --tile: #F6EBD3; --chip: #2B2142; --chip-on: #FFC83D; --chip-on-ink: #2E2147;
+    --shadow: 0 2px 0 rgba(0,0,0,.25), 0 12px 26px -12px rgba(0,0,0,.6);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #1C1529; --paper-2: #241B36; --card: #2B2142; --ink: #FFF1DA; --ink-soft: #CDBFE0;
+  --line: #3D3157; --plum: #3B2A5C; --plum-2: #4A3872; --on-plum: #FFF4DA;
+  --pumpkin-ink: #FFB06B; --tile: #F6EBD3; --chip: #2B2142; --chip-on: #FFC83D; --chip-on-ink: #2E2147;
+  --shadow: 0 2px 0 rgba(0,0,0,.25), 0 12px 26px -12px rgba(0,0,0,.6);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  background: var(--paper); color: var(--ink);
+  font-family: var(--f-body); font-size: 16px; line-height: 1.6; font-weight: 400;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--plum); }
+a { color: inherit; }
+img { max-width: 100%; height: auto; display: block; }
+h1, h2, h3 { font-family: var(--f-display); line-height: 1.05; text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+p { margin: 0; }
+:focus-visible { outline: 3px solid var(--pumpkin); outline-offset: 3px; border-radius: 8px; }
+
+.wrap {
+  max-width: 1160px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* ---------- header ---------- */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--plum); color: var(--on-plum); }
+.top .wrap { display: flex; align-items: center; gap: 24px; padding-block: 12px; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; margin-right: auto; }
+.brand-mark { width: 38px; height: 38px; flex: none; }
+.brand-name { font-family: var(--f-display); font-weight: 800; font-size: 20px; line-height: 1; }
+.brand-name small { display: block; font-family: var(--f-hand); font-weight: 400; font-size: 15px; color: var(--sun); letter-spacing: .02em; margin-top: 3px; }
+.nav { display: flex; gap: 22px; font-size: 15px; }
+.nav a { text-decoration: none; opacity: .85; }
+.nav a:hover { opacity: 1; text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 2px; text-decoration-color: var(--sun); }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  font-family: var(--f-display); font-weight: 800; font-size: 16px; line-height: 1;
+  padding: 13px 20px; border-radius: 999px; border: 0; cursor: pointer; text-decoration: none;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn-sun { background: var(--sun); color: #2E2147; box-shadow: 0 3px 0 #C9921A; }
+.btn-pumpkin { background: var(--pumpkin); color: #fff; box-shadow: 0 3px 0 #B85310; }
+.btn-ghost { background: transparent; color: var(--on-plum); box-shadow: inset 0 0 0 2px rgba(255,244,218,.45); }
+.btn-ghost:hover { box-shadow: inset 0 0 0 2px var(--sun); }
+.btn-sm { font-size: 14px; padding: 10px 16px; }
+@media (max-width: 760px) { .nav { display: none; } }
+
+/* ---------- scalloped bulletin-board trim ---------- */
+.trim { height: 18px; background: radial-gradient(circle at 50% 0, var(--trim, var(--plum)) 13px, transparent 14px) 0 0 / 30px 18px repeat-x; }
+.trim.up { background: radial-gradient(circle at 50% 100%, var(--trim, var(--plum)) 13px, transparent 14px) 0 0 / 30px 18px repeat-x; }
+
+/* ---------- hero ---------- */
+.hero { background: var(--plum); color: var(--on-plum); position: relative; overflow: hidden; }
+.hero::after { /* paper-grain dots */
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .12;
+  background-image: radial-gradient(rgba(255,255,255,.7) 1px, transparent 1.5px); background-size: 22px 22px;
+}
+.hero .wrap { position: relative; z-index: 1; display: grid; grid-template-columns: 1.05fr .95fr; gap: 48px; align-items: center; padding-block: 56px 48px; }
+.eyebrow { font-family: var(--f-hand); font-size: 22px; color: var(--sun); transform: rotate(-2deg); display: inline-block; }
+.hero h1 { font-size: clamp(42px, 6.4vw, 78px); font-weight: 900; margin-top: 10px; }
+.hero h1 span { display: block; }
+.hero h1 .c1 { color: var(--sun); }
+.hero h1 .c2 { color: #FFB06B; }
+.hero h1 .c3 { color: var(--on-plum); }
+.hero-lede { font-size: 18px; font-weight: 300; max-width: 34em; margin-top: 20px; color: #EADFF7; }
+.hero-cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+.facts { display: flex; flex-wrap: wrap; gap: 10px 22px; margin-top: 30px; font-size: 14px; color: #D9CCEB; }
+.facts b { font-family: var(--f-display); font-weight: 800; font-size: 20px; color: var(--sun); margin-right: 6px; font-variant-numeric: tabular-nums; }
+
+/* spinner demo */
+.spin-card {
+  background: #FFF7DF; color: #2E2147; border-radius: 28px; padding: 22px 22px 20px;
+  box-shadow: 0 6px 0 rgba(0,0,0,.18), 0 24px 50px -20px rgba(0,0,0,.5);
+  transform: rotate(1.2deg); position: relative;
+}
+.spin-card::before { /* masking tape */
+  content: ""; position: absolute; top: -12px; left: 50%; width: 110px; height: 26px; margin-left: -55px;
+  background: rgba(255,200,61,.75); transform: rotate(-3deg); border-radius: 3px;
+}
+.spin-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.spin-head h2 { font-size: 24px; font-weight: 800; }
+.spin-head span { font-family: var(--f-hand); font-size: 17px; color: #8A5A16; }
+.wheel-box { position: relative; width: min(100%, 330px); aspect-ratio: 1; margin: 14px auto 6px; max-width: 100%; }
+.wheel { width: 100%; height: 100%; transition: transform 3.6s cubic-bezier(.17,.84,.24,1); will-change: transform; }
+.wheel svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.pointer { position: absolute; top: -8px; left: 50%; width: 34px; height: 40px; margin-left: -17px; z-index: 2; filter: drop-shadow(0 3px 0 rgba(0,0,0,.2)); }
+.spin-row { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; margin-top: 10px; }
+.result { min-width: 0; background: #fff; border: 2px dashed #E8D7A8; border-radius: 16px; padding: 10px 14px; min-height: 68px; }
+.result .who { font-family: var(--f-display); font-weight: 800; font-size: 18px; line-height: 1.2; }
+.result .who em { font-style: normal; color: #B85310; }
+.result .job { font-size: 14px; color: #5E5277; line-height: 1.4; margin-top: 2px; }
+.spin-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 14px; font-size: 14px; }
+.spin-foot a { font-weight: 600; color: #B85310; }
+.spin-foot small { color: #7A6E8F; font-size: 12px; }
+@media (prefers-reduced-motion: reduce) { .wheel { transition-duration: .01s; } }
+@media (max-width: 900px) {
+  .hero .wrap { grid-template-columns: 1fr; gap: 40px; padding-block: 40px 36px; }
+  .spin-card { transform: none; max-width: 460px; width: 100%; justify-self: center; }
+}
+
+/* ---------- sections ---------- */
+section { padding-block: 64px; }
+.sec-head { display: flex; justify-content: space-between; align-items: end; gap: 20px; flex-wrap: wrap; margin-bottom: 26px; }
+.sec-head h2 { font-size: clamp(32px, 4.4vw, 48px); font-weight: 900; }
+.sec-head p { color: var(--ink-soft); max-width: 36em; margin-top: 8px; }
+.hand { font-family: var(--f-hand); font-size: 21px; color: var(--pumpkin-ink); display: inline-block; transform: rotate(-1.5deg); }
+
+/* filters */
+.filters { display: grid; gap: 14px; margin-bottom: 28px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  font-family: var(--f-body); font-size: 14px; font-weight: 500; color: var(--ink);
+  background: var(--chip); border: 2px solid var(--line); border-radius: 999px; padding: 7px 14px; cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.chip:hover { border-color: var(--pumpkin); }
+.chip[aria-pressed="true"] { background: var(--chip-on); border-color: var(--chip-on); color: var(--chip-on-ink); }
+.chip .n { opacity: .6; margin-left: 4px; font-variant-numeric: tabular-nums; }
+.filter-row { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; justify-content: space-between; }
+.selects { display: flex; flex-wrap: wrap; gap: 10px; }
+.selects label { font-size: 14px; color: var(--ink-soft); display: flex; align-items: center; gap: 8px; }
+select {
+  font: inherit; font-size: 14px; color: var(--ink); background: var(--chip); border: 2px solid var(--line);
+  border-radius: 12px; padding: 7px 10px; cursor: pointer; max-width: 100%;
+}
+.count { font-size: 14px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+
+/* product grid */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(232px, 1fr)); gap: 22px; }
+.card {
+  background: var(--card); border-radius: var(--r); box-shadow: var(--shadow); overflow: hidden;
+  display: flex; flex-direction: column; min-width: 0;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.card:hover { transform: translateY(-4px) rotate(-.6deg); }
+@media (prefers-reduced-motion: reduce) { .card, .btn { transition: none; } .card:hover, .btn:hover { transform: none; } }
+.thumb { aspect-ratio: 1; max-width: 100%; background: var(--tile); display: grid; place-items: center; padding: 14px; position: relative; }
+.thumb img { position: absolute; inset: 14px; width: calc(100% - 28px); height: calc(100% - 28px); object-fit: contain; filter: drop-shadow(0 3px 6px rgba(46,33,71,.2)); }
+.thumb .art { position: absolute; inset: 14px; width: auto; height: auto; }
+.thumb .badge { z-index: 1; }
+.badge {
+  position: absolute; top: 10px; left: 10px; font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+  background: var(--leaf); color: #fff; padding: 4px 9px; border-radius: 999px;
+}
+.badge.hot { background: var(--berry); }
+.card-body { padding: 16px 16px 18px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.meta { display: flex; gap: 6px; flex-wrap: wrap; font-size: 12px; font-weight: 500; }
+.pill { background: var(--paper-2); color: var(--ink-soft); border-radius: 999px; padding: 2px 9px; }
+.card h3 { font-size: 20px; font-weight: 800; }
+.card p { font-size: 14px; color: var(--ink-soft); line-height: 1.5; }
+.buy { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: auto; padding-top: 10px; border-top: 2px dotted var(--line); }
+.price { font-family: var(--f-display); font-weight: 900; font-size: 24px; font-variant-numeric: tabular-nums; }
+.price.free { color: var(--leaf); }
+.buy a {
+  font-weight: 600; font-size: 14px; text-decoration: none; color: #fff; background: var(--pumpkin);
+  padding: 8px 14px; border-radius: 999px; white-space: nowrap; box-shadow: 0 2px 0 #B85310;
+}
+.buy a:hover { background: #E3741A; }
+.empty { grid-column: 1 / -1; text-align: center; padding: 40px 16px; color: var(--ink-soft); }
+.empty button { margin-top: 12px; }
+
+/* placeholder art for covers we don't have yet */
+.art { width: 100%; height: 100%; border-radius: 6px; display: grid; place-items: center; text-align: center; padding: 16px; position: relative; overflow: hidden; box-shadow: 0 2px 8px rgba(46,33,71,.15); }
+.art strong { font-family: var(--f-display); font-weight: 900; font-size: 24px; line-height: 1.05; position: relative; z-index: 1; }
+.art.sea { background: linear-gradient(#BFE6F3, #6CC1DF); color: #18405A; }
+.art.sea::before { content: ""; position: absolute; inset: 0; background:
+  radial-gradient(circle at 18% 78%, rgba(255,255,255,.75) 0 7px, transparent 8px),
+  radial-gradient(circle at 26% 62%, rgba(255,255,255,.6) 0 4px, transparent 5px),
+  radial-gradient(circle at 80% 26%, rgba(255,255,255,.7) 0 9px, transparent 10px),
+  radial-gradient(circle at 72% 14%, rgba(255,255,255,.55) 0 5px, transparent 6px),
+  radial-gradient(ellipse at 50% 112%, #F4D89A 0 36%, transparent 37%); }
+.art.match { background: #6CC07A; color: #fff; }
+.art.match::before { content: ""; position: absolute; left: 50%; top: 20%; width: 120px; height: 56px; margin-left: -60px; background:
+  radial-gradient(circle at 25% 50%, #2E2147 0 9px, #fff 10px 26px, transparent 27px),
+  radial-gradient(circle at 75% 50%, #2E2147 0 9px, #fff 10px 26px, transparent 27px); }
+.art.match strong { margin-top: 60px; }
+
+/* ---------- theme week ---------- */
+.week { background: var(--paper-2); }
+.week .trim { --trim: var(--paper); }
+.days { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; }
+.day {
+  background: var(--card); border-radius: var(--r); box-shadow: var(--shadow); padding: 14px 14px 16px;
+  display: flex; flex-direction: column; gap: 10px; text-decoration: none; min-width: 0; transition: transform .2s ease;
+}
+.day:hover { transform: translateY(-3px); }
+.day-name { font-family: var(--f-display); font-weight: 900; font-size: 15px; letter-spacing: .08em; text-transform: uppercase; color: #fff; align-self: flex-start; padding: 3px 12px; border-radius: 999px; }
+.day img { aspect-ratio: 1; object-fit: contain; background: var(--tile); border-radius: 10px; padding: 8px; width: 100%; max-width: 100%; }
+.day h3 { font-size: 17px; font-weight: 800; }
+.day .tip { font-family: var(--f-hand); font-size: 17px; line-height: 1.3; color: var(--ink-soft); }
+.day .p { margin-top: auto; font-weight: 600; font-size: 14px; color: var(--pumpkin-ink); font-variant-numeric: tabular-nums; }
+.week-total { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-top: 22px; background: var(--card); border: 2px dashed var(--line); border-radius: var(--r); padding: 16px 20px; }
+.week-total b { font-family: var(--f-display); font-size: 22px; font-variant-numeric: tabular-nums; }
+@media (max-width: 980px) { .days { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); } }
+
+/* ---------- inclusive spotlight ---------- */
+.spot { display: grid; grid-template-columns: .9fr 1.1fr; gap: 40px; align-items: center; }
+.spot-img { background: var(--plum); border-radius: 28px; padding: 26px; transform: rotate(-1.5deg); box-shadow: var(--shadow); max-width: 100%; }
+.spot-img img { border-radius: 10px; width: 100%; }
+.spot h2 { font-size: clamp(30px, 4vw, 44px); font-weight: 900; margin-top: 8px; }
+.spot p { color: var(--ink-soft); margin-top: 14px; max-width: 34em; }
+.ticks { list-style: none; padding: 0; margin: 20px 0 24px; display: grid; gap: 10px; }
+.ticks li { display: flex; gap: 12px; align-items: flex-start; }
+.ticks li::before { content: ""; flex: none; width: 22px; height: 22px; margin-top: 2px; border-radius: 50%;
+  background: var(--leaf) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12.5l4 4 8-9' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/16px no-repeat; }
+@media (max-width: 820px) { .spot { grid-template-columns: 1fr; } .spot-img { max-width: 420px; } }
+
+/* ---------- free + coming soon ---------- */
+.freebie-band { background: var(--leaf); color: #fff; }
+.freebie-band .trim { --trim: var(--paper); }
+.free-grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 40px; align-items: center; }
+.free-grid h2 { font-size: clamp(32px, 4.4vw, 48px); font-weight: 900; }
+.free-grid p { margin-top: 12px; max-width: 34em; color: #EAF7EC; }
+.free-grid .hand { color: #FFE9A6; }
+.free-cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+.btn-white { background: #fff; color: #2F6B40; box-shadow: 0 3px 0 rgba(0,0,0,.18); }
+.btn-line { background: transparent; color: #fff; box-shadow: inset 0 0 0 2px rgba(255,255,255,.7); }
+.soon { background: #FFF7DF; color: #2E2147; border-radius: 22px; padding: 16px; box-shadow: 0 6px 0 rgba(0,0,0,.15); transform: rotate(2deg); max-width: 340px; justify-self: center; width: 100%; }
+.soon img { border-radius: 12px; width: 100%; }
+.soon p { color: #5E5277; font-size: 14px; margin-top: 10px; }
+.soon .hand { color: #B85310; font-size: 20px; }
+@media (max-width: 820px) { .free-grid { grid-template-columns: 1fr; } }
+
+/* ---------- about ---------- */
+.about { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+.about h2 { font-size: clamp(30px, 4vw, 44px); font-weight: 900; }
+.about p { color: var(--ink-soft); margin-top: 14px; max-width: 36em; }
+.note {
+  background: var(--sun); color: #2E2147; padding: 22px 24px 24px; border-radius: 4px; transform: rotate(-1.8deg);
+  box-shadow: 0 14px 24px -14px rgba(46,33,71,.5); font-family: var(--f-hand); font-size: 22px; line-height: 1.35; max-width: 440px;
+}
+.note b { font-family: var(--f-display); font-weight: 800; font-size: 15px; letter-spacing: .08em; text-transform: uppercase; display: block; margin-bottom: 8px; }
+.note ul { margin: 0; padding-left: 20px; }
+@media (max-width: 820px) { .about { grid-template-columns: 1fr; } }
+
+/* ---------- footer ---------- */
+footer { background: var(--plum); color: #D9CCEB; }
+footer .trim { --trim: var(--paper); }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: center; justify-content: space-between; padding-block: 28px 36px; font-size: 14px; }
+footer a { color: var(--on-plum); font-weight: 600; }
+footer .brand-name { color: var(--on-plum); }
+.foot-social { display: flex; gap: 18px; }
+.social { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 14px; margin-top: 24px; }
+.social .hand { font-size: 19px; }
+.btn-plum { background: var(--plum); color: #FFF4DA; box-shadow: 0 3px 0 #22183A; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Preschool Unfiltered home">
+      <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
+        <circle cx="20" cy="20" r="19" fill="#FFF4DA"/>
+        <path d="M7 27a13 13 0 0 1 26 0" fill="none" stroke="#E3566C" stroke-width="3.2" stroke-linecap="round"/>
+        <path d="M11.5 27a8.5 8.5 0 0 1 17 0" fill="none" stroke="#FFC83D" stroke-width="3.2" stroke-linecap="round"/>
+        <path d="M16 27a4 4 0 0 1 8 0" fill="none" stroke="#4E9C62" stroke-width="3.2" stroke-linecap="round"/>
+      </svg>
+      <span class="brand-name">Preschool Unfiltered<small>real classrooms, no fluff</small></span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a href="#shop">Shop</a>
+      <a href="#pumpkin-week">Pumpkin Week</a>
+      <a href="#free">Free</a>
+      <a href="#about">About</a>
+    </nav>
+    <a class="btn btn-sun btn-sm" href="https://www.teacherspayteachers.com/store/preschool-unfiltered" target="_blank" rel="noopener">Visit TPT store ↗</a>
+  </div>
+</header>
+
+<main id="top">
+  <div class="hero">
+    <div class="wrap">
+      <div>
+        <span class="eyebrow">Made by a teacher, for real classrooms</span>
+        <h1><span class="c1">Real preschool.</span><span class="c2">Real resources.</span><span class="c3">No fluff.</span></h1>
+        <p class="hero-lede">Classroom-tested printables and interactive tools that make circle time smoother, transitions calmer and little learners excited to show up. Every one lives on Teachers Pay Teachers.</p>
+        <div class="hero-cta">
+          <a class="btn btn-sun" href="#shop">Shop the resources</a>
+          <a class="btn btn-ghost" href="#free">Get the free monster game</a>
+        </div>
+        <div class="facts" id="facts"></div>
+      </div>
+
+      <div class="spin-card" aria-labelledby="spin-title">
+        <div class="spin-head">
+          <h2 id="spin-title">Who's tidying up?</h2>
+          <span>try the Clean-Up Spinner</span>
+        </div>
+        <div class="wheel-box">
+          <svg class="pointer" viewBox="0 0 34 40" aria-hidden="true"><path d="M17 38 3 8a14 14 0 0 1 28 0Z" fill="#2E2147"/><circle cx="17" cy="11" r="5" fill="#FFC83D"/></svg>
+          <div class="wheel" id="wheel"><svg viewBox="-160 -160 320 320" id="wheel-svg" role="img" aria-label="Spinner wheel with eight classroom clean-up areas"></svg></div>
+        </div>
+        <div class="spin-row">
+          <button class="btn btn-pumpkin" id="spin-btn" type="button">SPIN</button>
+          <div class="result" aria-live="polite" id="result">
+            <div class="who">Tap <em>SPIN</em> to pick a helper</div>
+            <div class="job">Each spin calls the next friend and gives them a job.</div>
+          </div>
+        </div>
+        <div class="spin-foot">
+          <small>Sample class list. The real spinner uses your students' names.</small>
+          <a href="https://www.teacherspayteachers.com/Product/Clean-Up-Spinner-Teacher-Guide-and-Linkpdf-18025680" target="_blank" rel="noopener">Get the full spinner, $3 ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="trim"></div>
+
+  <section id="shop">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="hand">pulled off the shelf every single day</span>
+          <h2>Shop the resources</h2>
+          <p>Pick a theme or a skill. Every button takes you straight to the listing on Teachers Pay Teachers.</p>
+        </div>
+      </div>
+      <div class="filters">
+        <div class="chips" id="theme-chips" role="group" aria-label="Filter by theme"></div>
+        <div class="filter-row">
+          <div class="selects">
+            <label for="skill">Skill
+              <select id="skill"></select>
+            </label>
+            <label for="sort">Sort
+              <select id="sort">
+                <option value="best">Best sellers</option>
+                <option value="low">Price: low to high</option>
+                <option value="high">Price: high to low</option>
+              </select>
+            </label>
+          </div>
+          <span class="count" id="count" aria-live="polite"></span>
+        </div>
+      </div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </section>
+
+  <div class="week" id="pumpkin-week">
+    <div class="trim up"></div>
+    <section>
+      <div class="wrap">
+        <div class="sec-head">
+          <div>
+            <span class="hand">your whole week, already planned</span>
+            <h2>Pumpkin &amp; Harvest Week</h2>
+            <p>Five days of fall learning built from the shop: shapes, pretend play, patterns, colour sorting and a calm colouring day to finish.</p>
+          </div>
+        </div>
+        <div class="days" id="days"></div>
+        <div class="week-total">
+          <span>All five resources together: <b id="week-sum"></b></span>
+          <a class="btn btn-pumpkin btn-sm" href="#shop" id="week-filter">See all fall resources</a>
+        </div>
+      </div>
+    </section>
+    <div class="trim" style="--trim: var(--paper-2)"></div>
+  </div>
+
+  <section>
+    <div class="wrap spot">
+      <div class="spot-img"><img src="covers/aac.jpg" alt="Trick-or-Treat Communication Boards cover showing picture cards for happy Halloween, trick or treat, please, thank you and stop" width="279" height="279"></div>
+      <div>
+        <span class="hand">every kid gets to say it</span>
+        <h2>Trick-or-treat, in pictures</h2>
+        <p>Clip a picture board to the candy bucket and children who are non-speaking, minimally speaking or use AAC can join in at every door by pointing.</p>
+        <ul class="ticks">
+          <li>12 picture messages, from "trick or treat" to "all done" and "bathroom"</li>
+          <li>Main board plus an add-on board, each in 2 print sizes</li>
+          <li>ASL-based signs on the cards</li>
+        </ul>
+        <a class="btn btn-pumpkin" href="https://www.teacherspayteachers.com/Product/Halloween-Trick-or-Treat-Communication-Labels-17986304" target="_blank" rel="noopener">Get the boards on TPT, $1.50 ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="freebie-band" id="free">
+    <div class="trim up"></div>
+    <section>
+      <div class="wrap free-grid">
+        <div>
+          <span class="hand">no catch, it's free</span>
+          <h2>Start with the Monster Matching Game</h2>
+          <p>One set of silly, not-scary monster cards and two ways to play: a memory match and a biggest-to-smallest ordering game. Download it free on TPT, then follow the store to hear about new releases first.</p>
+          <div class="free-cta">
+            <a class="btn btn-white" href="https://www.teacherspayteachers.com/Product/Monster-Matching-Game-17703557" target="_blank" rel="noopener">Download it free ↗</a>
+            <a class="btn btn-line" href="https://www.teacherspayteachers.com/store/preschool-unfiltered" target="_blank" rel="noopener">Follow the store on TPT ↗</a>
+          </div>
+        </div>
+        <div class="soon">
+          <img src="covers/pumpkin-crafts.jpg" alt="50 Pumpkin Crafts and Fall Activities cover with six decorated pumpkins" width="520" height="520" loading="lazy">
+          <span class="hand">coming soon to the store</span>
+          <p>50 Pumpkin Crafts &amp; Fall Activities: cut, colour, glue and interactive games for PreK to 2nd.</p>
+        </div>
+      </div>
+    </section>
+    <div class="trim" style="--trim: var(--leaf)"></div>
+  </div>
+
+  <section id="about">
+    <div class="wrap about">
+      <div>
+        <span class="hand">hi there</span>
+        <h2>Made in a real preschool classroom</h2>
+        <p>Preschool Unfiltered is a small shop from Cambridge, Ontario. Every resource starts as something we needed in our own room: a fairer way to hand out clean-up jobs, a pumpkin activity that covers shapes and feelings at once, a sub binder that actually gets read.</p>
+        <p>If it didn't work with real three- and four-year-olds, it doesn't go in the store.</p>
+        <div class="social">
+          <a class="btn btn-pumpkin btn-sm" href="https://www.instagram.com/preschool_unfiltered" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="17.3" cy="6.7" r="1.3" fill="currentColor"/></svg>
+            Instagram</a>
+          <a class="btn btn-plum btn-sm" href="https://www.tiktok.com/@preschool.unfilte" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M14 3c.4 2.6 2.2 4.4 5 4.6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+            TikTok</a>
+          <span class="hand">see the resources in real classrooms</span>
+        </div>
+      </div>
+      <div class="note">
+        <b>What you can count on</b>
+        <ul>
+          <li>Low prep: print, cut, play</li>
+          <li>Big, simple pictures for little hands</li>
+          <li>Laminate once, reuse every year</li>
+          <li>Most resources under $3</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="trim up" style="--trim: var(--plum)"></div>
+  <div class="wrap">
+    <span class="brand-name">Preschool Unfiltered</span>
+    <span>Resources sold on <a href="https://www.teacherspayteachers.com/store/preschool-unfiltered" target="_blank" rel="noopener">Teachers Pay Teachers</a>. Prices in USD, set on TPT.</span>
+    <span class="foot-social"><a href="https://www.instagram.com/preschool_unfiltered" target="_blank" rel="noopener">Instagram</a> <a href="https://www.tiktok.com/@preschool.unfilte" target="_blank" rel="noopener">TikTok</a></span>
+    <span>© 2026 Preschool Unfiltered</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  var TPT = "https://www.teacherspayteachers.com/Product/";
+  var CDN = "https://ecdn.teacherspayteachers.com/thumbitem/";
+
+  // Store data from teacherspayteachers.com/store/preschool-unfiltered, in best-seller order.
+  // url: product page. hi: larger cover on TPT's image server (used when the site is hosted on your own domain).
+  var PRODUCTS = [
+    { id: "sub", title: "Substitute Teacher Binder", price: 6.00, grade: "PreK–8th", themes: ["any"], skills: ["teacher"],
+      blurb: "40 fillable pages so your sub knows your class, your routines and every child. Type over the examples and print.",
+      url: "Substitute-Teacher-Binder-Fillable-Sub-Plans-Student-Pages-17877903", hi: "Substitute-Teacher-Binder-Fillable-Sub-Plans-Student-Pages-17877903-1791410125/750f-17877903-1.jpg", img: "covers/sub.jpg" },
+    { id: "jack", title: "Jack-O'-Lantern Shape Faces", price: 2.50, grade: "PreK–1st", themes: ["fall", "halloween"], skills: ["shapes", "feelings"],
+      blurb: "Kids build their own pumpkin face from shape pieces. Shapes, fine motor and feelings talk in one activity.",
+      url: "Jack-O-Lantern-Shape-Faces-Pre-K-Pumpkin-Activity-Reusable-Fall-Printable-17889182", hi: "ack-O-Lantern-Shape-Faces-Pre-K-Pumpkin-Activity-Reusable-Fall-Printable-17889182-1791920152/750f-17889182-1.jpg", img: "covers/jack.jpg" },
+    { id: "spinner", title: "Clean-Up Spinner", price: 3.00, grade: "PreK–4th", themes: ["any"], skills: ["teacher"], tag: "Interactive",
+      blurb: "Tap spin and every child gets a clean-up job with a picture pop-up. Editable, with 10 wheel designs. Works on iPad and Chromebook.",
+      url: "Clean-Up-Spinner-Teacher-Guide-and-Linkpdf-18025680", hi: "Clean-Up-Spinner-Teacher-Guide-and-Link-pdf-18025680-1792532552/750f-18025680-1.jpg", img: "covers/spinner.jpg" },
+    { id: "bingo", title: "Halloween Number Bingo", price: 3.00, grade: "K–3rd", themes: ["halloween"], skills: ["numbers"],
+      blurb: "12 different boards, all 75 calling cards and a caller checklist for numbers 1 to 75.",
+      url: "Halloween-Number-Bingo-17986531", hi: "Halloween-Number-Bingo-17986531-1792243554/750f-17986531-1.jpg", img: "covers/bingo.jpg" },
+    { id: "leaf", title: "Fall Leaf Color Sorting Mats", price: 2.00, grade: "PreK–K", themes: ["fall"], skills: ["sorting"],
+      blurb: "Sort 110 leaf cards into 11 colour baskets. Each basket shows the colour word, so pre-readers can work on their own.",
+      url: "Fall-Leaf-Color-Sorting-Mats-17987531", hi: "Fall-Leaf-Color-Sorting-Mats-17987531-1792250255/750f-17987531-1.jpg", img: "covers/leaf.jpg" },
+    { id: "aac", title: "Trick-or-Treat Communication Boards", price: 1.50, grade: "All ages", themes: ["halloween"], skills: ["feelings"],
+      blurb: "Point-to-talk picture boards that clip to a candy bucket, for children who are non-speaking or use AAC.",
+      url: "Halloween-Trick-or-Treat-Communication-Labels-17986304", hi: "Halloween-Trick-or-Treat-Communication-Labels-17986304-1792242401/750f-17986304-1.jpg", img: "covers/aac.jpg" },
+    { id: "thanks", title: "Thanksgiving Play & Learn", price: 3.00, grade: "PreK–1st", themes: ["thanksgiving", "fall"], skills: ["numbers", "letters", "patterns"],
+      blurb: "17 no-prep pages at two levels, from counting pumpkins to tallies and number sentences.",
+      url: "Thanksgiving-Play-Learn-Pre-K-Kindergarten-Grade-1-No-Prep-Printables-17853543", hi: "Thanksgiving-Play-Learn-Pre-K-Kindergarten-Grade-1-No-Prep-Printables-17853543-1791234694/750f-17853543-1.jpg", img: "covers/thanks.jpg" },
+    { id: "littlemon", title: "Little Monsters Learning Pack", price: 2.00, grade: "PreK–K", themes: ["monsters", "any"], skills: ["feelings", "numbers", "patterns"],
+      blurb: "Feelings cards, counting, patterns and storytelling with fuzzy, friendly monsters. 9 low-prep pages.",
+      url: "Little-Monsters-Learning-Pack-Pre-K-Printables-Feelings-Counting-Patterns-17853401", hi: "Little-Monsters-Learning-Pack-Pre-K-Printables-Feelings-Counting-Patterns-17853401-1791233953/750f-17853401-1.jpg", img: "covers/littlemon.jpg" },
+    { id: "patterns", title: "Fall Patterns Cut & Paste", price: 2.50, grade: "PreK–2nd", themes: ["fall"], skills: ["patterns"],
+      blurb: "AB, AAB, ABB and ABC pattern mats with picture cards to cut and glue. 16 patterns in all.",
+      url: "Fall-Patterns-Activity-AB-AAB-ABB-ABC-Cut-and-Paste-Pattern-Cards-17811168", hi: "Fall-Patterns-Activity-AB-AAB-ABB-ABC-Cut-and-Paste-Pattern-Cards-17811168-1790888823/750f-17811168-1.jpg", img: "covers/patterns.jpg" },
+    { id: "falloween", title: "Fall-O-Ween Coloring Sheets", price: 2.50, grade: "PreK–1st", themes: ["fall", "halloween", "thanksgiving"], skills: ["art"],
+      blurb: "9 no-prep colouring pages that run from the first falling leaves through Halloween and Thanksgiving.",
+      url: "Fall-O-Ween-Coloring-Sheets-17810852", hi: "Fall-O-Ween-Coloring-Sheets-17810852-1791920206/750f-17810852-1.jpg", img: "covers/falloween.jpg" },
+    { id: "patch", title: "Pumpkin Patch Dramatic Play", price: 2.00, grade: "PreK–K", themes: ["fall"], skills: ["play", "numbers"],
+      blurb: "Signs, price lists and role badges that turn your dramatic play corner into a pumpkin patch.",
+      url: "Pumpkin-Patch-Dramatic-Play-Pack-Pre-K-Fall-Pretend-Play-Counting-Pumpkins-17878084", hi: "Pumpkin-Patch-Dramatic-Play-Pack-Pre-K-Fall-Pretend-Play-Counting-Pumpkins-17878084-1791411068/750f-17878084-1.jpg", img: "covers/patch.jpg" },
+    { id: "spider", title: "Spider Counting Webs 1–20", price: 1.50, grade: "PreK–K", themes: ["halloween"], skills: ["numbers"],
+      blurb: "Count the spiders on each web, then trace the number. Laminate it for dry-erase practice all season.",
+      url: "Spider-Counting-Webs-1-20-Number-Tracing-Printables-Halloween-Pre-K-Math-17853704", hi: "Spider-Counting-Webs-1-20-Number-Tracing-Printables-Halloween-Pre-K-Math-17853704-1791235850/750f-17853704-1.jpg", img: "covers/spider.jpg" },
+    { id: "tenframe", title: "Monster Ten Frames", price: 2.00, grade: "PreK–1st", themes: ["monsters", "halloween"], skills: ["numbers"],
+      blurb: "Ten frames for 1 to 10 with a friendly monster on every card. Made for a math centre.",
+      url: "Monster-Ten-Frames-17691591", hi: "Monster-Ten-Frames-17691591-1789752156/750f-17691591-1.jpg", img: "covers/tenframe.jpg" },
+    { id: "sea", title: "Under the Sea Alphabet Tracing", price: 3.00, grade: "PreK–1st", themes: ["any"], skills: ["letters"],
+      blurb: "26 pages, one per letter, with tracing rows, a draw-it box and a free-write line.",
+      url: "Under-the-Sea-Alphabet-Tracing-17691928", hi: "Under-the-Sea-Alphabet-Tracing-17691928-1791021701/750f-17691928-1.jpg", art: "sea" },
+    { id: "fallcol", title: "Fall Coloring Sheets", price: 1.00, grade: "PreK–1st", themes: ["fall"], skills: ["art"],
+      blurb: "6 big, simple pictures with thick outlines, so little hands can colour without getting frustrated.",
+      url: "Fall-Coloring-Sheets-17810724", hi: "Fall-Coloring-Sheets-17810724-1791021654/750f-17810724-1.jpg", img: "covers/fallcol.jpg" },
+    { id: "match", title: "Monster Matching Game", price: 0, grade: "PreK–1st", themes: ["monsters", "any"], skills: ["sorting"],
+      blurb: "One set of monster cards, two games: memory match and biggest-to-smallest ordering.",
+      url: "Monster-Matching-Game-17703557", hi: "Monster-Matching-Game-17703557-1790887689/750f-17703557-1.jpg", art: "match" }
+  ];
+
+  var THEMES = [
+    ["all", "All"], ["fall", "Fall & harvest"], ["halloween", "Halloween"], ["thanksgiving", "Thanksgiving"],
+    ["monsters", "Monsters"], ["any", "Any time of year"], ["free", "Free"]
+  ];
+  var SKILLS = [
+    ["all", "All skills"], ["numbers", "Counting & numbers"], ["patterns", "Patterns"], ["shapes", "Shapes"],
+    ["sorting", "Sorting & matching"], ["letters", "Letters & sounds"], ["feelings", "Feelings & communication"],
+    ["art", "Art & colouring"], ["play", "Pretend play"], ["teacher", "Teacher tools"]
+  ];
+
+  var byId = {}; PRODUCTS.forEach(function (p, i) { p.rank = i; byId[p.id] = p; });
+  function money(n) { return n === 0 ? "Free" : "$" + n.toFixed(2); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+  // Swap in TPT's larger cover when the browser can load it (works on your own host; ignored if blocked).
+  function upgrade(img, hi) {
+    if (!hi) return;
+    var probe = new Image();
+    probe.onload = function () { if (probe.naturalWidth > img.naturalWidth) img.src = probe.src; };
+    probe.src = CDN + hi;
+  }
+
+  function coverHTML(p) {
+    if (p.art) return '<div class="art ' + p.art + '"><strong>' + esc(p.title) + '</strong></div>';
+    return '<img src="' + p.img + '" alt="' + esc(p.title) + ' cover" loading="lazy" data-hi="' + esc(p.hi) + '">';
+  }
+
+  /* ---------- facts ---------- */
+  var paid = PRODUCTS.filter(function (p) { return p.price > 0; });
+  var under3 = paid.filter(function (p) { return p.price <= 3; }).length;
+  var minPrice = Math.min.apply(null, paid.map(function (p) { return p.price; }));
+  document.getElementById("facts").innerHTML =
+    "<span><b>" + PRODUCTS.length + "</b>resources</span>" +
+    "<span><b>" + under3 + "</b>at $3 or less</span>" +
+    "<span><b>" + money(minPrice) + "</b>and up</span>";
+
+  /* ---------- shop ---------- */
+  var state = { theme: "all", skill: "all", sort: "best" };
+  try { var saved = JSON.parse(localStorage.getItem("pu-filters") || "null"); if (saved) state = Object.assign(state, saved); } catch (e) {}
+
+  var chipsEl = document.getElementById("theme-chips");
+  var skillEl = document.getElementById("skill");
+  var sortEl = document.getElementById("sort");
+  var gridEl = document.getElementById("grid");
+  var countEl = document.getElementById("count");
+
+  function matchTheme(p, t) { return t === "all" ? true : t === "free" ? p.price === 0 : p.themes.indexOf(t) > -1; }
+  function matchSkill(p, s) { return s === "all" || p.skills.indexOf(s) > -1; }
+
+  chipsEl.innerHTML = THEMES.map(function (t) {
+    var n = PRODUCTS.filter(function (p) { return matchTheme(p, t[0]); }).length;
+    return '<button type="button" class="chip" data-theme="' + t[0] + '" aria-pressed="false">' + t[1] + '<span class="n">' + n + '</span></button>';
+  }).join("");
+  skillEl.innerHTML = SKILLS.map(function (s) { return '<option value="' + s[0] + '">' + s[1] + "</option>"; }).join("");
+
+  function render() {
+    chipsEl.querySelectorAll(".chip").forEach(function (c) { c.setAttribute("aria-pressed", c.dataset.theme === state.theme ? "true" : "false"); });
+    skillEl.value = state.skill; sortEl.value = state.sort;
+    var list = PRODUCTS.filter(function (p) { return matchTheme(p, state.theme) && matchSkill(p, state.skill); });
+    list.sort(function (a, b) {
+      if (state.sort === "low") return a.price - b.price || a.rank - b.rank;
+      if (state.sort === "high") return b.price - a.price || a.rank - b.rank;
+      return a.rank - b.rank;
+    });
+    countEl.textContent = "Showing " + list.length + " of " + PRODUCTS.length + " resources";
+    if (!list.length) {
+      gridEl.innerHTML = '<div class="empty">Nothing matches that theme and skill yet.<br><button type="button" class="btn btn-pumpkin btn-sm" id="reset">Show everything</button></div>';
+      document.getElementById("reset").onclick = function () { state.theme = "all"; state.skill = "all"; save(); render(); };
+      return;
+    }
+    gridEl.innerHTML = list.map(function (p) {
+      var badge = p.price === 0 ? '<span class="badge">Free</span>' : p.tag ? '<span class="badge hot">' + p.tag + "</span>" : "";
+      return '<article class="card">' +
+        '<div class="thumb">' + badge + coverHTML(p) + "</div>" +
+        '<div class="card-body">' +
+          '<div class="meta"><span class="pill">' + p.grade + "</span></div>" +
+          "<h3>" + esc(p.title) + "</h3>" +
+          "<p>" + esc(p.blurb) + "</p>" +
+          '<div class="buy"><span class="price' + (p.price === 0 ? " free" : "") + '">' + money(p.price) + "</span>" +
+          '<a href="' + TPT + p.url + '" target="_blank" rel="noopener" aria-label="' + esc((p.price === 0 ? "Download " : "Get ") + p.title + " on TPT") + '">' +
+          (p.price === 0 ? "Download on TPT ↗" : "Get it on TPT ↗") + "</a></div>" +
+        "</div></article>";
+    }).join("");
+    gridEl.querySelectorAll("img[data-hi]").forEach(function (img) { upgrade(img, img.dataset.hi); });
+  }
+  function save() { try { localStorage.setItem("pu-filters", JSON.stringify(state)); } catch (e) {} }
+
+  chipsEl.addEventListener("click", function (e) {
+    var b = e.target.closest(".chip"); if (!b) return;
+    state.theme = b.dataset.theme; save(); render();
+  });
+  skillEl.addEventListener("change", function () { state.skill = skillEl.value; save(); render(); });
+  sortEl.addEventListener("change", function () { state.sort = sortEl.value; save(); render(); });
+  render();
+
+  /* ---------- pumpkin week ---------- */
+  var WEEK = [
+    ["Mon", "jack", "#F2862A", "Start with shapes and feelings. Laminate the mats and they last all of October."],
+    ["Tue", "patch", "#4E9C62", "Open the pumpkin patch in dramatic play and leave it up all week."],
+    ["Wed", "patterns", "#E3566C", "AB for the little ones, ABC for kids who are ready for more."],
+    ["Thu", "leaf", "#4AA3C8", "A small-group centre. Pre-readers match the colour swatch on each basket."],
+    ["Fri", "falloween", "#7B5BB5", "A calm colouring day after a busy week. Print and go."]
+  ];
+  var sum = 0;
+  document.getElementById("days").innerHTML = WEEK.map(function (d) {
+    var p = byId[d[1]]; sum += p.price;
+    return '<a class="day" href="' + TPT + p.url + '" target="_blank" rel="noopener">' +
+      '<span class="day-name" style="background:' + d[2] + '">' + d[0] + "</span>" +
+      '<img src="' + p.img + '" alt="' + esc(p.title) + ' cover" loading="lazy" data-hi="' + esc(p.hi) + '">' +
+      "<h3>" + esc(p.title) + "</h3>" +
+      '<span class="tip">' + esc(d[3]) + "</span>" +
+      '<span class="p">' + money(p.price) + " on TPT ↗</span></a>";
+  }).join("");
+  document.getElementById("week-sum").textContent = money(sum);
+  document.querySelectorAll("#days img[data-hi]").forEach(function (img) { upgrade(img, img.dataset.hi); });
+  document.getElementById("week-filter").addEventListener("click", function () { state.theme = "fall"; state.skill = "all"; save(); render(); });
+
+  /* ---------- clean-up spinner demo ---------- */
+  var JOBS = [
+    ["Blocks", "#F2862A", "#fff", "Stack the blocks on the shelf, big ones on the bottom."],
+    ["Books", "#FFC83D", "#2E2147", "Put the books back in the basket, covers facing out."],
+    ["Art table", "#4E9C62", "#fff", "Caps on the markers and crayons back in their cups."],
+    ["Kitchen", "#E3566C", "#fff", "Put the food back in the fridge and the dishes on the rack."],
+    ["Carpet", "#4AA3C8", "#fff", "Find three things on the carpet and put them away."],
+    ["Sink", "#7B5BB5", "#fff", "Turn off the tap and push in the step stool."],
+    ["Dress-up", "#F7A6B5", "#2E2147", "Hang the costumes back on their hooks."],
+    ["Toys", "#9BD37C", "#2E2147", "Sort the toys into their bins with the matching picture."]
+  ];
+  var NAMES = ["Ava", "Leo", "Maya", "Sam", "Noor", "Theo", "Zara", "Eli"];
+  var svg = document.getElementById("wheel-svg");
+  var NS = "http://www.w3.org/2000/svg";
+  var R = 150, seg = 360 / JOBS.length;
+  function pt(r, deg) { var a = deg * Math.PI / 180; return [r * Math.sin(a), -r * Math.cos(a)]; }
+  function el(tag, attrs) { var n = document.createElementNS(NS, tag); for (var k in attrs) n.setAttribute(k, attrs[k]); return n; }
+
+  svg.appendChild(el("circle", { cx: 0, cy: 0, r: R + 8, fill: "#2E2147" }));
+  JOBS.forEach(function (j, i) {
+    var a0 = i * seg, a1 = a0 + seg, p0 = pt(R, a0), p1 = pt(R, a1);
+    svg.appendChild(el("path", { d: "M0 0L" + p0[0] + " " + p0[1] + "A" + R + " " + R + " 0 0 1 " + p1[0] + " " + p1[1] + "Z", fill: j[1], stroke: "#FFF7DF", "stroke-width": 3 }));
+    var c = a0 + seg / 2;
+    var flip = c > 180;
+    var t = el("text", {
+      x: flip ? -R * 0.6 : R * 0.6, y: 0, "text-anchor": "middle", "dominant-baseline": "central",
+      transform: "rotate(" + (flip ? c + 90 : c - 90) + ")", fill: j[2],
+      "font-family": "Grandstander, 'Baloo 2', sans-serif", "font-weight": 800, "font-size": 17
+    });
+    t.textContent = j[0]; svg.appendChild(t);
+  });
+  // rim lights
+  for (var k = 0; k < 24; k++) { var q = pt(R + 4, k * 15); svg.appendChild(el("circle", { cx: q[0], cy: q[1], r: 2.4, fill: k % 2 ? "#FFC83D" : "#FFF7DF" })); }
+  svg.appendChild(el("circle", { cx: 0, cy: 0, r: 34, fill: "#FFF7DF", stroke: "#2E2147", "stroke-width": 4 }));
+  var hub = el("text", { x: 0, y: 1, "text-anchor": "middle", "dominant-baseline": "central", fill: "#2E2147", "font-family": "Grandstander, sans-serif", "font-weight": 900, "font-size": 18 });
+  hub.textContent = "Tidy!"; svg.appendChild(hub);
+
+  var wheel = document.getElementById("wheel");
+  var btn = document.getElementById("spin-btn");
+  var result = document.getElementById("result");
+  var rot = 0, turn = 0, spinning = false;
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  btn.addEventListener("click", function () {
+    if (spinning) return;
+    spinning = true; btn.disabled = true;
+    var i = Math.floor(Math.random() * JOBS.length);
+    var center = i * seg + seg / 2;
+    var jitter = (Math.random() - 0.5) * (seg * 0.6);
+    var target = (360 - center + jitter + 360) % 360;
+    var current = ((rot % 360) + 360) % 360;
+    rot += (reduce ? 0 : 5 * 360) + ((target - current + 360) % 360);
+    wheel.style.transform = "rotate(" + rot + "deg)";
+    result.innerHTML = '<div class="who">Spinning…</div><div class="job">Who will it be?</div>';
+    setTimeout(function () {
+      var name = NAMES[turn++ % NAMES.length], j = JOBS[i];
+      result.innerHTML = '<div class="who">' + name + " → <em>" + j[0] + "</em></div><div class=\"job\">" + j[3] + "</div>";
+      spinning = false; btn.disabled = false;
+    }, reduce ? 50 : 3700);
+  });
+})();
+</script>
+
+</body>
+</html>
