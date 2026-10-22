@@ -57,7 +57,7 @@ Jack-o'-lantern • Silly • Spooky • Cute • Dress-Up • Real Pumpkin Face
 
 **🖥️ BONUS: Pumpkin Patch Pals interactive app (13 games)**
 Decorate a Pumpkin (drag-and-drop, save or print your design) • Roll a Jack-o'-Lantern • Count the Pumpkins • Ten Frame Fill • Pumpkin Addition • What Comes Next? • Letter Match • Beginning Sounds • Rhyme Time • Spell It! • Pumpkin Life Cycle • Fall Memory Match • Feelings Check-In with pumpkin breathing.
-✔ Read-aloud directions for pre-readers ✔ Works offline, with no log-in and no ads ✔ Interactive whiteboards, tablets & Chromebooks ✔ Stars and confetti rewards
+✔ Every direction is read aloud in a warm, natural recorded voice (no robotic computer voice!), which is perfect for pre-readers ✔ Works offline, with no log-in and no ads ✔ Interactive whiteboards, tablets & Chromebooks ✔ Stars and confetti rewards
 
 **Standards connections:** K.CC, K.OA, K.G, K.MD, 1.MD, RF.K.1-3, W.K.2-3, NGSS 1-LS1-1, CASEL self-awareness. The full chart is in the Start Here guide.
 

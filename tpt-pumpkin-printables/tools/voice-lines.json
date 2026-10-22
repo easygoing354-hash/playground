@@ -1,0 +1,1826 @@
+[
+ {
+  "text": "You did it! Great work!",
+  "tts": "You did it! Great work!"
+ },
+ {
+  "text": "Great job!",
+  "tts": "Great job!"
+ },
+ {
+  "text": "You got it!",
+  "tts": "You got it!"
+ },
+ {
+  "text": "Pumpkin-tastic!",
+  "tts": "Pump-kin-tastic!"
+ },
+ {
+  "text": "Awesome!",
+  "tts": "Awesome!"
+ },
+ {
+  "text": "Way to go!",
+  "tts": "Way to go!"
+ },
+ {
+  "text": "Super!",
+  "tts": "Super!"
+ },
+ {
+  "text": "Spook-tacular!",
+  "tts": "Spook-tacular!"
+ },
+ {
+  "text": "Fantastic!",
+  "tts": "Fantastic!"
+ },
+ {
+  "text": "How many pumpkins?",
+  "tts": "How many pumpkins?"
+ },
+ {
+  "text": "How many apples?",
+  "tts": "How many apples?"
+ },
+ {
+  "text": "How many acorns?",
+  "tts": "How many acorns?"
+ },
+ {
+  "text": "How many ghosts?",
+  "tts": "How many ghosts?"
+ },
+ {
+  "text": "How many leaves?",
+  "tts": "How many leaves?"
+ },
+ {
+  "text": "Yes! 1!",
+  "tts": "Yes! 1!"
+ },
+ {
+  "text": "Yes! 2!",
+  "tts": "Yes! 2!"
+ },
+ {
+  "text": "Yes! 3!",
+  "tts": "Yes! 3!"
+ },
+ {
+  "text": "Yes! 4!",
+  "tts": "Yes! 4!"
+ },
+ {
+  "text": "Yes! 5!",
+  "tts": "Yes! 5!"
+ },
+ {
+  "text": "Yes! 6!",
+  "tts": "Yes! 6!"
+ },
+ {
+  "text": "Yes! 7!",
+  "tts": "Yes! 7!"
+ },
+ {
+  "text": "Yes! 8!",
+  "tts": "Yes! 8!"
+ },
+ {
+  "text": "Yes! 9!",
+  "tts": "Yes! 9!"
+ },
+ {
+  "text": "Yes! 10!",
+  "tts": "Yes! 10!"
+ },
+ {
+  "text": "Yes! 11!",
+  "tts": "Yes! 11!"
+ },
+ {
+  "text": "Yes! 12!",
+  "tts": "Yes! 12!"
+ },
+ {
+  "text": "Yes! 13!",
+  "tts": "Yes! 13!"
+ },
+ {
+  "text": "Yes! 14!",
+  "tts": "Yes! 14!"
+ },
+ {
+  "text": "Yes! 15!",
+  "tts": "Yes! 15!"
+ },
+ {
+  "text": "Yes! 16!",
+  "tts": "Yes! 16!"
+ },
+ {
+  "text": "Yes! 17!",
+  "tts": "Yes! 17!"
+ },
+ {
+  "text": "Yes! 18!",
+  "tts": "Yes! 18!"
+ },
+ {
+  "text": "Yes! 19!",
+  "tts": "Yes! 19!"
+ },
+ {
+  "text": "Yes! 20!",
+  "tts": "Yes! 20!"
+ },
+ {
+  "text": "What is 1 plus 1?",
+  "tts": "What is 1 plus 1?"
+ },
+ {
+  "text": "1 plus 1 equals 2!",
+  "tts": "1 plus 1 equals 2!"
+ },
+ {
+  "text": "What is 1 plus 2?",
+  "tts": "What is 1 plus 2?"
+ },
+ {
+  "text": "1 plus 2 equals 3!",
+  "tts": "1 plus 2 equals 3!"
+ },
+ {
+  "text": "What is 1 plus 3?",
+  "tts": "What is 1 plus 3?"
+ },
+ {
+  "text": "1 plus 3 equals 4!",
+  "tts": "1 plus 3 equals 4!"
+ },
+ {
+  "text": "What is 1 plus 4?",
+  "tts": "What is 1 plus 4?"
+ },
+ {
+  "text": "1 plus 4 equals 5!",
+  "tts": "1 plus 4 equals 5!"
+ },
+ {
+  "text": "What is 1 plus 5?",
+  "tts": "What is 1 plus 5?"
+ },
+ {
+  "text": "1 plus 5 equals 6!",
+  "tts": "1 plus 5 equals 6!"
+ },
+ {
+  "text": "What is 1 plus 6?",
+  "tts": "What is 1 plus 6?"
+ },
+ {
+  "text": "1 plus 6 equals 7!",
+  "tts": "1 plus 6 equals 7!"
+ },
+ {
+  "text": "What is 1 plus 7?",
+  "tts": "What is 1 plus 7?"
+ },
+ {
+  "text": "1 plus 7 equals 8!",
+  "tts": "1 plus 7 equals 8!"
+ },
+ {
+  "text": "What is 1 plus 8?",
+  "tts": "What is 1 plus 8?"
+ },
+ {
+  "text": "1 plus 8 equals 9!",
+  "tts": "1 plus 8 equals 9!"
+ },
+ {
+  "text": "What is 1 plus 9?",
+  "tts": "What is 1 plus 9?"
+ },
+ {
+  "text": "1 plus 9 equals 10!",
+  "tts": "1 plus 9 equals 10!"
+ },
+ {
+  "text": "What is 2 plus 1?",
+  "tts": "What is 2 plus 1?"
+ },
+ {
+  "text": "2 plus 1 equals 3!",
+  "tts": "2 plus 1 equals 3!"
+ },
+ {
+  "text": "What is 2 plus 2?",
+  "tts": "What is 2 plus 2?"
+ },
+ {
+  "text": "2 plus 2 equals 4!",
+  "tts": "2 plus 2 equals 4!"
+ },
+ {
+  "text": "What is 2 plus 3?",
+  "tts": "What is 2 plus 3?"
+ },
+ {
+  "text": "2 plus 3 equals 5!",
+  "tts": "2 plus 3 equals 5!"
+ },
+ {
+  "text": "What is 2 plus 4?",
+  "tts": "What is 2 plus 4?"
+ },
+ {
+  "text": "2 plus 4 equals 6!",
+  "tts": "2 plus 4 equals 6!"
+ },
+ {
+  "text": "What is 2 plus 5?",
+  "tts": "What is 2 plus 5?"
+ },
+ {
+  "text": "2 plus 5 equals 7!",
+  "tts": "2 plus 5 equals 7!"
+ },
+ {
+  "text": "What is 2 plus 6?",
+  "tts": "What is 2 plus 6?"
+ },
+ {
+  "text": "2 plus 6 equals 8!",
+  "tts": "2 plus 6 equals 8!"
+ },
+ {
+  "text": "What is 2 plus 7?",
+  "tts": "What is 2 plus 7?"
+ },
+ {
+  "text": "2 plus 7 equals 9!",
+  "tts": "2 plus 7 equals 9!"
+ },
+ {
+  "text": "What is 2 plus 8?",
+  "tts": "What is 2 plus 8?"
+ },
+ {
+  "text": "2 plus 8 equals 10!",
+  "tts": "2 plus 8 equals 10!"
+ },
+ {
+  "text": "What is 3 plus 1?",
+  "tts": "What is 3 plus 1?"
+ },
+ {
+  "text": "3 plus 1 equals 4!",
+  "tts": "3 plus 1 equals 4!"
+ },
+ {
+  "text": "What is 3 plus 2?",
+  "tts": "What is 3 plus 2?"
+ },
+ {
+  "text": "3 plus 2 equals 5!",
+  "tts": "3 plus 2 equals 5!"
+ },
+ {
+  "text": "What is 3 plus 3?",
+  "tts": "What is 3 plus 3?"
+ },
+ {
+  "text": "3 plus 3 equals 6!",
+  "tts": "3 plus 3 equals 6!"
+ },
+ {
+  "text": "What is 3 plus 4?",
+  "tts": "What is 3 plus 4?"
+ },
+ {
+  "text": "3 plus 4 equals 7!",
+  "tts": "3 plus 4 equals 7!"
+ },
+ {
+  "text": "What is 3 plus 5?",
+  "tts": "What is 3 plus 5?"
+ },
+ {
+  "text": "3 plus 5 equals 8!",
+  "tts": "3 plus 5 equals 8!"
+ },
+ {
+  "text": "What is 3 plus 6?",
+  "tts": "What is 3 plus 6?"
+ },
+ {
+  "text": "3 plus 6 equals 9!",
+  "tts": "3 plus 6 equals 9!"
+ },
+ {
+  "text": "What is 3 plus 7?",
+  "tts": "What is 3 plus 7?"
+ },
+ {
+  "text": "3 plus 7 equals 10!",
+  "tts": "3 plus 7 equals 10!"
+ },
+ {
+  "text": "What is 4 plus 1?",
+  "tts": "What is 4 plus 1?"
+ },
+ {
+  "text": "4 plus 1 equals 5!",
+  "tts": "4 plus 1 equals 5!"
+ },
+ {
+  "text": "What is 4 plus 2?",
+  "tts": "What is 4 plus 2?"
+ },
+ {
+  "text": "4 plus 2 equals 6!",
+  "tts": "4 plus 2 equals 6!"
+ },
+ {
+  "text": "What is 4 plus 3?",
+  "tts": "What is 4 plus 3?"
+ },
+ {
+  "text": "4 plus 3 equals 7!",
+  "tts": "4 plus 3 equals 7!"
+ },
+ {
+  "text": "What is 4 plus 4?",
+  "tts": "What is 4 plus 4?"
+ },
+ {
+  "text": "4 plus 4 equals 8!",
+  "tts": "4 plus 4 equals 8!"
+ },
+ {
+  "text": "What is 4 plus 5?",
+  "tts": "What is 4 plus 5?"
+ },
+ {
+  "text": "4 plus 5 equals 9!",
+  "tts": "4 plus 5 equals 9!"
+ },
+ {
+  "text": "What is 4 plus 6?",
+  "tts": "What is 4 plus 6?"
+ },
+ {
+  "text": "4 plus 6 equals 10!",
+  "tts": "4 plus 6 equals 10!"
+ },
+ {
+  "text": "What is 5 plus 1?",
+  "tts": "What is 5 plus 1?"
+ },
+ {
+  "text": "5 plus 1 equals 6!",
+  "tts": "5 plus 1 equals 6!"
+ },
+ {
+  "text": "What is 5 plus 2?",
+  "tts": "What is 5 plus 2?"
+ },
+ {
+  "text": "5 plus 2 equals 7!",
+  "tts": "5 plus 2 equals 7!"
+ },
+ {
+  "text": "What is 5 plus 3?",
+  "tts": "What is 5 plus 3?"
+ },
+ {
+  "text": "5 plus 3 equals 8!",
+  "tts": "5 plus 3 equals 8!"
+ },
+ {
+  "text": "What is 5 plus 4?",
+  "tts": "What is 5 plus 4?"
+ },
+ {
+  "text": "5 plus 4 equals 9!",
+  "tts": "5 plus 4 equals 9!"
+ },
+ {
+  "text": "What is 5 plus 5?",
+  "tts": "What is 5 plus 5?"
+ },
+ {
+  "text": "5 plus 5 equals 10!",
+  "tts": "5 plus 5 equals 10!"
+ },
+ {
+  "text": "What is 6 plus 1?",
+  "tts": "What is 6 plus 1?"
+ },
+ {
+  "text": "6 plus 1 equals 7!",
+  "tts": "6 plus 1 equals 7!"
+ },
+ {
+  "text": "What is 6 plus 2?",
+  "tts": "What is 6 plus 2?"
+ },
+ {
+  "text": "6 plus 2 equals 8!",
+  "tts": "6 plus 2 equals 8!"
+ },
+ {
+  "text": "What is 6 plus 3?",
+  "tts": "What is 6 plus 3?"
+ },
+ {
+  "text": "6 plus 3 equals 9!",
+  "tts": "6 plus 3 equals 9!"
+ },
+ {
+  "text": "What is 6 plus 4?",
+  "tts": "What is 6 plus 4?"
+ },
+ {
+  "text": "6 plus 4 equals 10!",
+  "tts": "6 plus 4 equals 10!"
+ },
+ {
+  "text": "What is 7 plus 1?",
+  "tts": "What is 7 plus 1?"
+ },
+ {
+  "text": "7 plus 1 equals 8!",
+  "tts": "7 plus 1 equals 8!"
+ },
+ {
+  "text": "What is 7 plus 2?",
+  "tts": "What is 7 plus 2?"
+ },
+ {
+  "text": "7 plus 2 equals 9!",
+  "tts": "7 plus 2 equals 9!"
+ },
+ {
+  "text": "What is 7 plus 3?",
+  "tts": "What is 7 plus 3?"
+ },
+ {
+  "text": "7 plus 3 equals 10!",
+  "tts": "7 plus 3 equals 10!"
+ },
+ {
+  "text": "What is 8 plus 1?",
+  "tts": "What is 8 plus 1?"
+ },
+ {
+  "text": "8 plus 1 equals 9!",
+  "tts": "8 plus 1 equals 9!"
+ },
+ {
+  "text": "What is 8 plus 2?",
+  "tts": "What is 8 plus 2?"
+ },
+ {
+  "text": "8 plus 2 equals 10!",
+  "tts": "8 plus 2 equals 10!"
+ },
+ {
+  "text": "What is 9 plus 1?",
+  "tts": "What is 9 plus 1?"
+ },
+ {
+  "text": "9 plus 1 equals 10!",
+  "tts": "9 plus 1 equals 10!"
+ },
+ {
+  "text": "What comes next?",
+  "tts": "What comes next?"
+ },
+ {
+  "text": "Find the lowercase letter that matches capital A.",
+  "tts": "Find the lowercase letter that matches capital A."
+ },
+ {
+  "text": "Yes! Capital A and lowercase a!",
+  "tts": "Yes! Capital A, and lowercase A!"
+ },
+ {
+  "text": "Find the lowercase letter that matches capital B.",
+  "tts": "Find the lowercase letter that matches capital B."
+ },
+ {
+  "text": "Yes! Capital B and lowercase b!",
+  "tts": "Yes! Capital B, and lowercase B!"
+ },
+ {
+  "text": "Find the lowercase letter that matches capital C.",
+  "tts": "Find the lowercase letter that matches capital C."
+ },
+ {
+  "text": "Yes! Capital C and lowercase c!",
+  "tts": "Yes! Capital C, and lowercase C!"
+ },
+ {
+  "text": "Find the lowercase letter that matches capital D.",
+  "tts": "Find the lowercase letter that matches capital D."
+ },
+ {
+  "text": "Yes! Capital D and lowercase d!",
+  "tts": "Yes! Capital D, and lowercase D!"
+ },
+ {
+  "text": "Find the lowercase letter that matches capital E.",
+  "tts": "Find the lowercase letter that matches capital E."
+ },
+ {
+  "text": "Yes! Capital E and lowercase e!",
+  "tts": "Yes! Capital E, and lowercase E!"
+ },
+ {
+  "text": "Find the lowercase letter that matches capital F.",
+  "tts": "Find the lowercase letter that matches capital F."
+ },
+ {
+  "text": "Yes! Capital F and lowercase f!",
+  "tts": "Yes! Capital F, and lowercase F!"
+ },
+ {
+  "text": "Find the lowercase letter that matches capital G.",
+  "tts": "Find the lowercase letter that matches capital G."
+ },
+ {
+  "text": "Yes! Capital G and lowercase g!",
+  "tts": "Yes! Capital G, and lowercase G!"
+ },
+ {
+  "text": "Find the lowercase letter that matches capital H.",
+  "tts": "Find the lowercase letter that matches capital H."
+ },
+ {
+  "text": "Yes! Capital H and lowercase h!",
+  "tts": "Yes! Capital H, and lowercase H!"
+ },
+ {
+  "text": "Find the lowercase letter that matches capital I.",
+  "tts": "Find the lowercase letter that matches capital I."
+ },
+ {
+  "text": "Yes! Capital I and lowercase i!",
+  "tts": "Yes! Capital I, and lowercase I!"
+ },
+ {
+  "text": "Find the lowercase letter that matches capital J.",
+  "tts": "Find the lowercase letter that matches capital J."
+ },
+ {
+  "text": "Yes! Capital J and lowercase j!",
+  "tts": "Yes! Capital J, and lowercase J!"
+ },
+ {
+  "text": "Find the lowercase letter that matches capital K.",
+  "tts": "Find the lowercase letter that matches capital K."
+ },
+ {
+  "text": "Yes! Capital K and lowercase k!",
+  "tts": "Yes! Capital K, and lowercase K!"
+ },
+ {
+  "text": "Find the lowercase letter that matches capital L.",
+  "tts": "Find the lowercase letter that matches capital L."
+ },
+ {
+  "text": "Yes! Capital L and lowercase l!",
+  "tts": "Yes! Capital L, and lowercase L!"
+ },
+ {
+  "text": "Find the lowercase letter that matches capital M.",
+  "tts": "Find the lowercase letter that matches capital M."
+ },
+ {
+  "text": "Yes! Capital M and lowercase m!",
+  "tts": "Yes! Capital M, and lowercase M!"
+ },
+ {
+  "text": "Find the lowercase letter that matches capital N.",
+  "tts": "Find the lowercase letter that matches capital N."
+ },
+ {
+  "text": "Yes! Capital N and lowercase n!",
+  "tts": "Yes! Capital N, and lowercase N!"
+ },
+ {
+  "text": "Find the lowercase letter that matches capital O.",
+  "tts": "Find the lowercase letter that matches capital O."
+ },
+ {
+  "text": "Yes! Capital O and lowercase o!",
+  "tts": "Yes! Capital O, and lowercase O!"
+ },
+ {
+  "text": "Find the lowercase letter that matches capital P.",
+  "tts": "Find the lowercase letter that matches capital P."
+ },
+ {
+  "text": "Yes! Capital P and lowercase p!",
+  "tts": "Yes! Capital P, and lowercase P!"
+ },
+ {
+  "text": "Find the lowercase letter that matches capital Q.",
+  "tts": "Find the lowercase letter that matches capital Q."
+ },
+ {
+  "text": "Yes! Capital Q and lowercase q!",
+  "tts": "Yes! Capital Q, and lowercase Q!"
+ },
+ {
+  "text": "Find the lowercase letter that matches capital R.",
+  "tts": "Find the lowercase letter that matches capital R."
+ },
+ {
+  "text": "Yes! Capital R and lowercase r!",
+  "tts": "Yes! Capital R, and lowercase R!"
+ },
+ {
+  "text": "Find the lowercase letter that matches capital S.",
+  "tts": "Find the lowercase letter that matches capital S."
+ },
+ {
+  "text": "Yes! Capital S and lowercase s!",
+  "tts": "Yes! Capital S, and lowercase S!"
+ },
+ {
+  "text": "Find the lowercase letter that matches capital T.",
+  "tts": "Find the lowercase letter that matches capital T."
+ },
+ {
+  "text": "Yes! Capital T and lowercase t!",
+  "tts": "Yes! Capital T, and lowercase T!"
+ },
+ {
+  "text": "Find the lowercase letter that matches capital U.",
+  "tts": "Find the lowercase letter that matches capital U."
+ },
+ {
+  "text": "Yes! Capital U and lowercase u!",
+  "tts": "Yes! Capital U, and lowercase U!"
+ },
+ {
+  "text": "Find the lowercase letter that matches capital V.",
+  "tts": "Find the lowercase letter that matches capital V."
+ },
+ {
+  "text": "Yes! Capital V and lowercase v!",
+  "tts": "Yes! Capital V, and lowercase V!"
+ },
+ {
+  "text": "Find the lowercase letter that matches capital W.",
+  "tts": "Find the lowercase letter that matches capital W."
+ },
+ {
+  "text": "Yes! Capital W and lowercase w!",
+  "tts": "Yes! Capital W, and lowercase W!"
+ },
+ {
+  "text": "Find the lowercase letter that matches capital X.",
+  "tts": "Find the lowercase letter that matches capital X."
+ },
+ {
+  "text": "Yes! Capital X and lowercase x!",
+  "tts": "Yes! Capital X, and lowercase X!"
+ },
+ {
+  "text": "Find the lowercase letter that matches capital Y.",
+  "tts": "Find the lowercase letter that matches capital Y."
+ },
+ {
+  "text": "Yes! Capital Y and lowercase y!",
+  "tts": "Yes! Capital Y, and lowercase Y!"
+ },
+ {
+  "text": "Find the lowercase letter that matches capital Z.",
+  "tts": "Find the lowercase letter that matches capital Z."
+ },
+ {
+  "text": "Yes! Capital Z and lowercase z!",
+  "tts": "Yes! Capital Z, and lowercase Z!"
+ },
+ {
+  "text": "bat. What sound does bat start with?",
+  "tts": "bat... What sound does bat start with?"
+ },
+ {
+  "text": "Yes! The word bat starts with b!",
+  "tts": "Yes! The word bat starts with B!"
+ },
+ {
+  "text": "cat. What sound does cat start with?",
+  "tts": "cat... What sound does cat start with?"
+ },
+ {
+  "text": "Yes! The word cat starts with c!",
+  "tts": "Yes! The word cat starts with C!"
+ },
+ {
+  "text": "ghost. What sound does ghost start with?",
+  "tts": "ghost... What sound does ghost start with?"
+ },
+ {
+  "text": "Yes! The word ghost starts with g!",
+  "tts": "Yes! The word ghost starts with G!"
+ },
+ {
+  "text": "hat. What sound does hat start with?",
+  "tts": "hat... What sound does hat start with?"
+ },
+ {
+  "text": "Yes! The word hat starts with h!",
+  "tts": "Yes! The word hat starts with H!"
+ },
+ {
+  "text": "leaf. What sound does leaf start with?",
+  "tts": "leaf... What sound does leaf start with?"
+ },
+ {
+  "text": "Yes! The word leaf starts with l!",
+  "tts": "Yes! The word leaf starts with L!"
+ },
+ {
+  "text": "moon. What sound does moon start with?",
+  "tts": "moon... What sound does moon start with?"
+ },
+ {
+  "text": "Yes! The word moon starts with m!",
+  "tts": "Yes! The word moon starts with M!"
+ },
+ {
+  "text": "owl. What sound does owl start with?",
+  "tts": "owl... What sound does owl start with?"
+ },
+ {
+  "text": "Yes! The word owl starts with o!",
+  "tts": "Yes! The word owl starts with O!"
+ },
+ {
+  "text": "pumpkin. What sound does pumpkin start with?",
+  "tts": "pumpkin... What sound does pumpkin start with?"
+ },
+ {
+  "text": "Yes! The word pumpkin starts with p!",
+  "tts": "Yes! The word pumpkin starts with P!"
+ },
+ {
+  "text": "star. What sound does star start with?",
+  "tts": "star... What sound does star start with?"
+ },
+ {
+  "text": "Yes! The word star starts with s!",
+  "tts": "Yes! The word star starts with S!"
+ },
+ {
+  "text": "web. What sound does web start with?",
+  "tts": "web... What sound does web start with?"
+ },
+ {
+  "text": "Yes! The word web starts with w!",
+  "tts": "Yes! The word web starts with W!"
+ },
+ {
+  "text": "apple. What sound does apple start with?",
+  "tts": "apple... What sound does apple start with?"
+ },
+ {
+  "text": "Yes! The word apple starts with a!",
+  "tts": "Yes! The word apple starts with A!"
+ },
+ {
+  "text": "rake. What sound does rake start with?",
+  "tts": "rake... What sound does rake start with?"
+ },
+ {
+  "text": "Yes! The word rake starts with r!",
+  "tts": "Yes! The word rake starts with R!"
+ },
+ {
+  "text": "corn. What sound does corn start with?",
+  "tts": "corn... What sound does corn start with?"
+ },
+ {
+  "text": "Yes! The word corn starts with c!",
+  "tts": "Yes! The word corn starts with C!"
+ },
+ {
+  "text": "mug. What sound does mug start with?",
+  "tts": "mug... What sound does mug start with?"
+ },
+ {
+  "text": "Yes! The word mug starts with m!",
+  "tts": "Yes! The word mug starts with M!"
+ },
+ {
+  "text": "bee. What sound does bee start with?",
+  "tts": "bee... What sound does bee start with?"
+ },
+ {
+  "text": "Yes! The word bee starts with b!",
+  "tts": "Yes! The word bee starts with B!"
+ },
+ {
+  "text": "tree. What sound does tree start with?",
+  "tts": "tree... What sound does tree start with?"
+ },
+ {
+  "text": "Yes! The word tree starts with t!",
+  "tts": "Yes! The word tree starts with T!"
+ },
+ {
+  "text": "bug. What sound does bug start with?",
+  "tts": "bug... What sound does bug start with?"
+ },
+ {
+  "text": "Yes! The word bug starts with b!",
+  "tts": "Yes! The word bug starts with B!"
+ },
+ {
+  "text": "spider. What sound does spider start with?",
+  "tts": "spider... What sound does spider start with?"
+ },
+ {
+  "text": "Yes! The word spider starts with s!",
+  "tts": "Yes! The word spider starts with S!"
+ },
+ {
+  "text": "cake. What sound does cake start with?",
+  "tts": "cake... What sound does cake start with?"
+ },
+ {
+  "text": "Yes! The word cake starts with c!",
+  "tts": "Yes! The word cake starts with C!"
+ },
+ {
+  "text": "broom. What sound does broom start with?",
+  "tts": "broom... What sound does broom start with?"
+ },
+ {
+  "text": "Yes! The word broom starts with b!",
+  "tts": "Yes! The word broom starts with B!"
+ },
+ {
+  "text": "mushroom. What sound does mushroom start with?",
+  "tts": "mushroom... What sound does mushroom start with?"
+ },
+ {
+  "text": "Yes! The word mushroom starts with m!",
+  "tts": "Yes! The word mushroom starts with M!"
+ },
+ {
+  "text": "pie. What sound does pie start with?",
+  "tts": "pie... What sound does pie start with?"
+ },
+ {
+  "text": "Yes! The word pie starts with p!",
+  "tts": "Yes! The word pie starts with P!"
+ },
+ {
+  "text": "car. What sound does car start with?",
+  "tts": "car... What sound does car start with?"
+ },
+ {
+  "text": "Yes! The word car starts with c!",
+  "tts": "Yes! The word car starts with C!"
+ },
+ {
+  "text": "What rhymes with cat?",
+  "tts": "What rhymes with... cat?"
+ },
+ {
+  "text": "Yes! cat and hat rhyme!",
+  "tts": "Yes! Cat... and hat... rhyme!"
+ },
+ {
+  "text": "Yes! cat and bat rhyme!",
+  "tts": "Yes! Cat... and bat... rhyme!"
+ },
+ {
+  "text": "What rhymes with hat?",
+  "tts": "What rhymes with... hat?"
+ },
+ {
+  "text": "Yes! hat and cat rhyme!",
+  "tts": "Yes! Hat... and cat... rhyme!"
+ },
+ {
+  "text": "Yes! hat and bat rhyme!",
+  "tts": "Yes! Hat... and bat... rhyme!"
+ },
+ {
+  "text": "What rhymes with bat?",
+  "tts": "What rhymes with... bat?"
+ },
+ {
+  "text": "Yes! bat and cat rhyme!",
+  "tts": "Yes! Bat... and cat... rhyme!"
+ },
+ {
+  "text": "Yes! bat and hat rhyme!",
+  "tts": "Yes! Bat... and hat... rhyme!"
+ },
+ {
+  "text": "What rhymes with moon?",
+  "tts": "What rhymes with... moon?"
+ },
+ {
+  "text": "Yes! moon and spoon rhyme!",
+  "tts": "Yes! Moon... and spoon... rhyme!"
+ },
+ {
+  "text": "What rhymes with spoon?",
+  "tts": "What rhymes with... spoon?"
+ },
+ {
+  "text": "Yes! spoon and moon rhyme!",
+  "tts": "Yes! Spoon... and moon... rhyme!"
+ },
+ {
+  "text": "What rhymes with star?",
+  "tts": "What rhymes with... star?"
+ },
+ {
+  "text": "Yes! star and car rhyme!",
+  "tts": "Yes! Star... and car... rhyme!"
+ },
+ {
+  "text": "What rhymes with car?",
+  "tts": "What rhymes with... car?"
+ },
+ {
+  "text": "Yes! car and star rhyme!",
+  "tts": "Yes! Car... and star... rhyme!"
+ },
+ {
+  "text": "What rhymes with rake?",
+  "tts": "What rhymes with... rake?"
+ },
+ {
+  "text": "Yes! rake and cake rhyme!",
+  "tts": "Yes! Rake... and cake... rhyme!"
+ },
+ {
+  "text": "What rhymes with cake?",
+  "tts": "What rhymes with... cake?"
+ },
+ {
+  "text": "Yes! cake and rake rhyme!",
+  "tts": "Yes! Cake... and rake... rhyme!"
+ },
+ {
+  "text": "What rhymes with bee?",
+  "tts": "What rhymes with... bee?"
+ },
+ {
+  "text": "Yes! bee and tree rhyme!",
+  "tts": "Yes! Bee... and tree... rhyme!"
+ },
+ {
+  "text": "What rhymes with tree?",
+  "tts": "What rhymes with... tree?"
+ },
+ {
+  "text": "Yes! tree and bee rhyme!",
+  "tts": "Yes! Tree... and bee... rhyme!"
+ },
+ {
+  "text": "What rhymes with bug?",
+  "tts": "What rhymes with... bug?"
+ },
+ {
+  "text": "Yes! bug and mug rhyme!",
+  "tts": "Yes! Bug... and mug... rhyme!"
+ },
+ {
+  "text": "What rhymes with mug?",
+  "tts": "What rhymes with... mug?"
+ },
+ {
+  "text": "Yes! mug and bug rhyme!",
+  "tts": "Yes! Mug... and bug... rhyme!"
+ },
+ {
+  "text": "Put 1 pumpkins in the ten frame. Then press check.",
+  "tts": "Put 1 pumpkins in the ten frame. Then press check."
+ },
+ {
+  "text": "Yes! 1. 9 more makes 10.",
+  "tts": "Yes! 1. 9 more makes 10."
+ },
+ {
+  "text": "Put 2 pumpkins in the ten frame. Then press check.",
+  "tts": "Put 2 pumpkins in the ten frame. Then press check."
+ },
+ {
+  "text": "Yes! 2. 8 more makes 10.",
+  "tts": "Yes! 2. 8 more makes 10."
+ },
+ {
+  "text": "Put 3 pumpkins in the ten frame. Then press check.",
+  "tts": "Put 3 pumpkins in the ten frame. Then press check."
+ },
+ {
+  "text": "Yes! 3. 7 more makes 10.",
+  "tts": "Yes! 3. 7 more makes 10."
+ },
+ {
+  "text": "Put 4 pumpkins in the ten frame. Then press check.",
+  "tts": "Put 4 pumpkins in the ten frame. Then press check."
+ },
+ {
+  "text": "Yes! 4. 6 more makes 10.",
+  "tts": "Yes! 4. 6 more makes 10."
+ },
+ {
+  "text": "Put 5 pumpkins in the ten frame. Then press check.",
+  "tts": "Put 5 pumpkins in the ten frame. Then press check."
+ },
+ {
+  "text": "Yes! 5. 5 more makes 10.",
+  "tts": "Yes! 5. 5 more makes 10."
+ },
+ {
+  "text": "Put 6 pumpkins in the ten frame. Then press check.",
+  "tts": "Put 6 pumpkins in the ten frame. Then press check."
+ },
+ {
+  "text": "Yes! 6. 4 more makes 10.",
+  "tts": "Yes! 6. 4 more makes 10."
+ },
+ {
+  "text": "Put 7 pumpkins in the ten frame. Then press check.",
+  "tts": "Put 7 pumpkins in the ten frame. Then press check."
+ },
+ {
+  "text": "Yes! 7. 3 more makes 10.",
+  "tts": "Yes! 7. 3 more makes 10."
+ },
+ {
+  "text": "Put 8 pumpkins in the ten frame. Then press check.",
+  "tts": "Put 8 pumpkins in the ten frame. Then press check."
+ },
+ {
+  "text": "Yes! 8. 2 more makes 10.",
+  "tts": "Yes! 8. 2 more makes 10."
+ },
+ {
+  "text": "Put 9 pumpkins in the ten frame. Then press check.",
+  "tts": "Put 9 pumpkins in the ten frame. Then press check."
+ },
+ {
+  "text": "Yes! 9. 1 more makes 10.",
+  "tts": "Yes! 9. 1 more makes 10."
+ },
+ {
+  "text": "Put 10 pumpkins in the ten frame. Then press check.",
+  "tts": "Put 10 pumpkins in the ten frame. Then press check."
+ },
+ {
+  "text": "Yes! 10. You filled the whole ten frame!",
+  "tts": "Yes! 10. You filled the whole ten frame!"
+ },
+ {
+  "text": "You have 0. Add 1 more!",
+  "tts": "You have 0. Add 1 more!"
+ },
+ {
+  "text": "You have 0. Add 2 more!",
+  "tts": "You have 0. Add 2 more!"
+ },
+ {
+  "text": "You have 0. Add 3 more!",
+  "tts": "You have 0. Add 3 more!"
+ },
+ {
+  "text": "You have 0. Add 4 more!",
+  "tts": "You have 0. Add 4 more!"
+ },
+ {
+  "text": "You have 0. Add 5 more!",
+  "tts": "You have 0. Add 5 more!"
+ },
+ {
+  "text": "You have 0. Add 6 more!",
+  "tts": "You have 0. Add 6 more!"
+ },
+ {
+  "text": "You have 0. Add 7 more!",
+  "tts": "You have 0. Add 7 more!"
+ },
+ {
+  "text": "You have 0. Add 8 more!",
+  "tts": "You have 0. Add 8 more!"
+ },
+ {
+  "text": "You have 0. Add 9 more!",
+  "tts": "You have 0. Add 9 more!"
+ },
+ {
+  "text": "You have 0. Add 10 more!",
+  "tts": "You have 0. Add 10 more!"
+ },
+ {
+  "text": "You have 1. Add 1 more!",
+  "tts": "You have 1. Add 1 more!"
+ },
+ {
+  "text": "You have 1. Add 2 more!",
+  "tts": "You have 1. Add 2 more!"
+ },
+ {
+  "text": "You have 1. Add 3 more!",
+  "tts": "You have 1. Add 3 more!"
+ },
+ {
+  "text": "You have 1. Add 4 more!",
+  "tts": "You have 1. Add 4 more!"
+ },
+ {
+  "text": "You have 1. Add 5 more!",
+  "tts": "You have 1. Add 5 more!"
+ },
+ {
+  "text": "You have 1. Add 6 more!",
+  "tts": "You have 1. Add 6 more!"
+ },
+ {
+  "text": "You have 1. Add 7 more!",
+  "tts": "You have 1. Add 7 more!"
+ },
+ {
+  "text": "You have 1. Add 8 more!",
+  "tts": "You have 1. Add 8 more!"
+ },
+ {
+  "text": "You have 1. Add 9 more!",
+  "tts": "You have 1. Add 9 more!"
+ },
+ {
+  "text": "You have 2. Take away 1!",
+  "tts": "You have 2. Take away 1!"
+ },
+ {
+  "text": "You have 2. Add 1 more!",
+  "tts": "You have 2. Add 1 more!"
+ },
+ {
+  "text": "You have 2. Add 2 more!",
+  "tts": "You have 2. Add 2 more!"
+ },
+ {
+  "text": "You have 2. Add 3 more!",
+  "tts": "You have 2. Add 3 more!"
+ },
+ {
+  "text": "You have 2. Add 4 more!",
+  "tts": "You have 2. Add 4 more!"
+ },
+ {
+  "text": "You have 2. Add 5 more!",
+  "tts": "You have 2. Add 5 more!"
+ },
+ {
+  "text": "You have 2. Add 6 more!",
+  "tts": "You have 2. Add 6 more!"
+ },
+ {
+  "text": "You have 2. Add 7 more!",
+  "tts": "You have 2. Add 7 more!"
+ },
+ {
+  "text": "You have 2. Add 8 more!",
+  "tts": "You have 2. Add 8 more!"
+ },
+ {
+  "text": "You have 3. Take away 2!",
+  "tts": "You have 3. Take away 2!"
+ },
+ {
+  "text": "You have 3. Take away 1!",
+  "tts": "You have 3. Take away 1!"
+ },
+ {
+  "text": "You have 3. Add 1 more!",
+  "tts": "You have 3. Add 1 more!"
+ },
+ {
+  "text": "You have 3. Add 2 more!",
+  "tts": "You have 3. Add 2 more!"
+ },
+ {
+  "text": "You have 3. Add 3 more!",
+  "tts": "You have 3. Add 3 more!"
+ },
+ {
+  "text": "You have 3. Add 4 more!",
+  "tts": "You have 3. Add 4 more!"
+ },
+ {
+  "text": "You have 3. Add 5 more!",
+  "tts": "You have 3. Add 5 more!"
+ },
+ {
+  "text": "You have 3. Add 6 more!",
+  "tts": "You have 3. Add 6 more!"
+ },
+ {
+  "text": "You have 3. Add 7 more!",
+  "tts": "You have 3. Add 7 more!"
+ },
+ {
+  "text": "You have 4. Take away 3!",
+  "tts": "You have 4. Take away 3!"
+ },
+ {
+  "text": "You have 4. Take away 2!",
+  "tts": "You have 4. Take away 2!"
+ },
+ {
+  "text": "You have 4. Take away 1!",
+  "tts": "You have 4. Take away 1!"
+ },
+ {
+  "text": "You have 4. Add 1 more!",
+  "tts": "You have 4. Add 1 more!"
+ },
+ {
+  "text": "You have 4. Add 2 more!",
+  "tts": "You have 4. Add 2 more!"
+ },
+ {
+  "text": "You have 4. Add 3 more!",
+  "tts": "You have 4. Add 3 more!"
+ },
+ {
+  "text": "You have 4. Add 4 more!",
+  "tts": "You have 4. Add 4 more!"
+ },
+ {
+  "text": "You have 4. Add 5 more!",
+  "tts": "You have 4. Add 5 more!"
+ },
+ {
+  "text": "You have 4. Add 6 more!",
+  "tts": "You have 4. Add 6 more!"
+ },
+ {
+  "text": "You have 5. Take away 4!",
+  "tts": "You have 5. Take away 4!"
+ },
+ {
+  "text": "You have 5. Take away 3!",
+  "tts": "You have 5. Take away 3!"
+ },
+ {
+  "text": "You have 5. Take away 2!",
+  "tts": "You have 5. Take away 2!"
+ },
+ {
+  "text": "You have 5. Take away 1!",
+  "tts": "You have 5. Take away 1!"
+ },
+ {
+  "text": "You have 5. Add 1 more!",
+  "tts": "You have 5. Add 1 more!"
+ },
+ {
+  "text": "You have 5. Add 2 more!",
+  "tts": "You have 5. Add 2 more!"
+ },
+ {
+  "text": "You have 5. Add 3 more!",
+  "tts": "You have 5. Add 3 more!"
+ },
+ {
+  "text": "You have 5. Add 4 more!",
+  "tts": "You have 5. Add 4 more!"
+ },
+ {
+  "text": "You have 5. Add 5 more!",
+  "tts": "You have 5. Add 5 more!"
+ },
+ {
+  "text": "You have 6. Take away 5!",
+  "tts": "You have 6. Take away 5!"
+ },
+ {
+  "text": "You have 6. Take away 4!",
+  "tts": "You have 6. Take away 4!"
+ },
+ {
+  "text": "You have 6. Take away 3!",
+  "tts": "You have 6. Take away 3!"
+ },
+ {
+  "text": "You have 6. Take away 2!",
+  "tts": "You have 6. Take away 2!"
+ },
+ {
+  "text": "You have 6. Take away 1!",
+  "tts": "You have 6. Take away 1!"
+ },
+ {
+  "text": "You have 6. Add 1 more!",
+  "tts": "You have 6. Add 1 more!"
+ },
+ {
+  "text": "You have 6. Add 2 more!",
+  "tts": "You have 6. Add 2 more!"
+ },
+ {
+  "text": "You have 6. Add 3 more!",
+  "tts": "You have 6. Add 3 more!"
+ },
+ {
+  "text": "You have 6. Add 4 more!",
+  "tts": "You have 6. Add 4 more!"
+ },
+ {
+  "text": "You have 7. Take away 6!",
+  "tts": "You have 7. Take away 6!"
+ },
+ {
+  "text": "You have 7. Take away 5!",
+  "tts": "You have 7. Take away 5!"
+ },
+ {
+  "text": "You have 7. Take away 4!",
+  "tts": "You have 7. Take away 4!"
+ },
+ {
+  "text": "You have 7. Take away 3!",
+  "tts": "You have 7. Take away 3!"
+ },
+ {
+  "text": "You have 7. Take away 2!",
+  "tts": "You have 7. Take away 2!"
+ },
+ {
+  "text": "You have 7. Take away 1!",
+  "tts": "You have 7. Take away 1!"
+ },
+ {
+  "text": "You have 7. Add 1 more!",
+  "tts": "You have 7. Add 1 more!"
+ },
+ {
+  "text": "You have 7. Add 2 more!",
+  "tts": "You have 7. Add 2 more!"
+ },
+ {
+  "text": "You have 7. Add 3 more!",
+  "tts": "You have 7. Add 3 more!"
+ },
+ {
+  "text": "You have 8. Take away 7!",
+  "tts": "You have 8. Take away 7!"
+ },
+ {
+  "text": "You have 8. Take away 6!",
+  "tts": "You have 8. Take away 6!"
+ },
+ {
+  "text": "You have 8. Take away 5!",
+  "tts": "You have 8. Take away 5!"
+ },
+ {
+  "text": "You have 8. Take away 4!",
+  "tts": "You have 8. Take away 4!"
+ },
+ {
+  "text": "You have 8. Take away 3!",
+  "tts": "You have 8. Take away 3!"
+ },
+ {
+  "text": "You have 8. Take away 2!",
+  "tts": "You have 8. Take away 2!"
+ },
+ {
+  "text": "You have 8. Take away 1!",
+  "tts": "You have 8. Take away 1!"
+ },
+ {
+  "text": "You have 8. Add 1 more!",
+  "tts": "You have 8. Add 1 more!"
+ },
+ {
+  "text": "You have 8. Add 2 more!",
+  "tts": "You have 8. Add 2 more!"
+ },
+ {
+  "text": "You have 9. Take away 8!",
+  "tts": "You have 9. Take away 8!"
+ },
+ {
+  "text": "You have 9. Take away 7!",
+  "tts": "You have 9. Take away 7!"
+ },
+ {
+  "text": "You have 9. Take away 6!",
+  "tts": "You have 9. Take away 6!"
+ },
+ {
+  "text": "You have 9. Take away 5!",
+  "tts": "You have 9. Take away 5!"
+ },
+ {
+  "text": "You have 9. Take away 4!",
+  "tts": "You have 9. Take away 4!"
+ },
+ {
+  "text": "You have 9. Take away 3!",
+  "tts": "You have 9. Take away 3!"
+ },
+ {
+  "text": "You have 9. Take away 2!",
+  "tts": "You have 9. Take away 2!"
+ },
+ {
+  "text": "You have 9. Take away 1!",
+  "tts": "You have 9. Take away 1!"
+ },
+ {
+  "text": "You have 9. Add 1 more!",
+  "tts": "You have 9. Add 1 more!"
+ },
+ {
+  "text": "You have 10. Take away 9!",
+  "tts": "You have 10. Take away 9!"
+ },
+ {
+  "text": "You have 10. Take away 8!",
+  "tts": "You have 10. Take away 8!"
+ },
+ {
+  "text": "You have 10. Take away 7!",
+  "tts": "You have 10. Take away 7!"
+ },
+ {
+  "text": "You have 10. Take away 6!",
+  "tts": "You have 10. Take away 6!"
+ },
+ {
+  "text": "You have 10. Take away 5!",
+  "tts": "You have 10. Take away 5!"
+ },
+ {
+  "text": "You have 10. Take away 4!",
+  "tts": "You have 10. Take away 4!"
+ },
+ {
+  "text": "You have 10. Take away 3!",
+  "tts": "You have 10. Take away 3!"
+ },
+ {
+  "text": "You have 10. Take away 2!",
+  "tts": "You have 10. Take away 2!"
+ },
+ {
+  "text": "You have 10. Take away 1!",
+  "tts": "You have 10. Take away 1!"
+ },
+ {
+  "text": "Spell cat.",
+  "tts": "Spell cat."
+ },
+ {
+  "text": "Spell cat. c, a, t.",
+  "tts": "Spell cat. C, A, T."
+ },
+ {
+  "text": "c a t. That spells cat!",
+  "tts": "C, A, T. That spells cat!"
+ },
+ {
+  "text": "Spell bat.",
+  "tts": "Spell bat."
+ },
+ {
+  "text": "Spell bat. b, a, t.",
+  "tts": "Spell bat. B, A, T."
+ },
+ {
+  "text": "b a t. That spells bat!",
+  "tts": "B, A, T. That spells bat!"
+ },
+ {
+  "text": "Spell hat.",
+  "tts": "Spell hat."
+ },
+ {
+  "text": "Spell hat. h, a, t.",
+  "tts": "Spell hat. H, A, T."
+ },
+ {
+  "text": "h a t. That spells hat!",
+  "tts": "H, A, T. That spells hat!"
+ },
+ {
+  "text": "Spell bug.",
+  "tts": "Spell bug."
+ },
+ {
+  "text": "Spell bug. b, u, g.",
+  "tts": "Spell bug. B, U, G."
+ },
+ {
+  "text": "b u g. That spells bug!",
+  "tts": "B, U, G. That spells bug!"
+ },
+ {
+  "text": "Spell mug.",
+  "tts": "Spell mug."
+ },
+ {
+  "text": "Spell mug. m, u, g.",
+  "tts": "Spell mug. M, U, G."
+ },
+ {
+  "text": "m u g. That spells mug!",
+  "tts": "M, U, G. That spells mug!"
+ },
+ {
+  "text": "Spell web.",
+  "tts": "Spell web."
+ },
+ {
+  "text": "Spell web. w, e, b.",
+  "tts": "Spell web. W, E, B."
+ },
+ {
+  "text": "w e b. That spells web!",
+  "tts": "W, E, B. That spells web!"
+ },
+ {
+  "text": "a",
+  "tts": "A."
+ },
+ {
+  "text": "b",
+  "tts": "B."
+ },
+ {
+  "text": "c",
+  "tts": "C."
+ },
+ {
+  "text": "d",
+  "tts": "D."
+ },
+ {
+  "text": "e",
+  "tts": "E."
+ },
+ {
+  "text": "f",
+  "tts": "F."
+ },
+ {
+  "text": "g",
+  "tts": "G."
+ },
+ {
+  "text": "h",
+  "tts": "H."
+ },
+ {
+  "text": "i",
+  "tts": "I."
+ },
+ {
+  "text": "j",
+  "tts": "J."
+ },
+ {
+  "text": "k",
+  "tts": "K."
+ },
+ {
+  "text": "l",
+  "tts": "L."
+ },
+ {
+  "text": "m",
+  "tts": "M."
+ },
+ {
+  "text": "n",
+  "tts": "N."
+ },
+ {
+  "text": "o",
+  "tts": "O."
+ },
+ {
+  "text": "p",
+  "tts": "P."
+ },
+ {
+  "text": "q",
+  "tts": "Q."
+ },
+ {
+  "text": "r",
+  "tts": "R."
+ },
+ {
+  "text": "s",
+  "tts": "S."
+ },
+ {
+  "text": "t",
+  "tts": "T."
+ },
+ {
+  "text": "u",
+  "tts": "U."
+ },
+ {
+  "text": "v",
+  "tts": "V."
+ },
+ {
+  "text": "w",
+  "tts": "W."
+ },
+ {
+  "text": "x",
+  "tts": "X."
+ },
+ {
+  "text": "y",
+  "tts": "Y."
+ },
+ {
+  "text": "z",
+  "tts": "Z."
+ },
+ {
+  "text": "Hmm, not quite. Let's try again!",
+  "tts": "Hmm, not quite. Let's try again!"
+ },
+ {
+  "text": "How does a pumpkin grow? Tap the pictures in order. What comes first?",
+  "tts": "How does a pumpkin grow? Tap the pictures in order. What comes first?"
+ },
+ {
+  "text": "First, a seed.",
+  "tts": "First, a seed."
+ },
+ {
+  "text": "Next, a sprout.",
+  "tts": "Next, a sprout."
+ },
+ {
+  "text": "Then, a vine grows.",
+  "tts": "Then, a vine grows."
+ },
+ {
+  "text": "A yellow flower blooms.",
+  "tts": "A yellow flower blooms."
+ },
+ {
+  "text": "A green pumpkin grows.",
+  "tts": "A green pumpkin grows."
+ },
+ {
+  "text": "Last, an orange pumpkin!",
+  "tts": "Last, an orange pumpkin!"
+ },
+ {
+  "text": "You grew a pumpkin!",
+  "tts": "You grew a pumpkin!"
+ },
+ {
+  "text": "Find the matching pairs!",
+  "tts": "Find the matching pairs!"
+ },
+ {
+  "text": "How do you feel today? Tap the pumpkin that shows your feeling.",
+  "tts": "How do you feel today? Tap the pumpkin that shows your feeling."
+ },
+ {
+  "text": "I feel Happy. Share your smile with a friend!",
+  "tts": "I feel Happy. Share your smile with a friend!"
+ },
+ {
+  "text": "I feel Sad. It is OK to feel sad. A hug or talking to a grown-up can help.",
+  "tts": "I feel Sad. It is OK to feel sad. A hug or talking to a grown-up can help."
+ },
+ {
+  "text": "I feel Mad. Let’s take three slow pumpkin breaths together.",
+  "tts": "I feel Mad. Let’s take three slow pumpkin breaths together."
+ },
+ {
+  "text": "I feel Surprised. Wow! Tell a friend what surprised you.",
+  "tts": "I feel Surprised. Wow! Tell a friend what surprised you."
+ },
+ {
+  "text": "I feel Sleepy. Stretch up tall like a pumpkin vine!",
+  "tts": "I feel Sleepy. Stretch up tall like a pumpkin vine!"
+ },
+ {
+  "text": "I feel Silly. Silly is fun! Let’s get ready to learn.",
+  "tts": "I feel Silly. Silly is fun! Let’s get ready to learn."
+ },
+ {
+  "text": "I feel Scared. You are safe. Breathe slowly with the pumpkin.",
+  "tts": "I feel Scared. You are safe. Breathe slowly with the pumpkin."
+ },
+ {
+  "text": "I feel Proud. Hooray! You worked hard!",
+  "tts": "I feel Proud. Hooray! You worked hard!"
+ },
+ {
+  "text": "Smell the pumpkin pie. Breathe in. Now blow out the candle. Breathe out.",
+  "tts": "Smell the pumpkin pie. Breathe in. Now blow out the candle. Breathe out."
+ },
+ {
+  "text": "Roll a jack-o'-lantern! Roll for the eyes.",
+  "tts": "Roll a jack-o'-lantern! Roll for the eyes."
+ },
+ {
+  "text": "You rolled 1! Next, roll for the nose.",
+  "tts": "You rolled 1! Next, roll for the nose."
+ },
+ {
+  "text": "You rolled 1! Next, roll for the mouth.",
+  "tts": "You rolled 1! Next, roll for the mouth."
+ },
+ {
+  "text": "You rolled 1! Your jack-o'-lantern is done!",
+  "tts": "You rolled 1! Your jack-o'-lantern is done!"
+ },
+ {
+  "text": "You rolled 2! Next, roll for the nose.",
+  "tts": "You rolled 2! Next, roll for the nose."
+ },
+ {
+  "text": "You rolled 2! Next, roll for the mouth.",
+  "tts": "You rolled 2! Next, roll for the mouth."
+ },
+ {
+  "text": "You rolled 2! Your jack-o'-lantern is done!",
+  "tts": "You rolled 2! Your jack-o'-lantern is done!"
+ },
+ {
+  "text": "You rolled 3! Next, roll for the nose.",
+  "tts": "You rolled 3! Next, roll for the nose."
+ },
+ {
+  "text": "You rolled 3! Next, roll for the mouth.",
+  "tts": "You rolled 3! Next, roll for the mouth."
+ },
+ {
+  "text": "You rolled 3! Your jack-o'-lantern is done!",
+  "tts": "You rolled 3! Your jack-o'-lantern is done!"
+ },
+ {
+  "text": "You rolled 4! Next, roll for the nose.",
+  "tts": "You rolled 4! Next, roll for the nose."
+ },
+ {
+  "text": "You rolled 4! Next, roll for the mouth.",
+  "tts": "You rolled 4! Next, roll for the mouth."
+ },
+ {
+  "text": "You rolled 4! Your jack-o'-lantern is done!",
+  "tts": "You rolled 4! Your jack-o'-lantern is done!"
+ },
+ {
+  "text": "You rolled 5! Next, roll for the nose.",
+  "tts": "You rolled 5! Next, roll for the nose."
+ },
+ {
+  "text": "You rolled 5! Next, roll for the mouth.",
+  "tts": "You rolled 5! Next, roll for the mouth."
+ },
+ {
+  "text": "You rolled 5! Your jack-o'-lantern is done!",
+  "tts": "You rolled 5! Your jack-o'-lantern is done!"
+ },
+ {
+  "text": "You rolled 6! Next, roll for the nose.",
+  "tts": "You rolled 6! Next, roll for the nose."
+ },
+ {
+  "text": "You rolled 6! Next, roll for the mouth.",
+  "tts": "You rolled 6! Next, roll for the mouth."
+ },
+ {
+  "text": "You rolled 6! Your jack-o'-lantern is done!",
+  "tts": "You rolled 6! Your jack-o'-lantern is done!"
+ },
+ {
+  "text": "Decorate your pumpkin! Tap a piece to add it, then drag it where you want.",
+  "tts": "Decorate your pumpkin! Tap a piece to add it, then drag it where you want."
+ }
+]

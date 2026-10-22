@@ -44,16 +44,59 @@
     roll: () => { for (let i = 0; i < 6; i++) tone(200 + rand(400), i * 0.07, 0.05, 'square', 0.05); },
     flip: () => tone(880, 0, 0.06, 'sine', 0.06),
   };
-  function say(text) {
-    if (!settings.voice || !('speechSynthesis' in window)) return;
+  // Voice: every line the app speaks is pre-recorded with a natural female neural voice (voice.js).
+  // If a clip is missing, or voice.js has not loaded yet, the best female device voice reads it instead.
+  const voiceEl = new Audio();
+  voiceEl.preload = 'auto';
+  let voiceQueue = [];
+  let voiceGen = 0;
+  const voiceMisses = (window.__voiceMisses = []);
+  const FEMALE_VOICES = [/ava.*natural/i, /jenny.*natural/i, /aria.*natural/i, /emma.*natural/i, /michelle.*natural/i,
+    /google us english/i, /samantha/i, /\bava\b/i, /allison/i, /susan/i, /zira/i, /karen/i, /moira/i, /tessa/i,
+    /serena/i, /victoria/i, /female/i];
+  function femaleVoice() {
+    const vs = speechSynthesis.getVoices().filter((v) => /^en/i.test(v.lang));
+    for (const re of FEMALE_VOICES) { const v = vs.find((x) => re.test(x.name)); if (v) return v; }
+    return vs.find((v) => /en.US/i.test(v.lang)) || vs[0];
+  }
+  function deviceSay(text, done) {
+    if (!('speechSynthesis' in window)) return done();
     try {
-      speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
-      u.rate = 0.9; u.pitch = 1.1;
-      const v = speechSynthesis.getVoices().find((x) => /^en(-|_)/i.test(x.lang));
-      if (v) u.voice = v;
+      u.rate = 0.95; u.pitch = 1.05;
+      const v = femaleVoice(); if (v) u.voice = v;
+      u.onend = done; u.onerror = done;
       speechSynthesis.speak(u);
-    } catch (e) { /* speech unavailable */ }
+    } catch (e) { done(); }
+  }
+  function playNext(gen) {
+    if (gen !== voiceGen) return;
+    const text = voiceQueue.shift();
+    if (text === undefined) return;
+    const next = () => playNext(gen);
+    const clip = window.VOICE && window.VOICE[text];
+    if (clip) {
+      voiceEl.src = clip;
+      voiceEl.onended = next;
+      const p = voiceEl.play();
+      if (p && p.catch) p.catch(() => { if (gen === voiceGen) deviceSay(text, next); });
+    } else {
+      voiceMisses.push(text);
+      deviceSay(text, next);
+    }
+  }
+  function stopVoice() {
+    voiceGen += 1;
+    voiceQueue = [];
+    voiceEl.onended = null;
+    try { voiceEl.pause(); } catch (e) { /* not playing */ }
+    if ('speechSynthesis' in window) speechSynthesis.cancel();
+  }
+  function say(parts) {
+    stopVoice();
+    if (!settings.voice) return;
+    voiceQueue = [].concat(parts);
+    playNext(voiceGen);
   }
 
   // ---------------------------------------------------------------- rewards
@@ -98,7 +141,7 @@
 
   // ---------------------------------------------------------------- home
   function home() {
-    speechSynthesis && speechSynthesis.cancel && speechSynthesis.cancel();
+    stopVoice();
     const filt = store.get('filter', 'all');
     const tags = [['all', 'All'], ['math', 'Math'], ['literacy', 'Literacy'], ['science', 'Science'], ['art', 'Art'], ['sel', 'Feelings']];
     app.innerHTML = `
@@ -117,7 +160,7 @@
             <span class="tag ${a.tag === 'art' ? 'tag-art' : a.tag}">${a.label}</span>
           </button>`).join('')}
       </div>
-      <p class="footer-note">Works offline • Great on interactive whiteboards, tablets and Chromebooks • © Pumpkin Patch Pals</p>`;
+      <p class="footer-note">Works offline • Great on interactive whiteboards, tablets and Chromebooks • Voice: Kokoro (Apache 2.0) • © Pumpkin Patch Pals</p>`;
     app.querySelectorAll('.chip').forEach((b) => b.onclick = () => { store.set('filter', b.dataset.f); sfx.tap(); home(); });
     app.querySelectorAll('.tile').forEach((b) => b.onclick = () => { sfx.tap(); go(b.dataset.id); });
   }
@@ -294,7 +337,7 @@
       key: word, prompt: `What sound does <b>${word}</b> start with?`, speak: `${word}. What sound does ${word} start with?`,
       stage: `<div class="pic-big">${art(pic)}</div>`,
       choices: shuffle([letter, ...others]).map((c) => ({ html: c, label: c, cls: 'letter', correct: c === letter })),
-      after: `Yes! ${word} starts with ${letter}!`,
+      after: `Yes! The word ${word} starts with ${letter}!`,
     };
   }
 
@@ -332,7 +375,7 @@
           </div>
           <div class="row" style="margin-top:18px"><button class="big-btn green" id="check">Check</button><button class="big-btn alt" id="clear">Clear</button></div>
           <div class="feedback" aria-live="polite"></div>`;
-        const speak = () => say(`Put ${target} pumpkins in the ten frame. Then press check.`);
+        const speak = () => say(tenPrompt(target));
         $('.say', body).onclick = speak; speak();
         body.querySelectorAll('.tenframe button').forEach((b) => b.onclick = () => {
           const i = +b.dataset.i; filled[i] = !filled[i];
@@ -346,12 +389,12 @@
           if (c === target) {
             sfx.right(); confetti(); addStar();
             fb.className = 'feedback'; fb.textContent = `${pick(PRAISE)} ${target} pumpkins!`;
-            say(`Yes! ${target}. ${10 - target} more makes 10.`);
+            say(tenYes(target));
             n += 1; await wait(1900); if (alive(body)) next();
           } else {
             sfx.wrong();
             fb.className = 'feedback try';
-            fb.textContent = c < target ? `You have ${c}. Add ${target - c} more!` : `You have ${c}. Take away ${c - target}!`;
+            fb.textContent = tenFix(c, target);
             say(fb.textContent);
           }
         };
@@ -393,11 +436,11 @@
             const fb = $('.feedback', body);
             if (typed.map((t) => t.ch).join('') === word) {
               sfx.right(); confetti(); addStar(); fb.className = 'feedback'; fb.textContent = pick(PRAISE);
-              say(`${[...word].join(' ')}. ${word}! ${fb.textContent}`);
+              say([`${[...word].join(' ')}. That spells ${word}!`, fb.textContent]);
               n += 1; await wait(2000); if (alive(body)) next();
             } else {
               sfx.wrong(); fb.className = 'feedback try'; fb.textContent = 'Not quite. Tap Undo and try again!';
-              say(`That spells ${typed.map((t) => t.ch).join(' ')}. Try again.`);
+              say(SPELL_TRY);
             }
           }
         });
@@ -420,7 +463,7 @@
         <div class="slots6">${STAGES.map((_, i) => `<div class="slot6" data-s="${i}"><span class="n">${i + 1}</span></div>`).join('')}</div>
         <div class="cards6">${order.map((i) => `<button class="choice" data-i="${i}" aria-label="${STAGES[i][1]}">${art(STAGES[i][0])}</button>`).join('')}</div>
         <div class="feedback" aria-live="polite"></div>`;
-      const speak = () => say('How does a pumpkin grow? Tap the pictures in order. What comes first?');
+      const speak = () => say(LIFE_INTRO);
       $('.say', body).onclick = speak; speak();
       body.querySelectorAll('.cards6 .choice').forEach((b) => b.onclick = async () => {
         const i = +b.dataset.i; const fb = $('.feedback', body);
@@ -429,7 +472,7 @@
           slot.innerHTML = `<span class="n">${i + 1}</span>${art(STAGES[i][0])}<small>${STAGES[i][1]}</small>`;
           slot.classList.add('filled'); b.style.visibility = 'hidden';
           sfx.right(); addStar(); fb.className = 'feedback'; fb.textContent = STAGES[i][1] + '!';
-          say(['First, a seed.', 'Next, a sprout.', 'Then, a vine grows.', 'A yellow flower blooms.', 'A green pumpkin grows.', 'Last, an orange pumpkin!'][i]);
+          say(LIFE_LINES[i]);
           step += 1;
           if (step === STAGES.length) { await wait(2200); if (!alive(body)) return; confetti(40); sfx.win(); fb.textContent = 'You grew a pumpkin!'; say('You grew a pumpkin!'); body.insertAdjacentHTML('beforeend', '<div class="row" style="margin-top:12px"><button class="big-btn" id="again">Play again</button></div>'); $('#again').onclick = start; }
         } else {
@@ -485,7 +528,7 @@
       <div class="prompt"><button class="say" aria-label="Hear it again">🔊</button><span>How do you feel today?</span></div>
       <div class="feel-grid">${FEELINGS.map(([k, t]) => `<button class="choice" data-k="${k}">${art('feel-' + k)}<span>${t}</span></button>`).join('')}</div>
       <div class="row" style="margin-top:18px"><button class="big-btn alt" id="breatheBtn">🎃 Pumpkin breathing</button></div>`;
-    const speak = () => say('How do you feel today? Tap the pumpkin that shows your feeling.');
+    const speak = () => say(FEEL_INTRO);
     $('.say', body).onclick = speak; speak();
     body.querySelectorAll('.feel-grid .choice').forEach((b) => b.onclick = () => {
       const [k, t, tip] = FEELINGS.find((f) => f[0] === b.dataset.k);
@@ -506,7 +549,7 @@
       <div class="breathe go" id="ball">Breathe in</div>
       <div class="row"><button class="big-btn" id="doneBreathe">I feel calm</button></div>`;
     const ball = $('#ball'); let inhale = true;
-    say('Smell the pumpkin pie. Breathe in. Now blow out the candle. Breathe out.');
+    say(BREATHE);
     const t = setInterval(() => { if (!document.body.contains(ball)) return clearInterval(t); inhale = !inhale; ball.textContent = inhale ? 'Breathe in' : 'Breathe out'; }, 4000);
     $('#doneBreathe').onclick = () => { clearInterval(t); runFeelings(); };
   }
@@ -544,7 +587,7 @@
       renderStage(stage, 'base-orange', parts.map((p, i) => ({ id: i, flip: false, rot: 0, ...p })));
     };
     const setDie = (n) => $('#die').querySelectorAll('i').forEach((el, i) => el.classList.toggle('on', PIPS[n].includes(i)));
-    setDie(1); draw(); say("Roll a jack-o'-lantern! Roll for the eyes.");
+    setDie(1); draw(); say(ROLL_INTRO);
     $('#rollBtn').onclick = async () => {
       if (step >= 3) return;
       const die = $('#die'); die.classList.remove('rolling'); void die.offsetWidth; die.classList.add('rolling'); sfx.roll();
@@ -554,7 +597,7 @@
       const part = steps[step];
       face[part] = ROLL[part][r - 1]; draw(); sfx.right();
       step += 1;
-      const msg = step < 3 ? `You rolled ${r}! Now roll for the ${steps[step]}.` : `You rolled ${r}! Your jack-o'-lantern is done!`;
+      const msg = rollMsg(r, step);
       $('#rollMsg').textContent = msg; say(msg);
       if (step === 3) { addStar(); confetti(30); }
     };
@@ -684,7 +727,7 @@
     stage.addEventListener('pointercancel', end);
 
     tray(); draw();
-    say('Decorate your pumpkin! Tap a piece to add it, then drag it where you want.');
+    say(DECO_INTRO);
   }
 
   function savePicture(base, parts) {
@@ -711,6 +754,63 @@
     sfx.right();
   }
 
+  // ---------------------------------------------------------------- spoken lines
+  const tenPrompt = (t) => `Put ${t} pumpkins in the ten frame. Then press check.`;
+  const tenYes = (t) => (t === 10 ? 'Yes! 10. You filled the whole ten frame!' : `Yes! ${t}. ${10 - t} more makes 10.`);
+  const tenFix = (c, t) => (c < t ? `You have ${c}. Add ${t - c} more!` : `You have ${c}. Take away ${c - t}!`);
+  const rollMsg = (r, step) => (step < 3 ? `You rolled ${r}! Next, roll for the ${['eyes', 'nose', 'mouth'][step]}.` : `You rolled ${r}! Your jack-o'-lantern is done!`);
+  const SPELL_TRY = "Hmm, not quite. Let's try again!";
+  const LIFE_INTRO = 'How does a pumpkin grow? Tap the pictures in order. What comes first?';
+  const LIFE_LINES = ['First, a seed.', 'Next, a sprout.', 'Then, a vine grows.', 'A yellow flower blooms.', 'A green pumpkin grows.', 'Last, an orange pumpkin!'];
+  const FEEL_INTRO = 'How do you feel today? Tap the pumpkin that shows your feeling.';
+  const BREATHE = 'Smell the pumpkin pie. Breathe in. Now blow out the candle. Breathe out.';
+  const ROLL_INTRO = "Roll a jack-o'-lantern! Roll for the eyes.";
+  const DECO_INTRO = 'Decorate your pumpkin! Tap a piece to add it, then drag it where you want.';
+
+  // Every line the app can say, with the text the voice generator should read (letters are spelled out
+  // as capitals so they are read as letter names). Used by tools/voice to pre-record voice.js.
+  function speechCatalog() {
+    const out = new Map();
+    const add = (t, tts) => out.set(t, tts || t);
+    const up = (c) => c.toUpperCase();
+    add('You did it! Great work!');
+    PRAISE.forEach((p) => add(p, { 'Pumpkin-tastic!': 'Pump-kin-tastic!' }[p]));
+    ['pumpkins', 'apples', 'acorns', 'ghosts', 'leaves'].forEach((n) => add(`How many ${n}?`));
+    for (let n = 1; n <= 20; n++) add(`Yes! ${n}!`);
+    for (let a = 1; a <= 9; a++) for (let b = 1; a + b <= 10; b++) { add(`What is ${a} plus ${b}?`); add(`${a} plus ${b} equals ${a + b}!`); }
+    add('What comes next?');
+    for (const L of 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') {
+      add(`Find the lowercase letter that matches capital ${L}.`);
+      add(`Yes! Capital ${L} and lowercase ${L.toLowerCase()}!`, `Yes! Capital ${L}, and lowercase ${L}!`);
+    }
+    SOUND_WORDS.forEach(([, letter, word]) => {
+      add(`${word}. What sound does ${word} start with?`, `${word}... What sound does ${word} start with?`);
+      add(`Yes! The word ${word} starts with ${letter}!`, `Yes! The word ${word} starts with ${up(letter)}!`);
+    });
+    RHYME.forEach(([, words]) => words.forEach((a) => {
+      add(`What rhymes with ${a[1]}?`, `What rhymes with... ${a[1]}?`);
+      const cap = (w) => w[0].toUpperCase() + w.slice(1);
+      words.forEach((b) => { if (a !== b) add(`Yes! ${a[1]} and ${b[1]} rhyme!`, `Yes! ${cap(a[1])}... and ${b[1]}... rhyme!`); });
+    }));
+    for (let t = 1; t <= 10; t++) { add(tenPrompt(t)); add(tenYes(t)); }
+    for (let c = 0; c <= 10; c++) for (let t = 1; t <= 10; t++) if (c !== t) add(tenFix(c, t));
+    CVC.forEach(([, w]) => {
+      add(`Spell ${w}.`);
+      add(`Spell ${w}. ${[...w].join(', ')}.`, `Spell ${w}. ${[...w].map(up).join(', ')}.`);
+      add(`${[...w].join(' ')}. That spells ${w}!`, `${[...w].map(up).join(', ')}. That spells ${w}!`);
+    });
+    'abcdefghijklmnopqrstuvwxyz'.split('').forEach((c) => add(c, up(c) + '.'));
+    add(SPELL_TRY);
+    add(LIFE_INTRO); LIFE_LINES.forEach((l) => add(l)); add('You grew a pumpkin!');
+    add('Find the matching pairs!');
+    add(FEEL_INTRO); FEELINGS.forEach(([, t, tip]) => add(`I feel ${t}. ${tip}`));
+    add(BREATHE); add(ROLL_INTRO);
+    for (let r = 1; r <= 6; r++) for (let st = 1; st <= 3; st++) add(rollMsg(r, st));
+    add(DECO_INTRO);
+    return [...out].map(([text, tts]) => ({ text, tts }));
+  }
+  window.PPP_SPEECH_CATALOG = speechCatalog;
+
   // ---------------------------------------------------------------- top bar
   function initBar() {
     $('#starCount').textContent = stars;
@@ -718,7 +818,7 @@
     const sb = $('#soundBtn'); const vb = $('#voiceBtn');
     const sync = () => { sb.setAttribute('aria-pressed', settings.sound); vb.setAttribute('aria-pressed', settings.voice); };
     sb.onclick = () => { settings.sound = !settings.sound; store.set('sound', settings.sound); sync(); sfx.tap(); };
-    vb.onclick = () => { settings.voice = !settings.voice; store.set('voice', settings.voice); sync(); if (!settings.voice && window.speechSynthesis) speechSynthesis.cancel(); };
+    vb.onclick = () => { settings.voice = !settings.voice; store.set('voice', settings.voice); sync(); if (!settings.voice) stopVoice(); };
     $('#fullBtn').onclick = () => {
       const d = document;
       if (!d.fullscreenElement) (d.documentElement.requestFullscreen || d.documentElement.webkitRequestFullscreen || (() => {})).call(d.documentElement);

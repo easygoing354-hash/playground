@@ -6,6 +6,7 @@ const [url, out] = process.argv.slice(2);
   const errors = [];
   const run = async (vw, vh, tag, full) => {
     const page = await browser.newPage({ viewport: { width: vw, height: vh } });
+    await page.addInitScript(() => { window.speechSynthesis && (window.speechSynthesis.speak = () => {}); });
     page.on('pageerror', (e) => errors.push(`${tag} pageerror: ${e.stack}`));
     page.on('console', (m) => { if (m.type() === 'error') errors.push(`${tag} console: ${m.text()}`); });
     await page.goto(url);
@@ -76,6 +77,10 @@ const [url, out] = process.argv.slice(2);
         await page.screenshot({ path: `${out}/${tag}-decorate-surprise.png` });
       }
     }
+    const misses = await page.evaluate(() => window.__voiceMisses);
+    const hasVoice = await page.evaluate(() => !!window.VOICE);
+    if (!hasVoice) errors.push(`${tag}: voice.js did not load`);
+    if (misses.length) errors.push(`${tag}: lines with no recording: ${JSON.stringify([...new Set(misses)])}`);
     await page.close();
   };
   await run(1280, 860, 'desk', true);

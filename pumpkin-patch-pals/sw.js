@@ -1,6 +1,6 @@
 // Keeps Pumpkin Patch Pals working offline. Bump VERSION whenever any app file changes.
-const VERSION = 'pumpkin-patch-pals-v1';
-const CORE = ['./', './index.html', './fonts.css', './styles.css', './app.js', './art.js', './manifest.webmanifest',
+const VERSION = 'pumpkin-patch-pals-v2';
+const CORE = ['./', './index.html', './fonts.css', './styles.css', './app.js', './art.js', './voice.js', './manifest.webmanifest',
   './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', (e) => {
