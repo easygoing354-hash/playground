@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Daily Checklist</title>
+<meta name="description" content="A small, private daily habit checklist with streaks, a 30-day heatmap and an optional diary. Works offline; data stays on your device.">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b0d16">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Checklist">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --ink:#fff; --muted:rgba(255,255,255,.72); --glass:rgba(8,8,10,.62); --line:rgba(255,255,255,.16); --accent:#f2b630; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; min-height:100%; font-family:'IBM Plex Mono',ui-monospace,monospace; color:var(--ink); background:#0b0d16; }
+  #bg { position:fixed; inset:0; z-index:0; overflow:hidden; }
+  #bg svg { width:100%; height:100%; display:block; }
+  main { position:relative; z-index:1; max-width:560px; margin:0 auto; padding:calc(28px + env(safe-area-inset-top)) 16px calc(48px + env(safe-area-inset-bottom)); }
+  .card { background:var(--glass); border:1px solid var(--line); border-radius:6px; padding:20px; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); box-shadow:0 10px 40px rgba(0,0,0,.35); margin-bottom:16px; }
+  .top { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+  .eyebrow { font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
+  h1 { font-family:'Bebas Neue',sans-serif; font-weight:400; font-size:38px; letter-spacing:.04em; margin:4px 0 2px; line-height:1; }
+  .ring { position:relative; width:74px; height:74px; flex:none; }
+  .ring svg { transform:rotate(-90deg); }
+  .ring b { position:absolute; inset:0; display:grid; place-items:center; font-size:18px; }
+  .stats { display:flex; gap:10px; margin-top:16px; }
+  .stat { flex:1; border:1px solid var(--line); border-radius:4px; padding:10px; text-align:center; }
+  .stat b { display:block; font-size:22px; }
+  .stat span { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; }
+  ul { list-style:none; padding:0; margin:0; }
+  .item { display:flex; align-items:center; gap:14px; width:100%; padding:14px 12px; margin:6px 0; border-radius:4px; border:1px solid var(--line); background:rgba(255,255,255,.03); color:var(--ink); font:inherit; font-size:16px; cursor:pointer; text-align:left; transition:transform .12s, background .2s; }
+  .item:hover { background:rgba(255,255,255,.09); }
+  .item:active { transform:scale(.98); }
+  .row { display:flex; gap:6px; align-items:stretch; margin:6px 0; }
+  .row .item { margin:0; flex:1; }
+  .item .box { margin-left:auto; min-width:44px; height:28px; padding:0 8px; border-radius:3px; border:1px solid rgba(255,255,255,.4); display:grid; place-items:center; flex:none; font-weight:600; font-size:14px; transition:all .2s; }
+  .item.done { background:color-mix(in srgb, var(--accent) 14%, transparent); border-color:color-mix(in srgb, var(--accent) 55%, transparent); }
+  .item.done .box { background:var(--accent); border-color:var(--accent); color:#111; }
+  .minus { width:44px; border-radius:4px; border:1px solid var(--line); background:rgba(255,255,255,.03); color:var(--muted); font:inherit; font-size:20px; cursor:pointer; }
+  .minus:hover { color:var(--ink); background:rgba(255,255,255,.09); }
+  .minus[hidden] { display:none; }
+  .hint { font-size:12px; color:var(--muted); margin:0 0 6px; }
+  .word { margin-top:14px; font-size:14px; color:var(--muted); border-top:1px dashed var(--line); padding-top:12px; }
+  .word b { color:var(--ink); }
+  h2 { font-size:15px; margin:0 0 12px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); font-weight:500; }
+  .heat { display:grid; grid-template-columns:repeat(10,1fr); gap:6px; }
+  .cell { aspect-ratio:1; border-radius:2px; border:1px solid var(--line); cursor:pointer; position:relative; padding:0; }
+  .cell.sel { outline:2px solid #fff; outline-offset:1px; }
+  .cell.today::after { content:""; position:absolute; inset:35%; border-radius:50%; background:#fff; }
+  .legend { display:flex; justify-content:space-between; gap:8px; font-size:11px; color:var(--muted); margin-top:8px; }
+  .hist li { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:9px 4px; border-bottom:1px solid var(--line); font-size:14px; cursor:pointer; }
+  .hist li:last-child { border-bottom:0; }
+  .dots { display:flex; gap:4px; }
+  .dots i { width:9px; height:9px; border-radius:50%; background:rgba(255,255,255,.2); }
+  .dots i.on { background:var(--accent); }
+  .back { display:none; margin-top:10px; background:none; border:1px solid var(--line); color:var(--ink); border-radius:4px; padding:8px 12px; font:inherit; font-size:14px; cursor:pointer; }
+  .note { font-size:12px; color:var(--muted); text-align:center; margin-top:4px; }
+  .note a { color:var(--muted); }
+  .opt { text-transform:none; letter-spacing:0; font-size:12px; }
+  textarea#diary { width:100%; min-height:110px; resize:vertical; background:rgba(0,0,0,.35); color:var(--ink); border:1px solid var(--line); border-radius:4px; padding:10px 12px; font:inherit; font-size:14px; line-height:1.5; }
+  textarea#diary:focus { outline:none; border-color:color-mix(in srgb, var(--accent) 60%, transparent); }
+  textarea#diary::placeholder { color:rgba(255,255,255,.4); }
+  .diaryMeta { font-size:11px; color:var(--muted); margin-top:6px; text-align:right; min-height:14px; }
+  .pen { color:var(--accent); font-size:13px; margin-left:6px; }
+  .btns { display:flex; gap:8px; flex-wrap:wrap; }
+  .btn { flex:1; min-width:120px; background:rgba(255,255,255,.03); border:1px solid var(--line); color:var(--ink); border-radius:4px; padding:10px 12px; font:inherit; font-size:14px; cursor:pointer; }
+  .btn:hover { background:rgba(255,255,255,.09); }
+  .btn.primary { border-color:color-mix(in srgb, var(--accent) 55%, transparent); }
+  .btn[hidden] { display:none; }
+  button:focus-visible, textarea:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+</style>
+</head>
+<body>
+<div id="bg"></div>
+<main>
+  <section class="card">
+    <div class="top">
+      <div>
+        <div class="eyebrow" id="eyebrow">Today</div>
+        <h1 id="dateTitle">—</h1>
+      </div>
+      <div class="ring">
+        <svg width="74" height="74" viewBox="0 0 74 74" aria-hidden="true">
+          <circle cx="37" cy="37" r="31" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="7"/>
+          <circle id="ringArc" cx="37" cy="37" r="31" fill="none" stroke="#f2b630" stroke-width="7" stroke-linecap="butt" stroke-dasharray="194.8" stroke-dashoffset="194.8" style="transition:stroke-dashoffset .4s"/>
+        </svg>
+        <b id="ringNum">0/0</b>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><b id="streak">0</b><span>Day streak</span></div>
+      <div class="stat"><b id="best">0</b><span>Best streak</span></div>
+      <div class="stat"><b id="perfect">0</b><span>Perfect days</span></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <p class="hint">Tap a goal each time you do it. Use − to undo.</p>
+    <ul id="list"></ul>
+    <button class="back" id="backBtn" type="button">← Back to today</button>
+    <div class="word" id="word"></div>
+  </section>
+
+  <section class="card">
+    <h2>Diary <span class="opt">— optional</span></h2>
+    <textarea id="diary" aria-label="Diary entry" placeholder="Anything on your mind today… (optional)"></textarea>
+    <div class="diaryMeta" id="diaryMeta"></div>
+  </section>
+
+  <section class="card">
+    <h2>Last 30 days</h2>
+    <div class="heat" id="heat"></div>
+    <div class="legend"><span>30 days ago</span><span>Tap a day to view or fix it</span><span>Today</span></div>
+  </section>
+
+  <section class="card">
+    <h2>History</h2>
+    <ul class="hist" id="hist"></ul>
+  </section>
+
+  <section class="card">
+    <h2>Backup</h2>
+    <p class="hint">Your history lives only in this browser. Export a backup now and then, and import it to move to a new phone or computer.</p>
+    <div class="btns">
+      <button class="btn primary" id="exportBtn" type="button">Export backup</button>
+      <button class="btn" id="importBtn" type="button">Import backup</button>
+      <button class="btn" id="installBtn" type="button" hidden>Install app</button>
+    </div>
+    <input type="file" id="importFile" accept="application/json,.json" hidden>
+  </section>
+
+  <div class="note" id="syncNote">Saved on this device. Works offline. · Open source (MIT)</div>
+</main>
+
+<script>
+/* ======================================================================
+   EDIT YOUR GOALS HERE.
+   id    – short unique key used in saved data (don't change it once used)
+   label – what you see on the button
+   since – optional "YYYY-MM-DD": the goal only counts from that day on,
+           so adding a goal later doesn't break your old perfect days.
+   ====================================================================== */
+const ITEMS = [
+  { id:"read",     label:"Read" },
+  { id:"math",     label:"Practice math" },
+  { id:"quiz",     label:"Stock terms quiz" },
+  { id:"spanish",  label:"Spanish lessons" },
+  { id:"walk",     label:"Power / long walk" },
+  { id:"research", label:"Research practice" },
+  { id:"claude",   label:"Build with Claude Code", since:"2026-11-06" },
+];
+/* Spanish "word of the day" list – one is picked per calendar day. */
+const WORDS = [
+  ["aprender","to learn"],["leer","to read"],["caminar","to walk"],["la bolsa","the stock market"],["invertir","to invest"],
+  ["la acción","the share / stock"],["el número","the number"],["investigar","to research"],["el libro","the book"],["la meta","the goal"],
+  ["el hábito","the habit"],["hoy","today"],["mañana","tomorrow / morning"],["el crecimiento","growth"],["la ganancia","profit"],
+  ["el riesgo","risk"],["la idea","the idea"],["construir","to build"],["diseñar","to design"],["el paso","the step"],
+  ["la pregunta","the question"],["la respuesta","the answer"],["fuerte","strong"],["paciencia","patience"],["el futuro","the future"],
+  ["la inteligencia","intelligence"],["el valor","value"],["seguir","to keep going"],["el mercado","the market"],["¡lo logré!","I did it!"]
+];
+const STORE_KEY = "daily-checklist-days";
+
+/* ---------- dates ---------- */
+const pad = n => String(n).padStart(2,"0");
+const keyOf = d => d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const fromKey = k => { const [y,m,d]=k.split("-").map(Number); return new Date(y,m-1,d); };
+const addDays = (d,n) => { const x=new Date(d); x.setDate(x.getDate()+n); return x; };
+const isDayKey = k => /^\d{4}-\d{2}-\d{2}$/.test(k);
+let todayKey = keyOf(new Date());
+let viewKey = todayKey;
+
+/* ---------- state ---------- */
+let days = {};          // key -> {done:{id:count}, diary?, updated}
+
+const reps=(d,id)=>{ const v=d&&d[id]; return v===true?1:(typeof v==="number"&&v>0?Math.floor(v):0); };
+const itemsFor = k => ITEMS.filter(i=>!i.since || k>=i.since);
+function countDone(k){ const d=days[k]; if(!d||!d.done) return 0; return itemsFor(k).filter(i=>reps(d.done,i.id)>0).length; }
+function isPerfect(k){ const t=itemsFor(k).length; return t>0 && countDone(k)===t; }
+
+/* ---------- seeded random ---------- */
+function rng(seed){ let s=seed||1; return ()=>{ s^=s<<13; s>>>=0; s^=s>>17; s^=s<<5; s>>>=0; return s/4294967296; }; }
+
+/* ---------- fixed background: rainy neon city at night ---------- */
+const W=1600,H=1000;
+function nightCity(r){
+  const hz=640; // horizon / street line
+  let s=`<defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#050506"/><stop offset=".55" stop-color="#1a0b0c"/><stop offset="1" stop-color="#3a1410"/></linearGradient>
+    <linearGradient id="street" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#160a09"/><stop offset="1" stop-color="#030303"/></linearGradient>
+    <radialGradient id="vig" cx="50%" cy="45%" r="75%"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".85"/></radialGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="9"/></filter>
+    <filter id="soft"><feGaussianBlur stdDeviation="3"/></filter>
+    <filter id="steam" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="28"/></filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .07 0"/></filter>
+  </defs>
+  <rect width="${W}" height="${H}" fill="url(#sky)"/>`;
+  s+=`<ellipse cx="${W*0.55}" cy="${hz-40}" rx="700" ry="160" fill="#7a2416" opacity=".35" filter="url(#steam)"/>`;
+  const neon=["#ff2e3a","#ff5c8a","#2fd3c8","#f2b630"];
+  const signs=[];
+  for(const layer of [{top:250,shade:"#0c0708",win:.18},{top:360,shade:"#070405",win:.32}]){
+    let x=-20;
+    while(x<W){ const w=60+r()*130, h=hz-layer.top-r()*220; const y=hz-h;
+      s+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${layer.shade}"/>`;
+      for(let wy=y+14; wy<hz-20; wy+=18) for(let wx=x+8; wx<x+w-10; wx+=14)
+        if(r()<layer.win) s+=`<rect x="${wx}" y="${wy}" width="6" height="9" fill="${r()<.85?"#e8a33a":"#d9d2b0"}" opacity="${(.35+r()*.5).toFixed(2)}"/>`;
+      if(layer.win>.2 && r()<.35){ const c=neon[Math.floor(r()*neon.length)], sw=30+r()*(w-40), sx=x+(w-sw)/2, sy=y+30+r()*Math.max(10,h-140), vert=r()<.4;
+        signs.push({c,x:vert?sx+sw/2-8:sx,y:sy,w:vert?16:sw,h:vert?90:16}); }
+      x+=w+r()*8; } }
+  for(const g of signs){
+    s+=`<rect x="${g.x}" y="${g.y}" width="${g.w}" height="${g.h}" fill="${g.c}" opacity=".9" filter="url(#glow)"/><rect x="${g.x}" y="${g.y}" width="${g.w}" height="${g.h}" fill="none" stroke="${g.c}" stroke-width="2" opacity=".95"/>`; }
+  s+=`<rect x="0" y="${hz}" width="${W}" height="${H-hz}" fill="url(#street)"/>`;
+  for(const g of signs){ const ry=hz+(hz-g.y)*0.35;
+    s+=`<rect x="${g.x}" y="${ry}" width="${g.w}" height="${Math.min(260,(hz-g.y)*0.6)}" fill="${g.c}" opacity=".22" filter="url(#glow)"/>`; }
+  for(let i=0;i<60;i++){ const y=hz+8+r()*(H-hz), x=r()*W;
+    s+=`<rect x="${x}" y="${y}" width="${20+r()*120}" height="2" fill="${r()<.6?"#e8a33a":"#ff2e3a"}" opacity="${(.08+r()*.18).toFixed(2)}" filter="url(#soft)"/>`; }
+  for(let i=0;i<3;i++){ const y=hz+50+i*55+r()*20;
+    s+=`<rect x="${-100+r()*400}" y="${y}" width="${700+r()*500}" height="5" fill="#ff2e3a" opacity=".45" filter="url(#glow)"/>`;
+    s+=`<rect x="${600+r()*500}" y="${y+18}" width="${400+r()*400}" height="4" fill="#ffe7b0" opacity=".35" filter="url(#glow)"/>`; }
+  for(const sx of [W*0.22, W*0.78]) for(let k=0;k<5;k++)
+    s+=`<ellipse cx="${sx+(r()-.5)*80}" cy="${H-80-k*90}" rx="${90+k*30}" ry="${60+k*20}" fill="#e8ddd0" opacity="${(.12-k*.018).toFixed(3)}" filter="url(#steam)"/>`;
+  for(let i=0;i<420;i++){ const x=r()*W, y=r()*H, l=12+r()*22;
+    s+=`<line x1="${x}" y1="${y}" x2="${x-4}" y2="${y+l}" stroke="#cfd6e0" stroke-opacity="${(.05+r()*.12).toFixed(2)}" stroke-width="1"/>`; }
+  s+=`<rect width="${W}" height="${H}" fill="url(#vig)"/><rect width="${W}" height="${H}" filter="url(#grain)"/>`;
+  return s;
+}
+function paintBackground(){
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${nightCity(rng(1976))}</svg>`;
+  document.getElementById("bg").innerHTML = svg;
+  const w = WORDS[dayIndex(todayKey) % WORDS.length];
+  document.getElementById("word").innerHTML = `Palabra del día: <b>${w[0]}</b> — ${w[1]}`;
+}
+function dayIndex(k){ const d=fromKey(k); return Math.floor((d - new Date(d.getFullYear(),0,0))/864e5) + d.getFullYear()*366; }
+
+/* ---------- stats ---------- */
+function streaks(){
+  let cur=0, d=fromKey(todayKey);
+  if(!isPerfect(todayKey)) d=addDays(d,-1);
+  while(isPerfect(keyOf(d))){ cur++; d=addDays(d,-1); }
+  const keys=Object.keys(days).filter(isPerfect).sort();
+  let best=0, run=0, prev=null;
+  for(const k of keys){ run = (prev && keyOf(addDays(fromKey(prev),1))===k) ? run+1 : 1; best=Math.max(best,run); prev=k; }
+  return { cur, best:Math.max(best,cur), perfect:keys.length };
+}
+
+/* ---------- render ---------- */
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmtLong = k => fromKey(k).toLocaleDateString(undefined,{weekday:"long", month:"long", day:"numeric", year:"numeric"});
+const fmtShort = k => fromKey(k).toLocaleDateString(undefined,{weekday:"short", month:"short", day:"numeric"});
+function heatColor(n,total){ if(!n||!total) return "rgba(255,255,255,.04)"; const a=0.15+0.85*(n/total); return `color-mix(in srgb, var(--accent) ${Math.round(a*100)}%, transparent)`; }
+function goTo(k){ viewKey=k; render(); window.scrollTo({top:0,behavior:"smooth"}); }
+
+function render(){
+  const isToday = viewKey===todayKey;
+  document.getElementById("eyebrow").textContent = isToday ? "Today" : "Editing a past day";
+  document.getElementById("dateTitle").textContent = fmtLong(viewKey);
+  document.getElementById("backBtn").style.display = isToday ? "none" : "inline-block";
+  const done = (days[viewKey] && days[viewKey].done) || {};
+  const list = document.getElementById("list"); list.innerHTML="";
+  for(const it of itemsFor(viewKey)){
+    const n=reps(done,it.id);
+    const li=document.createElement("li"); li.className="row";
+    const b=document.createElement("button"); b.type="button";
+    b.className="item"+(n?" done":"");
+    b.setAttribute("aria-label", `${it.label}: done ${n} time${n===1?"":"s"}. Tap to add one.`);
+    b.innerHTML=`<span class="label">${esc(it.label)}</span><span class="box">${n===0?"":n===1?"✓":"×"+n}</span>`;
+    b.onclick=()=>bump(it.id,1);
+    const m=document.createElement("button"); m.type="button"; m.className="minus"; m.textContent="−"; m.hidden=!n;
+    m.setAttribute("aria-label",`Undo one ${it.label}`); m.onclick=()=>bump(it.id,-1);
+    li.appendChild(b); li.appendChild(m); list.appendChild(li);
+  }
+  const n=countDone(viewKey);
+  const tot=itemsFor(viewKey).length;
+  document.getElementById("ringNum").textContent=`${n}/${tot}`;
+  document.getElementById("ringArc").setAttribute("stroke-dashoffset", (194.8*(1-(tot?n/tot:0))).toFixed(1));
+  const st=streaks();
+  document.getElementById("streak").textContent=st.cur;
+  document.getElementById("best").textContent=st.best;
+  document.getElementById("perfect").textContent=st.perfect;
+
+  const heat=document.getElementById("heat"); heat.innerHTML="";
+  for(let i=29;i>=0;i--){ const k=keyOf(addDays(fromKey(todayKey),-i)), c=document.createElement("button"); c.type="button";
+    c.className="cell"+(k===todayKey?" today":"")+(k===viewKey?" sel":"");
+    c.style.background=heatColor(countDone(k),itemsFor(k).length); c.title=`${fmtShort(k)} — ${countDone(k)}/${itemsFor(k).length}${days[k]&&days[k].diary?" · diary":""}`;
+    c.setAttribute("aria-label", c.title); c.onclick=()=>goTo(k);
+    heat.appendChild(c); }
+
+  const hist=document.getElementById("hist"); hist.innerHTML="";
+  const keys=Object.keys(days).filter(k=>k<=todayKey && (countDone(k)>0 || days[k].diary)).sort().reverse();
+  if(!keys.length){ hist.innerHTML=`<li style="cursor:default;color:var(--muted)">No history yet.</li>`; }
+  for(const k of keys.slice(0,60)){ const li=document.createElement("li"), d=days[k].done||{};
+    li.innerHTML=`<span>${fmtShort(k)}${isPerfect(k)?" — complete":""}${days[k].diary?'<span class="pen" title="Has a diary entry">✎</span>':""}</span><span style="display:flex;gap:10px;align-items:center"><span class="dots">${itemsFor(k).map(i=>`<i class="${reps(d,i.id)?"on":""}" title="${esc(i.label)}: ${reps(d,i.id)}×"></i>`).join("")}</span><b>${countDone(k)}/${itemsFor(k).length}</b></span>`;
+    li.onclick=()=>goTo(k);
+    hist.appendChild(li); }
+  renderDiary();
+}
+
+/* ---------- diary ---------- */
+const diaryEl=document.getElementById("diary"), diaryMeta=document.getElementById("diaryMeta");
+let diaryShownFor=null, diaryTimer=null;
+function renderDiary(){
+  const v=(days[viewKey]&&days[viewKey].diary)||"";
+  if(diaryShownFor!==viewKey){ diaryEl.value=v; diaryShownFor=viewKey; diaryMeta.textContent=""; }
+  else if(document.activeElement!==diaryEl){ diaryEl.value=v; }
+  diaryEl.placeholder = viewKey===todayKey ? "Anything on your mind today… (optional)" : "Notes for this day… (optional)";
+}
+diaryEl.addEventListener("input",()=>{
+  const k=viewKey, cur=dayCopy(k);
+  if(diaryEl.value.trim()) cur.diary=diaryEl.value; else delete cur.diary;
+  commit(k,cur,false);
+  diaryMeta.textContent="Saving…";
+  clearTimeout(diaryTimer); diaryTimer=setTimeout(()=>{ diaryMeta.textContent="Saved on this device"; render(); },500);
+});
+
+/* ---------- saving ---------- */
+function saveLocal(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(days)); return true; }catch(e){ note("Couldn't save — your browser is blocking storage (private window?)."); return false; } }
+function loadLocal(){ try{ const v=JSON.parse(localStorage.getItem(STORE_KEY)||"{}"); if(v&&typeof v==="object") days=clean(v); }catch(e){} }
+function dayCopy(k){ return days[k] ? { ...days[k], done:{ ...(days[k].done||{}) } } : { done:{} }; }
+function commit(k,cur,rerender=true){
+  cur.date=k; cur.count=itemsFor(k).filter(i=>reps(cur.done,i.id)>0).length; cur.updated=new Date().toISOString();
+  days[k]=cur; saveLocal(); if(rerender) render();
+}
+function bump(id,delta){
+  const k=viewKey, cur=dayCopy(k);
+  const n=Math.max(0, reps(cur.done,id)+delta);
+  if(n) cur.done[id]=n; else delete cur.done[id];
+  commit(k,cur);
+}
+function note(t){ document.getElementById("syncNote").textContent=t; }
+
+/* Keep only well-formed day records (used on load and on import). */
+function clean(obj){
+  const out={};
+  for(const [k,v] of Object.entries(obj||{})){
+    if(!isDayKey(k) || !v || typeof v!=="object") continue;
+    const done={};
+    for(const [id,c] of Object.entries(v.done||{})){ const n=reps({x:c},"x"); if(n) done[id]=n; }
+    const day={ done, date:k, updated: typeof v.updated==="string" ? v.updated : "" };
+    if(typeof v.diary==="string" && v.diary.trim()) day.diary=v.diary;
+    if(Object.keys(done).length || day.diary) out[k]=day;
+  }
+  return out;
+}
+
+/* ---------- backup: export / import ---------- */
+document.getElementById("exportBtn").onclick=()=>{
+  const data={ app:"daily-checklist", version:1, exported:new Date().toISOString(), days };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=`daily-checklist-${todayKey}.json`;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  note(`Backup saved (${Object.keys(days).length} days).`);
+};
+const fileEl=document.getElementById("importFile");
+document.getElementById("importBtn").onclick=()=>fileEl.click();
+fileEl.onchange=async()=>{
+  const f=fileEl.files&&fileEl.files[0]; fileEl.value=""; if(!f) return;
+  try{
+    const raw=JSON.parse(await f.text());
+    const incoming=clean(raw && raw.days ? raw.days : raw);
+    const n=Object.keys(incoming).length;
+    if(!n){ note("That file has no checklist days in it."); return; }
+    if(!confirm(`Import ${n} day${n===1?"":"s"}? For any day in both, the most recently edited version is kept.`)) return;
+    for(const [k,v] of Object.entries(incoming)){ if(!days[k] || (v.updated||"") >= (days[k].updated||"")) days[k]=v; }
+    saveLocal(); diaryShownFor=null; render(); note(`Imported ${n} day${n===1?"":"s"}.`);
+  }catch(e){ note("Couldn't read that file — is it a Daily Checklist backup?"); }
+};
+
+/* ---------- install prompt (Chrome / Edge / Android) ---------- */
+let installEvt=null; const installBtn=document.getElementById("installBtn");
+window.addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); installEvt=e; installBtn.hidden=false; });
+installBtn.onclick=async()=>{ if(!installEvt) return; installEvt.prompt(); await installEvt.userChoice.catch(()=>{}); installEvt=null; installBtn.hidden=true; };
+window.addEventListener("appinstalled",()=>{ installBtn.hidden=true; });
+
+/* ---------- day rollover & other tabs ---------- */
+function checkDay(){ const k=keyOf(new Date()); if(k!==todayKey){ const wasToday=viewKey===todayKey; todayKey=k; if(wasToday) viewKey=k; paintBackground(); render(); } }
+setInterval(checkDay, 60000);
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden) checkDay(); });
+window.addEventListener("storage",e=>{ if(e.key===STORE_KEY){ loadLocal(); render(); } });
+document.getElementById("backBtn").onclick=()=>goTo(todayKey);
+
+/* ---------- boot ---------- */
+loadLocal(); paintBackground(); render();
+if("serviceWorker" in navigator && (location.protocol==="https:" || location.hostname==="localhost" || location.hostname==="127.0.0.1")){
+  window.addEventListener("load",()=>{ navigator.serviceWorker.register("sw.js").catch(()=>{}); });
+}
+</script>
+</body>
+</html>
