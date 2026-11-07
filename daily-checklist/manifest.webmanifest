@@ -1,0 +1,18 @@
+{
+  "id": "./",
+  "name": "Daily Checklist",
+  "short_name": "Checklist",
+  "description": "A private daily habit checklist with streaks, a 30-day heatmap and an optional diary.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0d16",
+  "theme_color": "#0b0d16",
+  "categories": ["productivity", "lifestyle", "health"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
